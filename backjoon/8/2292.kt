@@ -28,6 +28,11 @@ fun main(args: Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
     bw.write("${getSequenceIndex(br.readLine().toInt()) + 1}")
+    // bw.write("${getSequenceIndex2(1)}\n")
+    // bw.write("${getSequenceIndex2(2)}\n")
+    // bw.write("${getSequenceIndex2(7)}\n")
+    // bw.write("${getSequenceIndex2(8)}\n")
+    // bw.write("${getSequenceIndex2(20)}\n")
     bw.flush()
     br.close()
     bw.close()
@@ -59,3 +64,19 @@ private fun getSequenceIndex(size : Int) : Int {
     // print("$res, ${count-1}\n")
     return count-1
 }
+
+// private fun getSequenceIndex2(size : Int) : Int {
+//     var res = 1
+//     var count = 0
+//     while(true){
+//         count++
+//         for(i in 0 until count){
+//             print("size : $size, res : $res, count : $count\n")
+//             res += 6
+//         }
+//         if(res >= size) 
+//             break
+//     }
+//     // print("$res, ${count-1}\n")
+//     return count
+// }
