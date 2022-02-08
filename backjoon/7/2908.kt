@@ -6,10 +6,14 @@ import java.io.InputStreamReader
 fun main(arge : Array<String>) {
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))
+    var st = StringTokenizer(br.readLine())
     
-    var a = "asd"
-    a = a.reversed()
-    bw.write(a)
+    var value1 = st.nextToken().toString().reversed().toInt()
+    var value2 = st.nextToken().toString().reversed().toInt()
+    if( value1 > value2 )
+        bw.write("$value1")
+    else
+        bw.write("$value2")
    
     bw.flush()
     br.close()
