@@ -7,7 +7,10 @@ fun main(arge : Array<String>) {
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     var st: StringTokenizer
-
+    st = StringTokenizer(br.readLine())
+    for( i in 1 until (st.nextToken().toInt() + 1)){
+        bw.write("$i\n")
+    }
      bw.flush()
      br.close()
      bw.close()
