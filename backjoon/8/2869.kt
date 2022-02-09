@@ -66,10 +66,9 @@ private fun getClimbDay2(height: Int, up: Int, down: Int) : Int {
     // print("res : $res\n")
     // print("res + 0.9 : ${(res+0.9).toInt()}\n")
 
+    // 소수점의 경우는 날이 지난것이니, 다음 날짜로 적용
     if(res.toInt() < res)
         return res.toInt() + 1
     else
         return res.toInt()
-
-    // return (res + 0.9).toInt()
 }
