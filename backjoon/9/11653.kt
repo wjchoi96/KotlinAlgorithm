@@ -6,9 +6,17 @@ fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
 
     var value = br.readLine().toInt()
+    doMainFunc3(value, bw)
+
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+private fun doMainFunc(num : Int, bw : BufferedWriter){
+    var value = num
     val sosuList = getSosuList(value)
     var sosuIdx = 0
-
     while(true){
         if(isSosu(value)){
             bw.write("$value\n")
@@ -21,11 +29,36 @@ fun main(args : Array<String>){
             sosuIdx++
         }
     }
-    
+}
 
-    bw.flush()
-    bw.close()
-    br.close()
+private fun doMainFunc2(num : Int, bw : BufferedWriter){
+    var value = num
+    var sosu = 2
+    while(true){
+        if(isSosu(value)){
+            bw.write("$value\n")
+            break
+        }
+        if( value % sosu == 0 ){
+            bw.write("$sosu\n")
+            value /= sosu
+        }else{
+            sosu++
+        }
+    }
+}
+
+private fun doMainFunc3(num : Int, bw : BufferedWriter){
+    var value = num
+    var sosu = 2
+    while(value>1){
+        if( value % sosu == 0 ){
+            bw.write("$sosu\n")
+            value /= sosu
+        }else{
+            sosu++
+        }
+    }
 }
 
 private fun getSosuList(max : Int) : ArrayList<Int> {
