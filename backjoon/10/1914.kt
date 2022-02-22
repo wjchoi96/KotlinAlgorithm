@@ -1,5 +1,3 @@
-//sliver 2
-//10-4
 
 /*
     원반 n개를 a->c 이동하는것은
@@ -20,20 +18,15 @@ fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
 
     val n = br.readLine().toInt()
+
     bw.write("${getHanoiCount(n)}\n")
-    hanoi(n, 1, 2, 3, bw)
-    
+    if(n<=20)
+        hanoi(n, 1, 2, 3, bw)
     bw.flush()
     bw.close()
     br.close()
 }
 
-/*
-    n 개의 하노이탑 1->3번기둥으로 옮기기
-    1. n-1개를 2번기둥으로 옮긴다
-    2. 1개를 3번기둥으로 옮긴다
-    3. n-1개를 3번기둥으로 옮긴다
-*/
 private fun getHanoiCount(n : Int) : String {
     var res = BigInteger("1")
     for(i in 0 until n){
@@ -41,16 +34,18 @@ private fun getHanoiCount(n : Int) : String {
     }
     res = res.subtract(BigInteger("1"))
     return res.toString()
+    // return "${(Math.pow(2.0, n.toDouble())-1).toInt()}"
 }
+
 private fun hanoi(n : Int, from : Int, by : Int, to : Int, bw : BufferedWriter){
     if(n==1){
         bw.write("$from $to\n")
     }else{
-        //1. n-1개를 2번기둥으로 옮긴다
+        //원반 n-1개를 a->b로 이동하는것
         hanoi(n-1, from, to, by, bw)
-        //2. 1개를 3번기둥으로 옮긴다
+        //큰 원반 1개를 a->c
         bw.write("$from $to\n")
-        //3. n-1개를 3번기둥으로 옮긴다
+        //원반 n-1개를 b->c로 이동
         hanoi(n-1, by, from, to, bw)
     }
 }
