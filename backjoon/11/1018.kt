@@ -20,7 +20,7 @@ fun main(args : Array<String>){
     for(x in 0 until height-7){
         for(y in 0 until width-7){
             var count1 = 0
-            var count2 = 0
+            var count2 = 0 // 첫 글자를 반대로 했을때 수정할 타일 개수
             var firstColor : Char = arr[x][y]
             print("($x, $y) ~ (${x+8-1}, ${y+8-1}).firstColor($firstColor) ")
             for(h in x until x+8){
@@ -29,13 +29,13 @@ fun main(args : Array<String>){
                     if((h+w)%2 == 0){
                         if(arr[h][w] != firstColor){
                             count1++
-                        }else{
+                        }else{ // 첫 글자를 반대로 했을때 수정할 타일 개수
                             count2++
                         }
                     }else{
                         if(arr[h][w] == firstColor){
                             count1++
-                        }else{
+                        }else{ // 첫 글자를 반대로 했을때 수정할 타일 개수
                             count2++
                         }
                     }
@@ -90,4 +90,5 @@ fun main(args : Array<String>){
     x를 
     0~8, 1~9, 2~10, ...  w-8~w
 
+    첫글자를 입력된 값으로만 계산을 했는데, 첫 글자를 반대로 했을때 수정해야하는 타일의 개수가 더 적은경우도 존재
  */
