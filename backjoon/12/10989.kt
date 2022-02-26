@@ -3,18 +3,20 @@ fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))
 
-    val size = br.readLine().toInt()
-    val arr : Array<Int> = Array(size){0}
-    var max = 0
-    for(i in 0 until size){
-        val value = br.readLine().toInt()
-        if(value > max){
-            max = value
-        }
-        arr[i] = value
-    }
+    doCountingSort(br, bw)
+
+    // val size = br.readLine().toInt()
+    // val arr : Array<Int> = Array(size){0}
+    // var max = 0
+    // for(i in 0 until size){
+    //     val value = br.readLine().toInt()
+    //     if(value > max){
+    //         max = value
+    //     }
+    //     arr[i] = value
+    // }
     
-    countingSort2(arr, max, bw)
+    // countingSort2(arr, max, bw)
     
     bw.flush()
     bw.close()
@@ -28,15 +30,30 @@ fun main(args : Array<String>){
     3. 목적 배열 만들기
     4. 배열 복사
  */
-  private fun countingSort2(arr : Array<Int>, maxValue : Int, bw : BufferedWriter){
+
+private fun doCountingSort(br : BufferedReader, bw : BufferedWriter){
+    val f : Array<Int> = Array(10001){0} // 도수 분포표
+
+    // data 받으면서 도수분포표 작성
+    for(i in 0 until br.readLine().toInt()){
+        f[br.readLine().toInt()]++
+    }
+
+    for(i in 1 until f.size){
+        while(f[i]>0){
+            bw.write("$i\n")
+            f[i]--
+        }
+    }
+
+}
+
+// 메모리초과
+private fun countingSort2(arr : Array<Int>, maxValue : Int, bw : BufferedWriter){
     val f : Array<Int> = Array(maxValue+1){0} // 도수 분포표
-    
     // 1
     for(i in 0 until arr.size){
         f[arr[i]]++
-    }
-
-    for(i in 0 until f.size){
     }
 
     //3, 4통합해서 출력
@@ -48,9 +65,10 @@ fun main(args : Array<String>){
         }
     }
 
- }
+}
 
- private fun countingSort(arr : Array<Int>, maxValue : Int){
+// 메모리초과
+private fun countingSort(arr : Array<Int>, maxValue : Int){
     val f : Array<Int> = Array(maxValue+1){0} // 누적 도수 분표표
     val b : Array<Int> = Array(arr.size){0} // 작업용 목적 배열
 
@@ -74,4 +92,4 @@ fun main(args : Array<String>){
         arr[i] = b[i]
     }
 
- }
+}
