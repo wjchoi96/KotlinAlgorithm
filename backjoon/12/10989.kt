@@ -14,11 +14,7 @@ fun main(args : Array<String>){
         arr[i] = value
     }
     
-    countingSort(arr, max)
-
-    for(i in arr){
-        bw.write("$i\n")
-    }
+    countingSort2(arr, max, bw)
     
     bw.flush()
     bw.close()
@@ -32,6 +28,27 @@ fun main(args : Array<String>){
     3. 목적 배열 만들기
     4. 배열 복사
  */
+  private fun countingSort2(arr : Array<Int>, maxValue : Int, bw : BufferedWriter){
+    val f : Array<Int> = Array(maxValue+1){0} // 도수 분포표
+    
+    // 1
+    for(i in 0 until arr.size){
+        f[arr[i]]++
+    }
+
+    for(i in 0 until f.size){
+    }
+
+    //3, 4통합해서 출력
+    for(i in 1 until f.size){ // 범위가 1<= <=10000
+        // f[i]가 0이 될때까지 출력
+        while(f[i]>0){
+            bw.write("$i\n")
+            f[i]--
+        }
+    }
+
+ }
 
  private fun countingSort(arr : Array<Int>, maxValue : Int){
     val f : Array<Int> = Array(maxValue+1){0} // 누적 도수 분표표
