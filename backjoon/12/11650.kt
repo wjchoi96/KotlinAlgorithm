@@ -39,9 +39,9 @@ private fun quickSort(a : Array<Point>, start : Int, end : Int){
 
     do{
         // pl 포인터의 값이 피벗보다 작다면
-        while(a[pl].compare(x) < 0)pl++ 
+        while(a[pl].compareX(x) < 0)pl++ 
         // pr 포인터의 값이 피벗보다 크다면
-        while(a[pr].compare(x) > 0)pr-- 
+        while(a[pr].compareX(x) > 0)pr-- 
         if(pl<=pr){
             swap(a, pl++, pr--)
         }
@@ -55,7 +55,7 @@ private fun quickSort(a : Array<Point>, start : Int, end : Int){
 private fun bubbleSort(arr : Array<Point>, size : Int){
     for(i in 0 until size){
         for(j in size-1 downTo i+1){
-            if(arr[j-1].compare(arr[j]) == 1){
+            if(arr[j-1].compareX(arr[j]) == 1){
                 swap(arr, j-1, j)
             }
         }
@@ -68,11 +68,11 @@ private fun swap(arr : Array<Point>, idx1 : Int, idx2 : Int){
     arr[idx2] = t
 }
 
-class Point internal constructor(
+private class Point internal constructor(
     val x : Int,
     val y : Int
 ){
-    fun compare(other : Point) : Int {
+    fun compareX(other : Point) : Int {
         return if(this.x > other.x){
             1
         }else if(this.x == other.x){
