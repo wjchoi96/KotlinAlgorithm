@@ -12,16 +12,14 @@ fun main(args : Array<String>){
     val m = st.nextToken().toInt()
 
     val arr = Array<Int>(m){0} // 길이가 m인 수열을 담을 배열
-    val visit = Array<Boolean>(n){false} // 1부터 n까지 노드들을 방문한 이력을 저장할 배열
-
-    dfs(n, m, 0, arr, visit, bw)
+    dfs(n, m, 0, arr, bw)
 
     bw.flush()
     bw.close()
     br.close()
 }
 
-private fun dfs(n : Int, m : Int, depth : Int, arr : Array<Int>, visit : Array<Boolean>, bw : BufferedWriter){
+private fun dfs(n : Int, m : Int, depth : Int, arr : Array<Int>, bw : BufferedWriter){
     if(depth == m){ // 깊이가 수열의 최대 개수와 같다면 방문 완료
         for(value in arr){
             bw.write("$value ")
@@ -33,7 +31,7 @@ private fun dfs(n : Int, m : Int, depth : Int, arr : Array<Int>, visit : Array<B
     // 1부터 n까지
     for(i in 1 until n+1){
         arr[depth] = i // 현재 깊이로 배열에 접근하여 값 저장
-        dfs(n, m, depth+1, arr, visit, bw) // 다음 노드로 출발
+        dfs(n, m, depth+1, arr, bw) // 다음 노드로 출발
     }
 }
 
