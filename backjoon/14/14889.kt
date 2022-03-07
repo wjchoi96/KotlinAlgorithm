@@ -28,7 +28,7 @@ fun main(args : Array<String>){
     // team 에 가입하는 선수를 저장할 배열
     // val team : Array<Array<Int>> = Array(2) { Array(size/2){-1} }
     // dfs(0, 0, team, status, join, size)
-    
+
     val join : Array<Boolean> = Array(size){false}
     dfs3(0, 0, size, join, status, bw)
 
@@ -55,7 +55,7 @@ private fun dfs3(depth : Int, count : Int, size : Int, join : Array<Boolean>, st
     for(i in depth until size){
         if(join[i] == false){
             join[i] = true
-            dfs3(depth + 1, count + 1, size, join, status, bw)
+            dfs3(i + 1, count + 1, size, join, status, bw)
             join[i] = false
         }
     }
@@ -85,7 +85,6 @@ private fun diff(size : Int, join : Array<Boolean>, status : Array<Array<Int>>, 
     }else if(value < teamMin){
         teamMin = value
     }
-    
 }
 
 // 시간초과뜬다
