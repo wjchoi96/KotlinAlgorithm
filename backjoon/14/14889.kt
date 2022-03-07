@@ -1,7 +1,6 @@
 //sliver2
 //14-8
 /*
-    https://st-lab.tistory.com/122
     https://infodon.tistory.com/63
     참고도 이해못하네 ㅅㅂ
 
@@ -10,6 +9,7 @@
 import java.io.*
 import java.util.StringTokenizer
 import kotlin.math.sign
+var teamMin = Int.MAX_VALUE
 fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))
@@ -24,13 +24,13 @@ fun main(args : Array<String>){
             status[y][x] = st.nextToken().toInt()
         }
     }
-
+    br.close()
     // team 에 가입하는 선수를 저장할 배열
-    val team : Array<Array<Int>> = Array(2) { Array(size/2){-1} }
-    val join : Array<Boolean> = Array(size){false}
-   
+    // val team : Array<Array<Int>> = Array(2) { Array(size/2){-1} }
     // dfs(0, 0, team, status, join, size)
-    dfs2(0, 0, size, join)
+    
+    val join : Array<Boolean> = Array(size){false}
+    dfs3(0, 0, size, join, status, bw)
 
     bw.write("$teamMin\n")
 
@@ -39,30 +39,57 @@ fun main(args : Array<String>){
     
 }
 
-private fun dfs2(idx : Int, count : Int, size : Int, join : Array<Boolean>){
-    if(count == size/2){ // 재귀 종료
-        dfsCount++
-        for(i in 0 until size){
-            if(join[i]){
-                print("team start($dfsCount) : $i\n")
-            }else{
-                print("team link($dfsCount) : $i\n")
-            }
-        }
+
+private fun dfs3(depth : Int, count : Int, size : Int, join : Array<Boolean>, status : Array<Array<Int>>, bw : BufferedWriter){
+    if(count == size/2){
+        // print("finish : { ")
+        // for((idx,i) in join.withIndex()){
+        //     if(i){
+        //         print("${idx+1} ")
+        //     }
+        // }
+        // print("}\n")
+        diff(size, join, status, bw)
         return
     }
-    for(i in idx until size){
-        if(!join[i]){
+    for(i in depth until size){
+        if(join[i] == false){
             join[i] = true
-            dfs2(idx+1, count+1, size, join)
+            dfs3(depth + 1, count + 1, size, join, status, bw)
             join[i] = false
         }
     }
 }
+private fun diff(size : Int, join : Array<Boolean>, status : Array<Array<Int>>, bw : BufferedWriter){
+    var start = 0
+    var link = 0
+    for(i in 0 until size-1){
+        for(j in i+1 until size){
+            //연달아 2개씩 있는거만 취급?
+            // 12 / 23 / 34
+            if(join[i]==true && join[j]==true){
+                start += status[i][j]
+                start += status[j][i]
+            }else if(join[i]==false && join[j]==false){
+                link += status[i][j]
+                link += status[j][i]
+            }
+        }
+    }
+    val value = Math.abs(start - link)
+    if(value == 0){ // 0이 최소값인지 어케알지
+        bw.write("$value\n")
+        bw.flush()
+        bw.close()
+        System.exit(0)
+    }else if(value < teamMin){
+        teamMin = value
+    }
+    
+}
 
 // 시간초과뜬다
 var dfsCount : Int = 0
-var teamMin = Int.MAX_VALUE
 private fun dfs(
     team1Idx : Int,
     team2Idx : Int,
