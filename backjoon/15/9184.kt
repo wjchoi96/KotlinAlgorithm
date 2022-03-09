@@ -1,6 +1,5 @@
 //sliver 2
 // 15-2
-// commit test
 import java.io.*
 import java.util.StringTokenizer
 var wArr : Array<Array<Array<Int>>> = Array(101){Array(101){Array(101){-1}}}
