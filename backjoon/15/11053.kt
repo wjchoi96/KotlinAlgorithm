@@ -107,6 +107,8 @@ private fun getNumDp(n : Int) : Int {
     for(i in n downTo 1){
         // 현재값보다 작은 값을 발견한다면
         if(numArr[i] < numArr[n]){
+            // 현재 dp[n] 과 해당마지막 수열 + 1 더한것중 최대값 구한다
+            // 어느쪽 수열에 이었을때 더 길게 이어지는지 구하는것
             numDpArr[n] = Math.max(numDpArr[n], getNumDp(i) + 1)
         }
     }
