@@ -27,8 +27,12 @@ fun main(args : Array<String>){
     // for(i in 1 until size + 1){
     //     bw.write("[$i] : A(${lineArr[i][A]}) - B(${lineArr[i][B]})\n")
     // }
+
+    // 다 풀었는데, 모든 경우의 수의 최대값을 구하는걸 누락했었다
+    // getLineDp(size) 로 제출을 했었는데, 
+    // 마지막 전깃줄을 연결 안하는게 제일 큰 경우의수 일수도 있다는것을 간과했다
     var max = Int.MIN_VALUE
-    for(i in size downTo 1){
+    for(i in size downTo 1){ 
         max = Math.max(getLineDp(i), max)
     }
     bw.write("${size-max}\n")
