@@ -2,7 +2,6 @@
 //gold 5
 
 // 참조 : https://st-lab.tistory.com/138
-
 import java.io.*
 import java.util.StringTokenizer
 lateinit var lineArr : Array<Array<Int>>
@@ -28,7 +27,11 @@ fun main(args : Array<String>){
     // for(i in 1 until size + 1){
     //     bw.write("[$i] : A(${lineArr[i][A]}) - B(${lineArr[i][B]})\n")
     // }
-    bw.write("${size - getLineDp(size)}\n")
+    var max = Int.MIN_VALUE
+    for(i in size downTo 1){
+        max = Math.max(getLineDp(i), max)
+    }
+    bw.write("${size-max}\n")
 
     // bw.write("${getLineDp(size)}\n")
     // for(i in 1 until size+1){
@@ -62,6 +65,12 @@ private fun getLineDp(n : Int) : Int{
             lineDp[n] = Math.max(getLineDp(i) + 1, lineDp[n])
         }
     }
+
+    // for(i in n+1 until lineDp.size){
+    //     if(lineArr[n][B] < lineArr[i][B]){
+    //         lineDp[n] = Math.max(getLineDp(i) + 1, lineDp[n])
+    //     }
+    // }
     return lineDp[n]
 }
 
