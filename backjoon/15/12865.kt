@@ -67,4 +67,68 @@
 
     // 현재 물건을 담을 수 있는 경우
     max( dp[i-w[]] )
+
+    dp[최대무게][idx]
 */
+
+import java.io.*
+import java.util.StringTokenizer
+lateinit var bagDp : Array<Array<Int>> 
+lateinit var wArr : Array<Int>
+lateinit var vArr : Array<Int>
+
+fun main(args : Array<String>){
+    val bw = BufferedWriter(OutputStreamWriter(System.out))
+    val br = BufferedReader(InputStreamReader(System.`in`))
+
+    var st = StringTokenizer(br.readLine())
+    val size = st.nextToken().toInt()
+    val maxWeight = st.nextToken().toInt()
+
+    bagDp = Array(maxWeight+1) { Array(size+1){-1} }
+    for(i in 0 until maxWeight + 1){
+      bagDp[i][0] = 0
+    }
+
+    wArr = Array(size+1){0}
+    vArr = Array(size+1){0}
+    for(i in 1 until size+1){
+        st = StringTokenizer(br.readLine())
+        wArr[i] = st.nextToken().toInt()
+        vArr[i] = st.nextToken().toInt()
+    }
+
+    getBagDp(maxWeight, size)
+
+    var max = Int.MIN_VALUE
+    for(i in 1 until size+1){
+        max = Math.max(bagDp[maxWeight][i], max)
+    }
+    bw.write("$max\n")
+    
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+private fun getBagDp(w : Int, i : Int) : Int{
+    if(bagDp[w][i] >= 0){
+      return bagDp[w][i]
+    }
+    // 현재 최대무게(w) 보다 현재물건의 무게(wArr[i])가 큰경우 
+    bagDp[w][i] = if( w < wArr[i] ){
+        getBagDp(w, i-1) // 이전 idx dp 값을 가져온다  
+    }
+    // 현재 최대무게(w) 와 현재 물건의 무게가 같은경우
+    else if( w == wArr[i] ){
+        Math.max(getBagDp(w, i-1), vArr[i]) 
+        // 이전 idx dp 값과 현재 물건의 가치중 높은것 저장
+    }
+    // 현재 최대무게(w)가 현재 물건의 무게보다 큰 경우
+    else {
+        // 최대무게 - 현재무게를 뺀 무게의 dp + 지금 물건의 가치
+        // 이전 idx 의 값
+        Math.max(getBagDp(w-wArr[i], i-1) + vArr[i], getBagDp(w, i-1))
+    }
+    return bagDp[w][i]
+}
