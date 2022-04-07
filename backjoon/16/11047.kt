@@ -17,6 +17,10 @@
     -> sum += k/coin, k %= coin
 
     반복 -> k = 0 이될때까지
+
+    => 알고리즘 최적화
+    0번째가 1 이니까 어차피 무조건 나눠 떨어진다
+    list 를 역순으로 조회하며 쪼갤수 있을때 쪼갠다
  */
 
 import java.io.*
@@ -36,17 +40,10 @@ fun main(args : Array<String>){
         coinArr[i] = br.readLine().toInt()
     }
     
-    while(k != 0){
-        var idx = -1
-        for(i in size-1 downTo 0){ // 큰값부터 비교해야하니 역순으로 loop
-            if(coinArr[i] <= k){
-                idx = i
-                break
-            }
-        }
-        if(idx != -1){
-            sum += k/coinArr[idx]
-            k = k%coinArr[idx]
+    for(i in size-1 downTo 0){ // 큰값부터 비교해야하니 역순으로 loop
+        if(coinArr[i] <= k){
+            sum += k/coinArr[i]
+            k = k%coinArr[i]    
         }
     }
     bw.write("$sum\n")
@@ -55,3 +52,19 @@ fun main(args : Array<String>){
     bw.flush()
     bw.close()
 }
+
+// private fun greedyCoin1(){
+//     while(k != 0){
+//         var idx = -1
+//         for(i in size-1 downTo 0){ // 큰값부터 비교해야하니 역순으로 loop
+//             if(coinArr[i] <= k){
+//                 idx = i
+//                 break
+//             }
+//         }
+//         if(idx != -1){
+//             sum += k/coinArr[idx]
+//             k = k%coinArr[idx]
+//         }
+//     }
+// }
