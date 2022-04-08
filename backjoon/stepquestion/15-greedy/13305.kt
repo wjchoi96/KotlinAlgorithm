@@ -67,6 +67,13 @@
     => 
 
     1000000000
+
+    ===========================
+    최적화!!!
+    내림차순!!
+    리터당 기름 값이 '내림차순'일 경우에 주유하면 된다.
+    8, 9, 5, 4, 2, 7, 1  → 8, 8, 5, 4, 2, 2, 1
+    각 도시를 순회하면서 현재 도시의 주유값이 지나온 도시보다 작다면 주유할 값 갱신
 */
 
 import java.io.*
@@ -94,8 +101,12 @@ fun main(args : Array<String>){
         cityArr[i] = st.nextToken().toLong()
     }
 
-    // 최적화는 좀 있다가 해보자
-    // https://st-lab.tistory.com/192
+    var minOilPrice = cityArr[0]
+    for(i in 0 until size-1){
+        minOilPrice = Math.min(minOilPrice, cityArr[i])
+        price += minOilPrice * roadArr[i]
+    }
+
 
     bw.write("$price\n")
    
