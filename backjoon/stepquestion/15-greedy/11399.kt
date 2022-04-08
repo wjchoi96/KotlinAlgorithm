@@ -47,7 +47,7 @@ fun main(args : Array<String>){
     var pendingTime = 0
     for(i in 0 until size){
         sum += pendingTime + userArr[i] // 대기시간 + 내가 돈뽑는데 걸리는 시간
-        pendingTime += userArr[i]
+        pendingTime += userArr[i] // 내가 끝났으니, 다음차례사람에겐 내가 돈뽑는 시간이 대기시간
     }
     bw.write("$sum\n")
 
