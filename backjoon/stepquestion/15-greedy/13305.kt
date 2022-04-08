@@ -94,31 +94,8 @@ fun main(args : Array<String>){
         cityArr[i] = st.nextToken().toLong()
     }
 
-    var i = 0
-    while(i < size-1){
-        //1. 현재도시의 유가가 다음도시보다 비싸거나 같다면 다음 도시까지의 기름만 챙긴다
-        if(cityArr[i] >= cityArr[i+1]){
-            chargeOil(i, i+1, i) // 기름 넣고
-            i++ // 출발
-        }
-        //1. 현재도시의 유가가 다음도시보다 싸다면
-        //2. 현재도시보다 유가가 더 싼 도시를 발견할때까지 갈수 있게 기름을 넣는다
-        else{
-            // 현재 point 도시에 정박
-            val point : Int = i
-            // 다음 도시들의 유가를 확인한다 -> 현재 도시보다 유가가 싼 도시를 찾는다
-            for(j in point+1 until size){
-                chargeOil(i, j, point)  // 현재 확인중인 도시까지는 가야하니 그만큼 주유한다
-                print("${point}도시에서 ${j}도시 유가 확인중\n")
-                // 현재 도시보다 더 싼 도시를 찾거나, 마지막 도시를 발견했다
-                if(cityArr[point] > cityArr[j] || j == size-1){ 
-                    i = j // j 도시까지 출발
-                    break
-                }
-                i = j
-            }
-        }
-    }
+    // 최적화는 좀 있다가 해보자
+    // https://st-lab.tistory.com/192
 
     bw.write("$price\n")
    
@@ -130,4 +107,32 @@ fun main(args : Array<String>){
 private fun chargeOil(start : Int, end : Int, oilIdx : Int){
     price += cityArr[oilIdx]*roadArr[start]
     print("${start}번째 도시에서 ${end}번째 도시로 가기위해 ${oilIdx}도시에서 ${cityArr[oilIdx]*roadArr[start]}주유\n")
+}
+
+private fun goTrip(cityCount : Int){
+    var i = 0
+    while(i < cityCount-1){
+        //1. 현재도시의 유가가 다음도시보다 비싸거나 같다면 다음 도시까지의 기름만 챙긴다
+        if(cityArr[i] >= cityArr[i+1]){
+            chargeOil(i, i+1, i) // 기름 넣고
+            i++ // 출발
+        }
+        //1. 현재도시의 유가가 다음도시보다 싸다면
+        //2. 현재도시보다 유가가 더 싼 도시를 발견할때까지 갈수 있게 기름을 넣는다
+        else{
+            // 현재 point 도시에 정박
+            val point : Int = i
+            // 다음 도시들의 유가를 확인한다 -> 현재 도시보다 유가가 싼 도시를 찾는다
+            for(j in point+1 until cityCount){
+                chargeOil(i, j, point)  // 현재 확인중인 도시까지는 가야하니 그만큼 주유한다
+                print("${point}도시에서 ${j}도시 유가 확인중\n")
+                // 현재 도시보다 더 싼 도시를 찾거나, 마지막 도시를 발견했다
+                if(cityArr[point] > cityArr[j] || j == cityCount-1){ 
+                    i = j // j 도시까지 출발
+                    break
+                }
+                i = j
+            }
+        }
+    }
 }
