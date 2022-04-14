@@ -1,4 +1,7 @@
 *.jar
+*.xml
+*.iml
+.idea/
 
 
 # push permission 문제 해결
