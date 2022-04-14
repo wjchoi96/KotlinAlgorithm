@@ -2,7 +2,7 @@
 // 15-2
 import java.io.*
 import java.util.StringTokenizer
-var wArr : Array<Array<Array<Int>>> = Array(101){Array(101){Array(101){-1}}}
+private var wArr : Array<Array<Array<Int>>> = Array(101){Array(101){Array(101){-1}}}
 fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))

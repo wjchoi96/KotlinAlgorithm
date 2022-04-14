@@ -12,7 +12,7 @@ fun main(arge : Array<String>) {
     val sum = if( size > 18 ){
         sum(br.readLine().toInt())
     }else{
-        sumUInt(br.readLine().toUInt()
+        sumUInt(br.readLine().toUInt())
     }
     bw.write("$sum")
    

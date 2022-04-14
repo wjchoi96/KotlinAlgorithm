@@ -128,7 +128,7 @@ private fun checkDiagonal(item : Point, old : Point) : Boolean{
     return Math.abs(item.x-old.x) == Math.abs(item.y-old.y)
 }
 
-class Point internal constructor (
+private class Point internal constructor (
     val x : Int,
     val y : Int
 ){}

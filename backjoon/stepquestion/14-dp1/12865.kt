@@ -73,9 +73,9 @@
 
 import java.io.*
 import java.util.StringTokenizer
-lateinit var bagDp : Array<Array<Int>> 
-lateinit var wArr : Array<Int>
-lateinit var vArr : Array<Int>
+private lateinit var bagDp : Array<Array<Int>>
+private lateinit var wArr : Array<Int>
+private lateinit var vArr : Array<Int>
 
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
