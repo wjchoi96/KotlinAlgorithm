@@ -41,8 +41,8 @@ fun main(args : Array<String>){
     br.close()
 }
 
-var max = Int.MIN_VALUE
-var min = Int.MAX_VALUE
+private var max = Int.MIN_VALUE
+private var min = Int.MAX_VALUE
 private fun dfs(num : Int, depth : Int, operator : Array<Int>, arr : Array<Int>){
     if(depth == arr.size-1){ // 연산을 다 하면 끝
         if(max<num){

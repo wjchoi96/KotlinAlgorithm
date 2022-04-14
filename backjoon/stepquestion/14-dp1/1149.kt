@@ -2,9 +2,9 @@
 // 15-5
 import java.io.*
 import java.util.StringTokenizer
-val R = 0
-val G = 1
-val B = 2
+private val R = 0
+private val G = 1
+private val B = 2
 lateinit var rgbCostArr : Array<Array<Int>>
 lateinit var rgbHouseArr : Array<Array<Int>>
 fun main(args : Array<String>){

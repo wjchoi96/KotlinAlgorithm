@@ -32,7 +32,7 @@ fun main(args : Array<String>){
     br.close()
 }
 
-class Point internal constructor(
+private class Point internal constructor(
     var x : Int,
     var y : Int
 ){

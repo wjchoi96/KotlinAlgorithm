@@ -46,7 +46,7 @@ import java.io.*
 import java.util.StringTokenizer
 lateinit var dpSum : Array<Int?>
 lateinit var arrValue : Array<Int>
-var max = Int.MIN_VALUE
+private var max = Int.MIN_VALUE
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))

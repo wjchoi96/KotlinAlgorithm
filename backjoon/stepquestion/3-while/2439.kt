@@ -10,7 +10,6 @@ fun main(arge : Array<String>) {
     st = StringTokenizer(br.readLine())
     val size = st.nextToken().toInt() + 1
     for(i in 1 until size ){
-        for( i in 0 until )
         for( i in 0 until i ){
             bw.write("*")
         }
