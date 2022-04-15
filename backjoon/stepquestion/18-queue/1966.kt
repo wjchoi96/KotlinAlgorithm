@@ -16,31 +16,26 @@
  
 import java.io.*
 import java.util.* 
-private var turn = 0
-private var import = 1
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
 
-    val testCase = br.readLine().toInt()
-    repeat(testCase){
+    repeat(br.readLine().toInt()){
         var st = StringTokenizer(br.readLine())
         val size = st.nextToken().toInt()
         val k = st.nextToken().toInt()
         st = StringTokenizer(br.readLine())
-        val queue : Queue<Array<Int>> = LinkedList<Array<Int>>()
+        val queue : Queue<Pair<Int, Int>> = LinkedList()
         for(i in 0 until size){
-            // queue.offer(Array(2){ i, st.nextToken.toInt() }) // 순서, 중요도 저장
-             queue.offer(arrayOf(i, st.nextToken().toInt()))
+             queue.offer(Pair(i, st.nextToken().toInt())) // 순서, 중요도 저장
         }
 
-        
         var count = 0
         while(!queue.isEmpty()){
             val item = queue.poll()
             var availablePrint = true
             for(i in 0 until queue.size){
-                if(item[import] < queue.elementAt(i)[import]){ // 중요도가 더 큰 원소를 발견
+                if(item.second < queue.elementAt(i).second){ // 중요도가 더 큰 원소를 발견
                     queue.offer(item) // 현재 item 을 뒤로 재배치한다
                     for(j in 0 until i){ // i번째 이전의 item들을 뒤로 재배치한다
                         queue.offer(queue.poll())
@@ -53,7 +48,7 @@ fun main(args : Array<String>){
                 continue 
             }
             count++
-            if(item[turn] == k){
+            if(item.first == k){
                 break
             }
         }
