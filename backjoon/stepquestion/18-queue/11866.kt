@@ -20,10 +20,39 @@
     원을 이루는 queue 를 구현
     k번만큼 pop, push 반복, k번째 요소는 push 하지 않고 res배열에 저장
     queue가 빌때까지 반복
+
+    최적화 참고 : https://www.acmicpc.net/source/7639687
  */
 import java.io.*
 import java.util.*
 fun main(args : Array<String>){
+    val bw = BufferedWriter(OutputStreamWriter(System.out))
+    val br = BufferedReader(InputStreamReader(System.`in`))
+
+    val st = StringTokenizer(br.readLine())
+    val size = st.nextToken().toInt()
+    val k = st.nextToken().toInt()
+
+    val queue : Queue<Int> = LinkedList()
+    for(i in 1 until size+1){
+        queue.offer(i)
+    }
+    bw.write("<")
+
+    while(queue.size > 1){
+        for(i in 0 until k-1){
+            queue.offer(queue.poll())
+        }
+        bw.write("${queue.poll()}, ")
+    }
+    bw.write("${queue.poll()}>\n")
+    
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+private fun case1(){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
 
@@ -38,10 +67,6 @@ fun main(args : Array<String>){
         queue.offer(i)
     }
 
-    for(i in queue){
-        print("$i\n")
-    }
-
     var count = 0
     while(!queue.isEmpty()){
         val pop = queue.poll()
@@ -49,7 +74,6 @@ fun main(args : Array<String>){
         if(count == k){
             count = 0
             resArr[resPoint++] = pop
-            print("resArr[resPoint] = pop => resArr[${resPoint-1}] = $pop\n")
         }else{
             queue.offer(pop)
         }
@@ -65,4 +89,3 @@ fun main(args : Array<String>){
     bw.close()
     br.close()
 }
-
