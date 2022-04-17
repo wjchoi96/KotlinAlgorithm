@@ -75,36 +75,49 @@ fun main(args : Array<String>){
     for(i in 1 until size+1){
         queue.offer(i)
     }
+    printQueue()
+
     st = StringTokenizer(br.readLine())
     val searchArr = Array(k){st.nextToken().toInt()} // 뽑을 숫자를 담은 배열
 
     for(i in 0 until k){
         val targetIdx = queue.indexOf(searchArr[i])
-        print("target : ${searchArr[i]}, idx : ${targetIdx}\n")
         val halfIdx = if(size%2==0){
             size/2-1
         }else{
             size/2
         }
+        print("target : $targetIdx, halfIdx : $halfIdx\n")
         if(targetIdx <= halfIdx){
             for(j in 0 until targetIdx){
-                moveQueueLeft()
+                val temp = queue.pollFirst()
+                queue.offerLast(temp)
+                printQueue()
+                count++
             }
         }else{
             for(j in 0 until size-targetIdx){
-                moveQueueRight()
+                val temp = queue.pollLast()
+                queue.offerFirst(temp)
+                printQueue()
+                count++
             }
         }
-        bw.write("poll first : ${queue.pollFirst()}\n")
+        print("poll first : ${queue.pollFirst()}\n")
     }
 
-
-    
     bw.write("$count\n")
 
     bw.flush()
     bw.close()
     br.close()
+}
+private fun printQueue(){
+    print("[ ")
+    for(i in queue){
+        print("${i} ")
+    }
+    print("]\n")
 }
 private fun moveQueueLeft(){
     count++
@@ -113,100 +126,4 @@ private fun moveQueueLeft(){
 private fun moveQueueRight(){
     count++
     queue.offerFirst(queue.pollLast())
-}
-
-private class RingQueue(
-    private val size : Int
-) {
-    private val queue = Array<Int>(size) { Int.MIN_VALUE }
-    private var lear = 0
-    private var front = 0
-    private var num = 0
-
-    fun offer(n : Int) : Boolean{
-        if(num >= size){
-            return false
-        }
-        queue[lear++] = n
-        num++
-        if(lear == size){
-            lear = 0
-        }
-        return true
-    }
-    fun offerFront(n : Int) : Boolean{
-        if(num >= size){
-            return false
-        }
-        if(front == 0){
-            front = size-1
-            queue[front] = n
-        }else{
-            queue[--front] = n
-        }
-        num++
-        return true
-    }
-
-    fun poll() : Int {
-        if(num <= 0){
-            return -1
-        }
-        val value = queue[front++] // 현재 front 가 가리키고 있는 지점엔 item이 있다
-        num--
-        if(front == size){
-            front = 0
-        }
-        return value
-    }
-    fun pollLast() : Int {
-        if(num <= 0){
-            return -1
-        }
-        // 현재 lear 가 가리키고 있는 지점은 item이 없다
-        val value = if(lear == 0){
-            lear = size-1
-            queue[lear]
-        }else{
-            queue[--lear]
-        }
-        num--
-        return value
-    }
-    
-    fun size() : Int {
-        return num
-    }
-    fun empty() : Int{
-        return if(num <= 0){
-            1
-        }else{
-            0
-        }
-    }
-
-    fun front() : Int { // 현재 front 가 가리키고 있는 지점엔 item이 있다
-        if(num <= 0){
-            return -1
-        }
-        return queue[front]
-    }
-    fun back() : Int {  // 현재 lear 가 가리키고 있는 지점은 item이 없다
-        if(num <= 0){
-            return -1
-        }
-        return if(lear == 0){
-            queue[size-1]
-        }else{
-            queue[lear-1]
-        }
-    }
-    fun indexOf(n : Int) : Int {
-        for(i in 0 until size){
-            if(queue[i] == n){
-                return i
-            }
-        }
-        return -1
-    }
 }
