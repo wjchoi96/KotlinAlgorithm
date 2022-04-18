@@ -1,5 +1,5 @@
 // gold5
-/*ㅈ
+/*
     바캉독님 bfs 강의 도중 나온 연습문제
     해당 문제를 보고 bfs라고 인지 가능한지 확인
 
@@ -33,15 +33,30 @@
     3. 틀렸습니다
     : pending tomato도 순회코드와, board전체 순회코드가 둘다 존재하는것을 확인, day++ 코드가 누락된것을 확인
     4. 성공
+
+    개선안
+    1. 익은 토마토를 queue에 넣고 bfs를 시작하면 시작점을 탐색할 필요 없이 알아서 돌아간다
+    2. day => 미로찾기에서의 disit와 같다 => 시작node부터의 거리
+
+    개선
+    1. 틀렸습니다(17%)
+    : 첫날에 익은 토마토가 여러개인데, 순서대로 방문처리가 되어서 disit가 1이 아니게 된다
+    => bfs노드 방문 조건에서 익은 토마토는 건너뛰게 하도록 설정
+    반례
+    3 3
+    1 1 1
+    1 1 1
+    1 1 0
+    2. 성공
+   
 */
 import java.util.StringTokenizer
 import java.util.LinkedList
 import java.util.Queue
 import java.io.*
 private lateinit var board : Array<Array<Int>>
-private var day = -1
-private val pendingTomato = ArrayList<Pair<Int, Int>>()
-private lateinit var visit : Array<Array<Boolean>>
+private lateinit var disit : Array<Array<Int>>
+private var debugDay = -1
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
@@ -50,110 +65,66 @@ fun main(args : Array<String>){
     val n = st.nextToken().toInt()
 
     board = Array(n) {Array(m){-1}}
-    var tomatoCount = 0 // 안익은토마토 + 익은 토마토의 개수
+    disit = Array(n){Array(m){0}}
+    val queue : Queue<Pair<Int, Int>> = LinkedList()
+
     for(i in 0 until n){
         st = StringTokenizer(br.readLine())
         // board[i] = Array(m){st.nextToken().toInt()}
         for(j in 0 until m){
             board[i][j] = st.nextToken().toInt()
-            if(board[i][j] == 1){
-                tomatoCount++
-                pendingTomato.add(Pair(i,j)) // 첫날 bfs 수행을 위해 추가해준다
-            } else if(board[i][j] != -1){
-                tomatoCount++
+            when(board[i][j]){
+                0 -> disit[i][j] = -1
+                1 -> queue.offer(Pair(i, j))
             }
         }
     }
 
-    var count = 0
-    visit = Array(n){Array(m){false}}
-    while(count != tomatoCount){
-        day++ // 하루가 지났다
-        
-        // 모든 토마토가 익지 않았는데, 오늘 익을 토마토가 없다 => 성공할수 없는 문제
-        if(pendingTomato.isEmpty()){
-            day = -1
-            break
-        }
 
-        // 인접한 덜익은 토마토 목록을 익은 토마토로 변경
-        for(i in pendingTomato){
-            board[i.first][i.second] = 1
-        }
-        printBoard()
+    val dx = arrayOf(1, 0, -1, 0)
+    val dy = arrayOf(0, 1, 0, -1)
+    while(!queue.isEmpty()){
+        val node = queue.poll()
 
-        // 오늘 익은 토마토 목록을 start node로 해서 bfs 수행
-        val tomatoList = ArrayList<Pair<Int, Int>>().apply{addAll(pendingTomato)}
-        pendingTomato.clear()
-        for(i in tomatoList){
-            if(visit[i.first][i.second] == false){
-                count += bfs(i) 
+        for(i in 0 until 4){
+            val nx = node.first + dx[i]
+            val ny = node.second + dy[i]
+            if(nx < 0 || nx >= n || ny < 0 || ny >= m){
+                continue
             }
+            // 빈칸이거나, 이미 방문한 토마토인경우 
+            // 방문한 토마토는 disit가 최소0
+            if(board[nx][ny] == -1 || disit[nx][ny] >= 0){
+                continue
+            }
+
+            disit[nx][ny] = disit[node.first][node.second]+1
+            queue.offer(Pair(nx, ny))
+            debugDay = Math.max(debugDay, disit[nx][ny]) // for dubug
+            printNode(queue.last())
         }
-        print("count : $count\nday : $day\n")   
     }
 
-    bw.write("$day\n")   
-    
+    var day = -1
+    for(i in 0 until n){
+        for(j in 0 until m){
+            if(disit[i][j] == -1){
+                bw.write("-1\n")
+                bw.flush()
+                bw.close()
+                br.close()
+                return
+            }
+            day = Math.max(day, disit[i][j])
+        }
+    }
+
+    bw.write("$day\n")
    
     bw.flush()
     bw.close()
     br.close()
 
-}
-
-// 1이 서로 다른 방향에서 시작하기도 한다
-// 그림그리기때처럼 해야겠는데
-/*
-    day n start
-    pending list 적용, clear
-    board 전체를 훝어서 bfs 시작, pending list 수집
-    day n end
-*/
-private fun bfs(start : Pair<Int, Int>) : Int{
-    var count = 1
-    val n = board.size
-    val m = board[0].size
-    val queue : Queue<Pair<Int, Int>> = LinkedList()
-
-    val dx = arrayOf(1, 0, -1, 0)
-    val dy = arrayOf(0, 1, 0, -1)
-
-    queue.offer(start)
-    visit[start.first][start.second] = true
-    printNode(start)
-
-    while(!queue.isEmpty()){
-        val node = queue.poll()
-        for(i in 0 until 4){
-            val nx = node.first + dx[i]
-            val ny = node.second + dy[i]
-
-            if(nx < 0 || nx >= n || ny < 0 || ny >= m){
-                continue
-            }
-
-            // 이미 방문한 익은 토마토의 경우
-            if(visit[nx][ny] == true){
-                continue
-            }
-            when(board[nx][ny]) {
-                -1 -> continue // 토마토가 없는 빈칸
-                1 -> {} // 익은 토마토
-                0 -> { // 인접한 덜익은 토마토는 다음날 익어야한다
-                    pendingTomato.add(Pair(nx, ny))
-                    print("pending tomato ")
-                    printNode(nx, ny)
-                    continue
-                } 
-            }
-
-            queue.offer(Pair(nx, ny))
-            visit[nx][ny] = true
-            count++
-        }
-    }
-    return count
 }
 
 private fun printBoard(){
@@ -170,5 +141,5 @@ private fun printNode(node : Pair<Int, Int>){
     printNode(node.first, node.second)
 }
 private fun printNode(nx : Int, ny : Int){
-    print("day[$day] : node[$nx, $ny]\n")
+    print("day[$debugDay] : node[$nx, $ny]\n")
 }
