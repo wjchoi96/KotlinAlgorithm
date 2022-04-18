@@ -58,6 +58,18 @@
 
     3. 틀렸습니다(7%)
     => 2번을 해결했더니, 퍼센테이지가 깎여서 실패
+    반례
+    5 5
+    ....F
+    ...J#
+    ....#
+    ....#
+    ...#.
+    정답 : 4
+    출력 : 0
+    => 불이 못가는곳을 처리했더니, 지훈이도 못가는곳이 정답처리가 되어버렸다
+
+
 */
 
 import java.util.StringTokenizer
@@ -125,8 +137,8 @@ fun main(args : Array<String>){
     for(exit in exits){
         if(jDisit[exit.first][exit.second] < fDisit[exit.first][exit.second]){
             min = Math.min(min, jDisit[exit.first][exit.second])
-        }else if(fDisit[exit.first][exit.second] < 0){
-            // 불이 해당 탈출구에 도달 못한 경우
+        }else if(jDisit[exit.first][exit.second] >= 0 && fDisit[exit.first][exit.second] < 0){
+            // 불이 해당 탈출구에 도달 못한 경우 => 지훈이는 도착한 출구여야한다
             min = Math.min(min, jDisit[exit.first][exit.second])
         }
     }
