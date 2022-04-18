@@ -33,7 +33,10 @@ fun main(args : Array<String>){
     연습문제
     1. 백준 1926번(solve)
     2. 백준 2178번(solve)
-    3. 백준 7576번
+    3. 백준 7576번(solve)
+    4. 백분 7579번
+    => 3차원 토마토 문제인데, 다른문제 먼저 풀고 시도해보자
+    5. 백준 4179번
 */ 
 private fun bfs1(){
     val board : Array<Array<Int>> = arrayOf(
