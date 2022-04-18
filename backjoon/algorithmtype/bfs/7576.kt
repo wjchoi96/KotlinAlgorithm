@@ -22,6 +22,17 @@
     !! 절대 방문 못하는 -1 node 가 있다면 n*m 의 방식으로 계산하는것은 불가능하다
     !! 전체에서 -1의 개수를 빼고, 0+1 의 개수를 counting 해서 정할까?
     !! 계산을 못하는 경우는 어떻게 찾아낼까
+    => 하루가 지나는 연산을 진행하는데 pending list 가 비어있고, 완료조건을 충족하지않았다면 완료할수 없는 상자
+
+    제출
+    1. 시간초과
+    : visit를 day마다 초기화시켜서 매번 처음부터 끝까지 bfs를 수행하는점을 개선
+    2. 시간초과
+    : day마다 맵 전체를 탐색하는것을 개선하기위해 pending tomato item을 start node로 bfs 수행하도록 수정
+    : 전날에 익어있는 토마토들은 탐색할 필요가 없기 때문
+    3. 틀렸습니다
+    : pending tomato도 순회코드와, board전체 순회코드가 둘다 존재하는것을 확인, day++ 코드가 누락된것을 확인
+    4. 성공
 */
 import java.util.StringTokenizer
 import java.util.LinkedList
@@ -45,20 +56,22 @@ fun main(args : Array<String>){
         // board[i] = Array(m){st.nextToken().toInt()}
         for(j in 0 until m){
             board[i][j] = st.nextToken().toInt()
-            if(board[i][j] != -1){
+            if(board[i][j] == 1){
+                tomatoCount++
+                pendingTomato.add(Pair(i,j)) // 첫날 bfs 수행을 위해 추가해준다
+            } else if(board[i][j] != -1){
                 tomatoCount++
             }
         }
     }
 
     var count = 0
+    visit = Array(n){Array(m){false}}
     while(count != tomatoCount){
-        var avilableTomato = 0
-
         day++ // 하루가 지났다
         
         // 모든 토마토가 익지 않았는데, 오늘 익을 토마토가 없다 => 성공할수 없는 문제
-        if(day != 0 && pendingTomato.isEmpty()){
+        if(pendingTomato.isEmpty()){
             day = -1
             break
         }
@@ -67,18 +80,16 @@ fun main(args : Array<String>){
         for(i in pendingTomato){
             board[i.first][i.second] = 1
         }
-        pendingTomato.clear()
         printBoard()
-        visit = Array(n){Array(m){false}} // day마다 visit 배열 초기화
 
-        for(nn in 0 until n){
-            for(nm in 0 until m){
-                if(board[nn][nm] == 1 && visit[nn][nm] == false){
-                    avilableTomato += bfs(Pair(nn, nm)) 
-                }
+        // 오늘 익은 토마토 목록을 start node로 해서 bfs 수행
+        val tomatoList = ArrayList<Pair<Int, Int>>().apply{addAll(pendingTomato)}
+        pendingTomato.clear()
+        for(i in tomatoList){
+            if(visit[i.first][i.second] == false){
+                count += bfs(i) 
             }
         }
-        count = avilableTomato
         print("count : $count\nday : $day\n")   
     }
 
@@ -139,9 +150,6 @@ private fun bfs(start : Pair<Int, Int>) : Int{
 
             queue.offer(Pair(nx, ny))
             visit[nx][ny] = true
-            // 하루가 지났을때 토마토가 익은걸 표현해준다
-            board[nx][ny] = 1 
-            printNode(nx, ny)
             count++
         }
     }
