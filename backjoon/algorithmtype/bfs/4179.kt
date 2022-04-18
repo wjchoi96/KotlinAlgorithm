@@ -2,6 +2,14 @@
 /*
     바캉독님 bfs강의에 나온 연습문제
 
+    나랑 조금 다른 풀이
+    https://www.acmicpc.net/board/view/82153
+    => 나는 불과 지훈이를 동시에 진행시키고, 모든 bfs가 완료된 후 탈출구들의 disit를 비교해보았는데
+    이분은 불을 먼저 내고, 지훈이를 보내면서 체크
+    1. 지훈이가 탈출구를 만나면 escape 완료한것 처리
+    2. 진행루트에 지훈이보다 불이 먼저 나있다면 continue 조건 추가
+    3. 탈출못하고 bfs가 종료되면 impossible 처리
+
     미로탈출 + 불
     지훈이와 불은 매 분마다 한칸씩 이동
 
@@ -38,6 +46,18 @@
     => 바로 출구로 나갈 수 있는 경우를 체크못함
 
     2. 틀렸습니다(71%)
+    반례
+    4 4
+    ###F
+    #J.#
+    #..#
+    #..#
+    정답 : 3
+    출력 : IMPOSSIBLE
+    => 불이 움직일수 없는 경우를 고려해야한다
+
+    3. 틀렸습니다(7%)
+    => 2번을 해결했더니, 퍼센테이지가 깎여서 실패
 */
 
 import java.util.StringTokenizer
@@ -104,6 +124,9 @@ fun main(args : Array<String>){
     var min = Int.MAX_VALUE
     for(exit in exits){
         if(jDisit[exit.first][exit.second] < fDisit[exit.first][exit.second]){
+            min = Math.min(min, jDisit[exit.first][exit.second])
+        }else if(fDisit[exit.first][exit.second] < 0){
+            // 불이 해당 탈출구에 도달 못한 경우
             min = Math.min(min, jDisit[exit.first][exit.second])
         }
     }
