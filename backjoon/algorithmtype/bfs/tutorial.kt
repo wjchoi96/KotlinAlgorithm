@@ -31,7 +31,9 @@ fun main(args : Array<String>){
     3. 이웃한 원소가 범위를 벗어났는지에 대한 체크를 잘못하 
 
     연습문제
-    백준 1926번
+    1. 백준 1926번(solve)
+    2. 백준 2178번(solve)
+    3. 백준 7576번
 */ 
 private fun bfs1(){
     val board : Array<Array<Int>> = arrayOf(
