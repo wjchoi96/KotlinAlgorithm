@@ -51,6 +51,8 @@ fun main(args : Array<String>){
 
     네이버 카페 문제50선 중 bfs문제 // https://cafe.naver.com/startdevelopercareer/6?boardType=L
     1. 백준 2667(solve)
+    2. 백준 2178(바캉독님 문제와 겹친다)(solve)
+    3. 백준 14502 
 
 
 
