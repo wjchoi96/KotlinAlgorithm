@@ -53,6 +53,7 @@ fun main(args : Array<String>){
     1. 백준 2667(solve)
     2. 백준 2178(바캉독님 문제와 겹친다)(solve)
     3. 백준 14502 
+    4. 백준 16236
 
 
 
