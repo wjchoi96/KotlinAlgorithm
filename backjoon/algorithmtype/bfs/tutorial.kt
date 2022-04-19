@@ -34,9 +34,15 @@ fun main(args : Array<String>){
     1. 백준 1926번(solve)
     2. 백준 2178번(solve)
     3. 백준 7576번(solve)
-    4. 백분 7579번
+    4. 백준 7579번
     => 3차원 토마토 문제인데, 다른문제 먼저 풀고 시도해보자
+    
     5. 백준 4179번(solve)
+    6. 백준 18809번 - 나중에 풀어볼것 //https://www.acmicpc.net/problem/18809
+    => 백트래킹이 추가된 문제
+    => 두종류의 bfs 혹은 dfs가 진행되면서 서로에게 여향을 준다
+    
+    7. 백준 1697번(solve)
 */ 
 private fun bfs1(){
     val board : Array<Array<Int>> = arrayOf(
