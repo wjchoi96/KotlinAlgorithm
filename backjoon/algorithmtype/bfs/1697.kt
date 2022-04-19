@@ -33,13 +33,42 @@
     => val max = Math.max(n, k) + 2 // +2를 해준이유는 *2의 조건에서는 node[max+1] -> node[max] 로 도착하는 경우도 있기 때문
 
     3. 성공
-    
+
+    개선안
+    : disit[k] 값을 가장 먼저 생성하는게 최단루트구나
+    : 이전에 k를 방문했었다면, 현재값과 이전값을 비교해서 더 적은 값을 가지게 하도록 하고 bfs를 계속 진행했었다
+    : while 문 조건을 !queue.isEmpty() && disit[k] == -1 
+    => queue에 데이터가 남아있고, k를 아직 방문하지 않았다면 반복
+    => bfs가 끝났거나, k를 방문했다면 반복 종료
+
+    - 사실 바캉독님 코드에서는 while(disit[k]==-1) 뿐이고, 현재 문제에서는 k에 방문하지 못한채로 bfs가 끝나지는 않지만
+    안전장치 하나를 더 추가할 수 있지 않을까 생각이 들었다
+
  */
 /*
 val dx = arrayOf(x-1, x+1, x*2) // 이거 순서도 영향이 있을수 있다네
 (n*2, x-1, x+1) 순서일경우 n이 0으로 시작하면 0*2 = 0 이므로
 disit[0] = disit[prev] + 1 가된다 => 0에서시작했으면 disit[0] = 0 이여야하는데, 시작점에 영향이 간다는 의미
 */
+
+/*
+    숏코딩
+    https://www.acmicpc.net/source/22878827
+    fun isValidRange(i: Int) = i in 0..100000 
+    이런 기법도 있네
+
+    https://www.acmicpc.net/source/32564141
+    val moves = listOf<(Int) -> Int>({num -> num + 1}, {num -> num - 1}, {num -> num * 2})
+        for (move in moves) {
+            val moved = move(t)
+
+            if (moved in 0..100000 && visited[moved] == 0) {
+                que.offer(moved)
+                visited[moved] = visited[t] + 1
+            }
+        }
+    이런식으로도 가능하구나
+ */
 import java.io.*
 import java.util.*
 private lateinit var disit : Array<Int>
@@ -57,7 +86,7 @@ fun main(args : Array<String>){
     queue.offer(n)
     disit[n] = 0
 
-    while(!queue.isEmpty()){
+    while(disit[k] == -1){//while(!queue.isEmpty()){
         val x = queue.poll()
         bw.write("node[${disit[x]}] : $x\n")
         val dx = arrayOf(x-1, x+1, x*2) 
