@@ -49,7 +49,9 @@
 
     제출
     1. 시간초과(2%)
-    : 매번 모든 board 를 순회하지말고 fish 위치정보를 저장한 배열
+    : 매번 모든 board 를 순회하지말고 fish 위치정보를 저장한 배열만 순회해보자
+
+    2. 성공!
 
 */
 
@@ -65,13 +67,15 @@ fun main(args : Array<String>){
     val n = br.readLine().toInt()
     board = Array(n){Array(n){-1}}
     lateinit var shark : Pair<Int, Int>
-    
+    val fishs : ArrayList<Pair<Int, Int>> = ArrayList()
     for(i in 0 until n){
         val st = StringTokenizer(br.readLine())
         for(j in 0 until n){
             board[i][j] = st.nextToken().toInt()
             if(board[i][j] == 9){
                 shark = Pair(i, j)
+            }else if(board[i][j] != 0){
+                fishs.add(Pair(i, j))
             }
         }
     }
@@ -82,24 +86,23 @@ fun main(args : Array<String>){
     while(true){
         closerFish = null
         bfs(shark, n)
-        // 왼쪽 상단부터 탐색
-        for(i in 0 until n){
-            for(j in 0 until n){
-                //아기상어가 방문할 수 있는 곳중에 먹을수 있는 물고기를 발견
-                if(
-                    board[i][j] != 0 &&
-                    disit[i][j] != -1 &&
-                    board[i][j] < sharkSize
-                ){
-                    if(closerFish == null){
+        
+        for(fish in fishs){
+            val i = fish.first
+            val j = fish.second
+            if(
+                board[i][j] != 0 &&
+                disit[i][j] != -1 &&
+                board[i][j] < sharkSize
+            ){
+                if(closerFish == null){
+                    closerFish = Pair(i, j)
+                    printNode(closerFish)
+                }else{
+                    // 같은 거리일때는 갱신하지않는다 => 우선순위가 높은 좌상단부터 탐색했기 때문
+                    if(disit[i][j] < disit[closerFish.first][closerFish.second]){
                         closerFish = Pair(i, j)
                         printNode(closerFish)
-                    }else{
-                        // 같은 거리일때는 갱신하지않는다 => 우선순위가 높은 좌상단부터 탐색했기 때문
-                        if(disit[i][j] < disit[closerFish.first][closerFish.second]){
-                            closerFish = Pair(i, j)
-                            printNode(closerFish)
-                        }
                     }
                 }
             }
@@ -110,6 +113,7 @@ fun main(args : Array<String>){
         }
         //move 
         moveWay += disit[closerFish.first][closerFish.second]
+        fishs.remove(closerFish)
         board[shark.first][shark.second] = 0 // 원래 상어의 위치를 비운다
         board[closerFish.first][closerFish.second] = 9 // 이동한 위치에 상어 배치
         shark = Pair(closerFish.first, closerFish.second) // 상어의 위치정보 저장 갱신
