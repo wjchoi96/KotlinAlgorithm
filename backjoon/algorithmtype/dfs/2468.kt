@@ -55,7 +55,7 @@ fun main(args : Array<String>){
         for(x in 0 until n){
             for(y in 0 until n){
                 if(board[x][y] > rain && visit[x][y] == false){
-                    bfs(Pair(x, y), rain, n)
+                    dfs(Pair(x, y), rain, n)
                     safeArea++
                 }
             }
@@ -70,7 +70,7 @@ fun main(args : Array<String>){
     br.close()
 }
 
-private fun bfs(start : Pair<Int, Int>, rain : Int, n : Int){
+private fun dfs(start : Pair<Int, Int>, rain : Int, n : Int){
     stack.push(start)
     visit[start.first][start.second] = true
 
