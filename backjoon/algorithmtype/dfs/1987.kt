@@ -47,6 +47,14 @@
 */
 
 
+/*
+    개선점
+    1. visit 와 alpha 의 통합
+    : 이미 지나온곳은 alpha가 겹치기때문에 어차피 다시 밟지 못한다
+    => 이말은 visit 배열을 사용 안할 수 있다
+    => 참고 코드 : https://www.acmicpc.net/source/30944986
+*/
+
 import java.util.StringTokenizer
 import java.util.Stack
 import java.io.*
@@ -85,15 +93,11 @@ private var maxDepth : Int = Int.MIN_VALUE
 private fun dfs2(start : Pair<Int, Int>, depth : Int){
     maxDepth = Math.max(maxDepth, depth)
     print("[Visit] node[$depth] : [${start.first}][${start.second}] => ${board[start.first][start.second]}\n")
-    visit[start.first][start.second] = true
     alpha.put(board[start.first][start.second], start)
     for(i in 0 until 4){
         val nx = start.first + dest[i].first
         val ny = start.second + dest[i].second
-        if(nx<0 || nx>=n || ny<0 || ny>=m){
-            continue
-        }
-        if(visit[nx][ny] == true){
+        if(nx !in 0 until n || ny !in 0 until m){
             continue
         }
         // 이미 거쳐온 알파벳이다
@@ -105,7 +109,6 @@ private fun dfs2(start : Pair<Int, Int>, depth : Int){
 
         print("[Remove] node[$depth] : [${nx}][${ny}] => ${board[nx][ny]}\n")
         // 백트래킹을 위해 해당 알파벳을 방문 안한것으로 처리
-        visit[nx][ny] = false
         alpha.remove(board[nx][ny]) 
     }
 }
