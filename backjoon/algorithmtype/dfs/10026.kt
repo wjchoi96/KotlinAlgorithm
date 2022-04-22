@@ -61,7 +61,6 @@ fun main(args : Array<String>){
             }
         }
     }
-
     bw.write("$count $colorCount\n")
 
 
@@ -70,6 +69,64 @@ fun main(args : Array<String>){
     br.close()
 }
 
+/*
+    두번째 방법
+    갑자기 생각난 개선안
+    탐색을 진행하면서 R을 만나면 G로 바꿔버리면(만나면 무조건 바꾸는게 아닌, R구역 탐색시 완료된 node 를 바꿔줘야할듯)
+    첫번째 탐색은 일반인 탐색
+    두번째 탐색은 적록색약 탐색이 되지않을까?
+
+    코드의 양은 줄고, 변수도 덜쓰는데 board 의 순회가 두번 필요함
+*/
+private fun main2(n : Int){
+    var count = 0
+    var colorCount = 0
+    for(x in 0 until n){
+        for(y in 0 until n){
+            if(visit[x][y] == false){
+                dfs2(Pair(x, y), n)
+                count++
+            }
+        }
+    }
+    visit = Array(n) { Array(n){false} }
+    for(x in 0 until n){
+        for(y in 0 until n){
+            if(visit[x][y] == false){
+                dfs2(Pair(x, y), n)
+                colorCount++
+            }
+        }
+    }
+}
+private fun dfs2(start : Pair<Int, Int>, n : Int){
+    val color = board[start.first][start.second]
+    stack.push(start)
+    visit[start.first][start.second] = true
+    while(!stack.isEmpty()){
+        val node = stack.pop()
+        if(board[node.first][node.second] == 'R'){
+            board[node.first][node.second] = 'G'
+        }
+        for(i in 0 until 4){
+            val nx = node.first + dx[i]
+            val ny = node.second + dy[i]
+            if(nx<0 || nx>=n || ny<0 || ny>=n){
+                continue
+            }
+            if(visit[nx][ny]==true || board[nx][ny] != color){
+                continue
+            }
+            stack.push(Pair(nx, ny))
+            visit[nx][ny] = true            
+        }
+    }
+}
+
+/*
+    첫번째 방법
+    일반 dfs와 색약dfs를 따로 작성해서 board를 한번만 순회하며 동시에 진행
+*/
 private fun dfs(start : Pair<Int, Int>, n : Int){
     val color = board[start.first][start.second]
     stack.push(start)
