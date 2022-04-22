@@ -113,15 +113,15 @@ private fun dfs2(start : Pair<Int, Int>){
     visit2[start.first][start.second] = true
     print("node[${start.first}][${start.second}]\n")
     for(i in 0 until 4){
-        val dx = start.first + dest[i].first
-        val dy = start.second + dest[i].second
-        if(dx<0 || dx>=board.size || dy<0 || dy>=board[0].size){
+        val nx = start.first + dest[i].first
+        val ny = start.second + dest[i].second
+        if(nx<0 || nx>=board.size || ny<0 || ny>=board[0].size){
             continue
         }
-        if(visit2[dx][dy] == true || board[dx][dy] != 1){
+        if(visit2[nx][ny] == true || board[nx][ny] != 1){
             continue
         }
-        dfs2(Pair(dx, dy)) 
+        dfs2(Pair(nx, ny)) 
     }
 }
 /*
