@@ -28,7 +28,8 @@
 
     네이버 카페 문제50선 중 dfs 유형 // https://cafe.naver.com/startdevelopercareer
     1. 백준 2667(solve)
-    2. 백준 2468
+    2. 백준 2468(solve)
+    3. 백준 10026(solve)
     
 
 
