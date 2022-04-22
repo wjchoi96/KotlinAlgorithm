@@ -65,5 +65,77 @@
     역순으로 계산??
     섬이 여러개니까 이게 맞는듯
 
+    =================================
+    입력값 받아서 그래프생성
+    각 섬당 개채 종류, 개채 수 저장 2차원 배열
+    0 : W 
+    1 : S
+
+    n+1 size를 가진 2차원 배열 graph
+    0번 노드는 무시
+
+    1번 노드(루트 노드)부터 출발
+    루트 <-> 단말노드까지의 연산
+    1. 양 - 늑대. 양+양. 결과값은 음수가 되지않는다
     
+    단말노드에 도착했는지 어떻게 알지?
+    => 그래프를 탐색하는 dfs를 작성해보자
+
+*/
+
+private const val wolf = 0
+private const val sheep = 1
+private val graph : ArrayList<ArrayList<Int>> = ArrayList()
+lateinit private var visit : Array<Boolean>
+lateinit private var animals : Array<Array<Int>>
+private fun initTestGraph(n : Int){
+    visit = Array(n){false}
+    for(i in 0 until n){
+        graph[i] = ArrayList()
+    }
+    graph[1].add(2)
+    graph[1].add(3)
+    graph[1].add(4)
+
+    graph[2].add(1)
+    graph[2].add(5)
+    graph[2].add(6)
+
+    graph[3].add(1)
+
+    graph[4].add(1)
+
+    graph[5].add(2)
+
+    graph[6].add(2)
+    graph[6].add(7)
+
+    graph[7].add(6)
+
+    // animals = Array
+}
+
+fun main(args : Array<String>){
+    val n = 7
+    initTestGraph(n+1)
+    dfs(1, n+1)
+}
+// x : 현재 노드
+private fun dfs(x : Int, n : Int){
+    visit[x] = true
+    // 간선노드
+    if(graph[x].size == 1){
+
+    }
+    for(i in 0 until graph[x].size){
+        val y = graph[x][i] // 작은 노드부터 탐색
+        if(visit[y] == false){
+            
+            dfs(y, n) // 방문
+        }
+    }
+}
+/*
+    1, 2. 5 
+    단말노드는 간선이 하나밖에없다(부모뿐)
 */
