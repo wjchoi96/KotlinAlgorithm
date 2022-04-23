@@ -126,6 +126,21 @@
 */
 
 /*
+    역순으로 계산할때의 문제점을 발견
+    1,2,6,7 의 경우
+    100마리가 되어야하는데
+    역순으로 계산하는 바람에 900이 되었다
+
+    어케하지
+
+    역순계산을 어떻게 하지
+
+    1 <-> 2 의 결과가 같아야하는데
+
+
+*/
+
+/*
     제출
     1. 틀렸습니다(2%)
     - 결과가 int 범위를 넘어설 수도 있다고 판단
@@ -137,6 +152,15 @@
     - 연속으로 늑대섬이 나오는 경우를 처리
 
     4. 틀렸습니다(2%)
+    - 재귀적으로 dfs를 호출하기 전에 동물수를 처리한다면 역순처리처럼 되는것이지만
+    dest를 체크하는 for문이 끝나고 동물수를 처리한다면 
+    종료된 재귀함수들이 stack에서 빠져나오면서 정순(leaf to root)순서처럼 처리되는거일까?
+    
+    - 해당사실을 검색을 통해 인지하였지만 너무 많이 꼬인것같아서 한번 더 실패함
+
+    - 추가 검색을 통해 자식노드들의 합을 구한다음, 현재 노드의 동물 현황을 적용시켜주는 방식으로 해결
+
+    5. 성공
 */
 
 import java.io.*
@@ -169,7 +193,7 @@ fun main(args : Array<String>){
     }
 
 
-    dfs(0, 1, 0, n+1)
+    val totalSheepSum = dfs(1, n+1)
     bw.write("$totalSheepSum\n")
    
     bw.flush()
@@ -177,80 +201,45 @@ fun main(args : Array<String>){
     br.close()
 }
 
-/*
-    역순으로 계산할때의 문제점을 발견
-    1,2,6,7 의 경우
-    100마리가 되어야하는데
-    역순으로 계산하는 바람에 900이 되었다
-
-    어케하지
-
-    역순계산을 어떻게 하지
-
-    1 <-> 2 의 결과가 같아야하는데
-
-
-*/
-private var totalSheepSum : Long = 0
 // sheepCount 를 재귀함수에서 전달함으로서 방문이 끝난 섬의 sheepCount를 빼주는 작업을 할 필요가 없다
-private fun dfs(from : Int, now : Int, sheepCount : Int, n : Int){ // x : 현재 노드(섬)
+private fun dfs(now : Int, n : Int) : Long{ // x : 현재 노드(섬)
+    var chlidNodeSheepSum : Long = 0
     // 현재 섬을 방문
-    visit[now] = true
-
-    /*
-        현재 섬을 방문함으로써 생기는 양의 수의 변동
-        단말노드 -> 루트 노드를 방문해야하지만, 트리 순회의 특성상
-        루트노드 -> 단말노드로 구성하며 양의 수량을 구하는 방법은 역순에 걸맞게 작성
-
-        1. 현재 섬의 늑대개수를 적용할 필요가 없다
-        2. 현재 섬에 양이 존재한다면 이전 섬의 늑대개수를 적용해줘야한다
-
-        = 양은 현재섬의 개수를 적용, 늑대는 이전섬의 개수를 적용
-    */ 
-    // var sheep = sheepCount + animals[now][S]
-    // sheep -= animals[from][W]
-    // if(sheep<0)sheep = 0
-
-    
-    // now섬에 양이 존재한다면
-    val sheep = if(animals[now][S] != 0){
-        var sheep = sheepCount - animals[from][W]
-        // from섬의 늑대가 양을 먹었다면, from섬의 늑대를 0으로 설정해준다
-        if(sheep != sheepCount){
-            animals[from][W] = 0 // 늑대는 일생동안 하나의 양만 잡아먹는다
-        }
-        sheep += animals[now][S]
-        if(sheep<0)sheep = 0
-        sheep
-    }else{ 
-        animals[now][W] += animals[from][W]
-        animals[from][W] = 0
-        sheepCount
-    }
-    
-    print("node[$now] => join : $sheepCount, after : $sheep\n")
-
-    // 간선노드 => 현재 루트의 양의 수를 적용해준다
-    if(graph[now].size == 1 && now != 1){
-        totalSheepSum += sheep
-    }
+    visit[now] = true // visit가 필요없지않나? 어차피 한번 방문한 노드는 for문 특성상 다시 체크 안할거같은데
     for(i in 0 until graph[now].size){
         val y = graph[now][i] // 작은 노드부터 탐색
         if(visit[y] == false){
             // y번섬으로 sheep만큼 양들이 이동한다
-            dfs(now, y, sheep, n) // 방문
+            chlidNodeSheepSum += dfs(y, n) // 방문
         }
     }
+    // chlidNodeSheepSum => 내 자식 노드들에서 온 양의 개수의 합
+    // 현재 섬의 늑대, 양 현황을 적용해준다(둘중 하나는 어차피 0임)
+    chlidNodeSheepSum += animals[now][S]
+    chlidNodeSheepSum -= animals[now][W]
+    /*
+        포식한 늑대에 대해서 정보를 업데이트 해줄 필요없다
+        자식노드의 모든 양들을 불러와서 한번에 처리하기때문에 중복해서 양을 먹을 늑대는 없다
+        animals[now][W] = 0 
+    */
+    if(chlidNodeSheepSum<0)chlidNodeSheepSum = 0
+    print("node[$now] => sheep : $chlidNodeSheepSum\n")
+    // 현재 섬의 양의 개수를 리턴해라
+    return chlidNodeSheepSum
 }
 /*
-    1, 2. 5 
-    단말노드는 간선이 하나밖에없다(부모뿐)
+    1, 2, 5 를 방문했다고 치자
 
-    내가 방문하고 나의 자식노드를 방문하는 일이 끝나면, 개체 수 카운팅을 다시 뺴준다
+    5에서 for문이 종료되고
+    animal count 를 처리한다
 
+    dfs(5)가 종료되고 dfs(3)의 dfs(5)호출 지점
 */
 
 
+/*
+    tes code
+*/
 private fun initTestGraph(n : Int){
     visit = Array(n){false}
     for(i in 0 until n){
