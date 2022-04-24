@@ -21,31 +21,31 @@ fun main(args : Array<String>){
 
     val (n, m) = br.readLine().split(' ').map{ it.toInt() }
     visit = Array(n+1){false}
-    res = Array(m+1){-1}   
+    res = Array(m){-1}   
 
-    dfs(1)
+    dfs(1, 0)
  
     bw.flush()
     bw.close()
     br.close()
 }
 
-private fun dfs(depth : Int){
+/*
+    개선
+    - 이전 item과 비교하는게 아닌, dfs에 시작 숫자를 같이 넘겨주게 해서 자동으로 오름차순이 되도록 한다
+    - push 된 값을 넘겨주는게 아닌, +1을 해서 넘겨주므로 visit 배열도 필요가 없어진다
+*/
+private fun dfs(num : Int, depth : Int){
     if(depth == res.size){
-        for(i in 1 until res.size){
+        for(i in 0 until res.size){
             bw.write("${res[i]} ")
         }
         bw.write("\n")
         return
     }
-    for(i in 1 until visit.size){
-        if(visit[i] == false && res[depth-1] < i){
-            res[depth] = i
-            visit[i] = true
-            dfs(depth + 1)
-            visit[i] = false
-        }
+    for(i in num until visit.size){
+        res[depth] = i
+        dfs(i+1, depth+1)
+        
     }
 }
-
-
