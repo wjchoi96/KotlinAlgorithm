@@ -6,18 +6,14 @@
 */
 
 import java.io.*
-import java.util.StringTokenizer
 private lateinit var bw : BufferedWriter
 private lateinit var visit : Array<Boolean>
 private lateinit var res : Array<Int>
 fun main(args : Array<String>){
     bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
-    val st = StringTokenizer(br.readLine())
-
-    val n = st.nextToken().toInt()
-    val m = st.nextToken().toInt()
-
+    
+    val (n, m) = br.readLine().split(' ').map{ it.toInt() }
     visit = Array(n+1){false}
     res = Array(m+1){-1}
 
