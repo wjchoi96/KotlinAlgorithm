@@ -63,6 +63,21 @@ fun main(args : Array<String>){
     
 */
 
+/*
+    12^116 mod 67을 구하고 싶다
+    이때 12^58승의 값이 4라는걸 안다면?
+    결과는 4*4 라는 것을 알 수 있다
+
+    1승을 계산할 수 있다
+    k승을 계산했으면 2k + 1도 O(1)에 계산 가능
+
+    n^i % r  
+    => n^(i/2) % 2 * n^(i/2) % 2
+
+    i 가 짝수라면 그대로 줘도 된다
+    i 가 홀수라면 * n 을 한번 더 해줘야한다
+*/
+
 private fun nMod2(n : Int, i : Int, r : Int) : Long{
     if(i == 1){
         return (n%r).toLong()
