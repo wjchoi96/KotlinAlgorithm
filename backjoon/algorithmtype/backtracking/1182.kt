@@ -41,6 +41,14 @@
     => 31
 */
 
+/*
+    ========== 최적화 ========== 
+    1. 같은수의 조합은 나와선 안된다 => 오름차순 정렬을 통해 해결
+    => for 문을 돌 필요가 없다
+    => visit 배열이 필요가 없다
+    => res 배열이 필요가 없다 : sum 만 있으면 된다
+*/
+
 import java.io.*
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
@@ -48,35 +56,20 @@ fun main(args : Array<String>){
 
     val (n, s) = br.readLine().split(' ').map{it.toInt()}
     val arr = br.readLine().split(' ').map{it.toInt()}.sorted()
-    val res : Array<Int> = Array(n){0}
-    val visit : Array<Boolean> = Array(n) { false }
 
     var count = 0
-    fun dfs(idx : Int = 0, depth : Int = 0, sum : Int = 0){
-        if(depth != 0 && sum == s){
-            for(i in 0 until depth){
-                print("${res[i]} ")
-            }
-            print("=> $sum\n")
-            count++
-        }
-        if(depth == n || idx >= n){
-            for(i in 0 until n){
-                print("${res[i]} ")
-            }
-            print("\n")
+    fun dfs(idx : Int = 0, sum : Int = 0){
+        if(idx >= n){
             return
         }
-        for(i in idx until n){
-            if(visit[i] == false){
-                res[depth] = arr[i]
-                visit[i] = true
-                dfs(i + 1, depth + 1, sum + res[depth])
-                visit[i] = false
-            }
+        if(sum + arr[idx] == s){
+            count++
         }
+        dfs(idx + 1, sum + arr[idx]) // 현재 item 을 선택한 가지
+        dfs(idx + 1, sum) // 현재 item을 선택하지 않은 가지
     }
 
+    
     dfs()
     bw.write("$count\n")
 
@@ -84,3 +77,23 @@ fun main(args : Array<String>){
     bw.close()
     br.close()
 }
+
+
+// val res : Array<Int> = Array(n){0}
+// val visit : Array<Boolean> = Array(n) { false }
+// fun dfs(idx : Int = 0, depth : Int = 0, sum : Int = 0){
+//     if(depth != 0 && sum == s){
+//         count++
+//     }
+//     if(depth == n || idx >= n){
+//         return
+//     }
+//     for(i in idx until n){
+//         if(visit[i] == false){
+//             res[depth] = arr[i]
+//             visit[i] = true
+//             dfs(i + 1, depth + 1, sum + res[depth])
+//             visit[i] = false
+//         }
+//     }
+// }
