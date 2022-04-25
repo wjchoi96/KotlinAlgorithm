@@ -23,8 +23,8 @@
 // 100000000 로 나눠줘서 long타입 범위를 벗어나지 않게 해주는게 헷갈리네
 import java.io.*
 // n자리수의 각각의 자릿값(0~9)
-lateinit var stairNumDp : Array<Array<Long>>
-lateinit var bw : BufferedWriter
+private lateinit var stairNumDp : Array<Array<Long>>
+private lateinit var bw : BufferedWriter
 fun main(args : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
     bw = BufferedWriter(OutputStreamWriter(System.out))
