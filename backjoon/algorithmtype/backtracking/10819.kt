@@ -20,8 +20,14 @@
     
 */
 
+/*
+    제출
+    1. 성공
+*/
+
 import java.io.*
 private lateinit var numbers : Array<Int>
+private lateinit var visit : Array<Boolean>
 private lateinit var res : Array<Int>
 private var n = 0
 private var max = Int.MIN_VALUE
@@ -33,31 +39,56 @@ fun main(args : Array<String>){
     n = br.readLine().toInt()
     numbers = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
     res = Array(n){-1}
+    visit = Array(n){false}
+
+    dfs()
+
+    bw.write("$max\n")
 
     bw.flush()
     bw.close()
     br.close()
 }
 
-private fun dfs(idx : Int = 0, depth : Int = 0){
-    if(idx == n){
+private fun dfs(depth : Int = 0){
+    if(depth == n){
         max = Math.max(processRes(), max)
         return
     }
-    res[depth] = numbers[idx]
+    for(i in 0 until n){
+        if(visit[i] == false){
+            res[depth] = numbers[i]
+            visit[i] = true
+            dfs(depth + 1)
+            visit[i] = false
+        }
+    }
     
 }
-/*
-    i = 1 : 0 - 1, 1 - 2
-    i = 2 : 1 - 2, 2 - 3
-    ...
-    i = n-2 : n-3 - n-2, n-2 - n-1 
-
-*/
 private fun processRes() : Int {
     var sum = 0
-    for(i in 1 until n-2){
-        sum += Math.abs(res[i-1] - res[i]) + Math.abs(res[i] - res[i+1])
+    for(i in 1 until n){
+        sum += Math.abs(res[i-1] - res[i])
     }
+    // for(i in 0 until n){
+    //     print("${res[i]} ")
+    // }
+    // print(": $sum\n")
     return sum
 }
+/*
+    10 4 20 1 15 8
+
+    6 + 16 + 19 + 14 + 7
+    22 + 19 + 14 + 7
+    41 + 14 + 7
+    56 + 7 
+    62
+
+    10 1 20 4 15 8
+
+    9 + 19 + 16 + 11 + 7
+    28 + 27 + 7
+    28 + 34
+    62
+*/
