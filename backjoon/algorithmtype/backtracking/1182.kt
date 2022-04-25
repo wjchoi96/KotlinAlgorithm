@@ -39,6 +39,8 @@
     5 0
     0 0 0 0 0
     => 31
+
+    4. 성공
 */
 
 /*
@@ -47,6 +49,10 @@
     => for 문을 돌 필요가 없다
     => visit 배열이 필요가 없다
     => res 배열이 필요가 없다 : sum 만 있으면 된다
+
+    ========= 바킹독님 해설 ===========
+    2. 현재수를 선택하겠다, 선택하지 않겠다로 트리를 그려나가는 방법(dfs2)
+    
 */
 
 import java.io.*
@@ -59,6 +65,8 @@ fun main(args : Array<String>){
 
     var count = 0
     fun dfs(idx : Int = 0, sum : Int = 0){
+        // dfs2와 흡사한 방식인데 다른 코드로 동작할 수 있었던 이유 (idx 체크에서 걸러질수도있었다)
+        // 현재 item을 선택한걸 가정해서 sum check를 하기 때문
         if(idx >= n){
             return
         }
@@ -68,9 +76,26 @@ fun main(args : Array<String>){
         dfs(idx + 1, sum + arr[idx]) // 현재 item 을 선택한 가지
         dfs(idx + 1, sum) // 현재 item을 선택하지 않은 가지
     }
+    dfs()
+
+    fun dfs2(idx : Int = 0, sum : Int = 0){
+        // 무조건 idx가 size까지 와야 완료
+        // 현재 item을 선택하겠다, 선택하지 않겠다로 그려지는 트리이기 때문
+        if(idx == n){
+            if(sum == s){
+                count++
+            }
+            return
+        }
+        dfs2(idx+1, sum) // 현재 item을 선택하지 않겠다
+        dfs2(idx+1, sum + arr[idx]) // 현재 item을 선택하겠다
+    }
+    // dfs2()
+    // if(s == 0){
+    //     count--
+    // }
 
     
-    dfs()
     bw.write("$count\n")
 
     bw.flush()
