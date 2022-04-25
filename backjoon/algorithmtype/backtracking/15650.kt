@@ -9,6 +9,10 @@
 /*
     제출
     1. 성공
+
+    개선
+    - for문을 사용하지않는 방법으로 구현해 보았다
+    - 개선이란 의미에 어울리는지는 모르겠지만, 약간 다른 방식을 학습
 */
 
 import java.io.*
@@ -23,7 +27,8 @@ fun main(args : Array<String>){
     visit = Array(n+1){false}
     res = Array(m){-1}   
 
-    dfs(1, 0)
+    // dfs(1, 0)
+    dfs2(size= n+1)
  
     bw.flush()
     bw.close()
@@ -46,6 +51,21 @@ private fun dfs(num : Int, depth : Int){
     for(i in num until visit.size){
         res[depth] = i
         dfs(i+1, depth+1)
-        
     }
+}
+
+private fun dfs2(num : Int = 1, depth : Int = 0, size : Int){
+    if(depth == res.size){
+        for(i in 0 until res.size){
+            bw.write("${res[i]} ")
+        }
+        bw.write("\n")
+        return
+    }
+    if(num >= size){
+        return
+    }
+    res[depth] = num
+    dfs2(num + 1, depth + 1, size) // 현재 item을 선택한 가지
+    dfs2(num + 1, depth, size) // 현재 item을 선택하지 않은 가지
 }
