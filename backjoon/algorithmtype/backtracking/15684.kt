@@ -209,37 +209,66 @@ fun main(args : Array<String>){
     br.close()
 }
 
-// ##################### try 1 ######################
-private fun dfsTry1(fromY : Int = 1, x : Int = 1, y : Int = 1, addRadder : Int = 0){
-    if(fromY == n && x == h && y == n){ // 5번기둥출발이 5번으로 왔을때
-        print("finish : [$x][$y] : $addRadder\n")
-        min = Math.min(min, addRadder)
+// ##################### try 1 개선 ######################
+private var minRadder = 3 // maxRadder 와 같게 하면 된다
+private fun dfs2(x : Int = 1, addRadder : Int = 0){
+    if(minRadder < addRadder){
         return
     }
-    // x의 끝좌표에 도착했을때
-    if(x == h){
-        if(y == fromY){ // 출발기둥 == 도착기둥
-            dfsTry1(fromY + 1, 1, y+1, addRadder) // 다음기둥의 1좌표로 이동, 출발 기둥 update
-        }
-        // 다른기둥에 도착했다면 버려야하는 가지
+    if(checkRadder()){
+        minRadder = Math.min(minRadder, addRadder)
         return
     }
+    for(nx in x until h+1){
+        for(ny in 1 until n){
+            if(board[nx][ny] == 0 && board[nx][ny+1] == 0){
+                board[nx][ny] = ny+1
+                board[nx][ny+1] = ny
 
-    // 배치를 위해 체크하는 코드
-    for(i in 0 until 2){
-        val ny = y + dy[i]
-        if(ny<0 || ny>n){ // size check
-            continue
-        }
-        // 배치할수있다면 배치하는 가지
-        if(canAddRadder(x, ny)){ 
-            board[x][y] = ny // [x,y] -> [x,ny]로 사다리 배치
-            dfsTry1(fromY, x, ny, addRadder + 1) // 사다리 배치한 좌표로 이동
-            board[x][y] = 0 // 백트래킹을 위해 사다리 배치 취소
+                dfs(nx, addRadder + 1)
+
+                board[nx][ny] = 0
+                board[nx][ny+1] = 0
+            }
         }
     }
-    dfsTry1(fromY, x+1, y, addRadder) // 배치를 안하는 가지
+    
 }
 private fun canAddRadder(x : Int, y : Int) : Boolean {
     return board[x][y] == 0
 }
+
+// ##################### try 1 ######################
+// private fun dfsTry1(fromY : Int = 1, x : Int = 1, y : Int = 1, addRadder : Int = 0){
+//     if(fromY == n && x == h && y == n){ // 5번기둥출발이 5번으로 왔을때
+//         print("finish : [$x][$y] : $addRadder\n")
+//         min = Math.min(min, addRadder)
+//         return
+//     }
+//     // x의 끝좌표에 도착했을때
+//     if(x == h){
+//         if(y == fromY){ // 출발기둥 == 도착기둥
+//             dfsTry1(fromY + 1, 1, y+1, addRadder) // 다음기둥의 1좌표로 이동, 출발 기둥 update
+//         }
+//         // 다른기둥에 도착했다면 버려야하는 가지
+//         return
+//     }
+
+//     // 배치를 위해 체크하는 코드
+//     for(i in 0 until 2){
+//         val ny = y + dy[i]
+//         if(ny<0 || ny>n){ // size check
+//             continue
+//         }
+//         // 배치할수있다면 배치하는 가지
+//         if(canAddRadder(x, ny)){ 
+//             board[x][y] = ny // [x,y] -> [x,ny]로 사다리 배치
+//             dfsTry1(fromY, x, ny, addRadder + 1) // 사다리 배치한 좌표로 이동
+//             board[x][y] = 0 // 백트래킹을 위해 사다리 배치 취소
+//         }
+//     }
+//     dfsTry1(fromY, x+1, y, addRadder) // 배치를 안하는 가지
+// }
+// private fun canAddRadder(x : Int, y : Int) : Boolean {
+//     return board[x][y] == 0
+// }
