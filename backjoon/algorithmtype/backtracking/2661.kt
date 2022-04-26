@@ -47,6 +47,12 @@
 
     2. 맞았습니다
 
+    개선점
+    1. res 배열 없이 string 으로만 진행해보자
+    => 맞았습니다
+
+    
+
 
 */
 
@@ -62,12 +68,48 @@ fun main(args : Array<String>){
     br.close()
     res = Array(n){0}
 
-    dfs()
+    dfs2()
 
     bw.flush()
     bw.close()
 }
 
+private fun dfs2(depth : Int = 0, res : String = ""){
+    if(depth == n){
+        bw.write("$res\n")
+        bw.flush()
+        bw.close()
+        System.exit(0)
+        return
+    }
+    for(i in 1 until 4){
+        val str = res + i.toString()
+        if(checkBadStr(str)){
+            dfs2(depth+1, str)
+        }
+    }
+}
+
+// 범위가 1 ~ size/2+1 이기 때문에
+// fIdx, sIdx 가 음수가 될만한 범위에서 실행을 하지 않는다
+// fIdx 는 당연히 음수가 될수 없고, sIdx는 1~size까지 범위를 잡으면 음수가 나올 수 있다
+private fun checkBadStr(res : String) : Boolean{
+    val size = res.count()
+    //마지막부터 1:1, 2:2, 3:3 ... size/2:size/2 비교
+    for(c in 1 until size/2+1){
+        val fIdx = size - c
+        val sIdx = size - (2*c)
+        val f = res.substring(fIdx until size)
+        val s = res.substring(sIdx until fIdx)
+        if(f == s){
+            return false
+        }
+    }
+    return true
+}
+
+
+// solve 1
 /*
     [1,2,3] 을 뽑는다
     N개까지
