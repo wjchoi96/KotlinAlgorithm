@@ -28,6 +28,8 @@
 
     b번 세로선과 b+1 세로선을 a번 점선 위치에 연결했다는 의미
     좌표는 [1,1] 로 시작한다
+
+    3 초과는 -1, 불가능해도 -1 출력
 */
 
 /*
@@ -101,6 +103,26 @@
 
 */
 
+/*
+    참고 
+    https://leveloper.tistory.com/96 => 주 
+    https://pangtrue.tistory.com/282 => 보조
+
+    제출
+    1. 틀렸습니다(6%)
+    - x 마지막 줄 체크를 안하는것 확인
+
+    2. 시간초과(64%)
+    - 자주 하는 실수 또함
+    - 현재 idx 를 다음 dfs로 넘겨주는데 거기에 함수인자로 전달받은 x를 넘겨버림
+
+    3. 성공
+ 
+    4. 실패(70%)
+    - 테스트겸 다음 dfs호출시 nx 대신 nx+1을 넘겨봄
+    - https://www.acmicpc.net/board/view/85699
+*/
+
 import java.io.*
 import java.util.StringTokenizer
 private lateinit var board : Array<Array<Int>>
@@ -109,39 +131,51 @@ private var n = 0 // y
 private var h = 0 // x
 private val dy = arrayOf(-1, 1)
 private var min = Int.MAX_VALUE
-private fun dfs(fromY : Int = 1, x : Int = 1, y : Int = 1, addRadder : Int = 0){
-    if(fromY == n && x == h && y == n){ // 5번기둥출발이 5번으로 왔을때
-        print("finish : [$x][$y] : $addRadder\n")
-        min = Math.min(min, addRadder)
+
+private fun dfs(x : Int = 1, addRadder : Int = 0, maxRadder : Int){
+    if(addRadder == maxRadder){
+        if(checkRadder()) {
+            min = Math.min(min, maxRadder)
+        }
         return
     }
-    // x의 끝좌표에 도착했을때
-    if(x == h){
-        if(y == fromY){ // 출발기둥 == 도착기둥
-            dfs(fromY + 1, 1, y+1, addRadder) // 다음기둥의 1좌표로 이동, 출발 기둥 update
-        }
-        // 다른기둥에 도착했다면 버려야하는 가지
-        return
-    }
-    // 배치를 안한 가지가 나아갈 곳이 없다
-    // for문으로 한번 더 감아주던지, 배치를 안하는 가지가 나아갈 길을 제시해줘야할듯
-    for(i in 0 until 2){
-        val ny = y + dy[i]
-        if(ny<0 || ny>n){ // size check
-            continue
-        }
-        if(!canAddRadder(x, ny)){ // 사다리를 놓을 수 없다면
-            dfs(fromY, x+1, y, addRadder) // 한칸 아래로 이동
-        }else{
-            board[x][y] = ny // [x,y] -> [x,ny]로 사다리 배치
-            dfs(fromY, x, ny, addRadder + 1) // 사다리 배치한 좌표로 이동
-            board[x][y] = 0 // 백트래킹을 위해 사다리 배치 취소
+
+    for(nx in x until h + 1){
+        for(ny in 1 until n){ //마지막 세로줄은 체크 안한다 -> 오른쪽으로만 배치
+            // 배치된 사다리가 없고, 사다리를 배치할 수 있다면
+            if(board[nx][ny] == 0 && board[nx][ny+1] == 0){ 
+                board[nx][ny] = ny+1 // 사다리 배치
+                board[nx][ny+1] = ny // 사다리 배치
+
+                dfs(nx, addRadder+1, maxRadder) // 여기를 nx+1 로할지 nx로할지에 따라서도 답이 갈린다 // https://www.acmicpc.net/board/view/85699
+
+                board[nx][ny] = 0// 사다리 철거
+                board[nx][ny+1] = 0 // 사다리 철거
+            }
         }
     }
+
 }
 
-private fun canAddRadder(x : Int, y : Int) : Boolean {
-    return board[x][y] == 0
+private fun checkRadder() : Boolean {
+    for(i in 1 until n+1){
+        var x = 1
+        var y = i
+        while(x <= h){
+            if(board[x][y] != 0){ // 배치된 사다리가 있는것
+                if(board[x][y] < y){
+                    y--
+                }else{
+                    y++
+                }
+            }
+            x++
+        }
+        if(y != i){ 
+            return false
+        }
+    }
+    return true
 }
 
 fun main(args : Array<String>){
@@ -159,20 +193,53 @@ fun main(args : Array<String>){
         st = StringTokenizer(br.readLine())
         val x = st.nextToken().toInt()
         val fromY = st.nextToken().toInt()
+        // 상호 연결
         board[x][fromY] = fromY + 1
+        board[x][fromY + 1] = fromY
     }
 
-    for(x in 0 until h+1){
-        for(y in 0 until n+1){
-            print("${board[x][y]} ")
-        }
-        print("\n")
+    for(i in 0 until 4){
+        dfs(maxRadder=i)
     }
 
-    dfs()
-    bw.write("$min\n")
+    bw.write("${if(min == Int.MAX_VALUE)-1 else min}\n")
 
     bw.flush()
     bw.close()
     br.close()
+}
+
+// ##################### try 1 ######################
+private fun dfsTry1(fromY : Int = 1, x : Int = 1, y : Int = 1, addRadder : Int = 0){
+    if(fromY == n && x == h && y == n){ // 5번기둥출발이 5번으로 왔을때
+        print("finish : [$x][$y] : $addRadder\n")
+        min = Math.min(min, addRadder)
+        return
+    }
+    // x의 끝좌표에 도착했을때
+    if(x == h){
+        if(y == fromY){ // 출발기둥 == 도착기둥
+            dfsTry1(fromY + 1, 1, y+1, addRadder) // 다음기둥의 1좌표로 이동, 출발 기둥 update
+        }
+        // 다른기둥에 도착했다면 버려야하는 가지
+        return
+    }
+
+    // 배치를 위해 체크하는 코드
+    for(i in 0 until 2){
+        val ny = y + dy[i]
+        if(ny<0 || ny>n){ // size check
+            continue
+        }
+        // 배치할수있다면 배치하는 가지
+        if(canAddRadder(x, ny)){ 
+            board[x][y] = ny // [x,y] -> [x,ny]로 사다리 배치
+            dfsTry1(fromY, x, ny, addRadder + 1) // 사다리 배치한 좌표로 이동
+            board[x][y] = 0 // 백트래킹을 위해 사다리 배치 취소
+        }
+    }
+    dfsTry1(fromY, x+1, y, addRadder) // 배치를 안하는 가지
+}
+private fun canAddRadder(x : Int, y : Int) : Boolean {
+    return board[x][y] == 0
 }
