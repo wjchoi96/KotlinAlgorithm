@@ -35,8 +35,22 @@
 /*
     제출
     1. 성공
-
     
+*/
+
+/*
+    개선안
+
+    https://www.acmicpc.net/source/38096140
+    1. home, chicken 을 각 list 로 가지고있는다
+    2. 폐업할 치킨집을 고르는게 아닌, 그대로 유지될 치킨집m개를 선택하는 백트래킹을 실시
+    3. 종료조건을 만족하면 home과 liveChicken끼리의 거리를 구해서 조건을 완료한다
+
+    제출
+    1. 시간초과
+    - 또 같은실수 dfs2 에서 다음 dfs 호출시 i+1 해야하는데 idx+1을 했다
+
+    2. 맞았습니다
 */
 
 /*
@@ -51,11 +65,17 @@
 import java.io.*
 import java.util.StringTokenizer
 private lateinit var board : Array<Array<Int>>
-private var chickens : ArrayList<Pair<Int, Int>> = ArrayList()
+private val chickens : ArrayList<Pair<Int, Int>> = ArrayList()
 private var originalChickenCount = 0
 private var m = 0 // 페업시키지 않고 살려둘 치킨집
 private var n = 0
 private var minRoad = Int.MAX_VALUE
+/*
+    개선 dfs2 에서 사용되는 전역변수
+*/
+private val homes : ArrayList<Pair<Int, Int>> = ArrayList()
+private lateinit var selectChicekns : Array<Pair<Int, Int>>
+private lateinit var visit : Array<Boolean>
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
@@ -72,16 +92,48 @@ fun main(args : Array<String>){
                 chickens.add(Pair(x, y))
                 originalChickenCount++
             }
+            // use at dfs2
+            else if(board[x][y] == 1){
+                homes.add(Pair(x, y))
+            }
         }
     }
+    //use at dfs2
+    visit = Array(chickens.size){false}
+    selectChicekns = Array(m){Pair(0,0)}
 
-    print("chickensCount[$originalChickenCount] - m[$m] => ${originalChickenCount - m}\n")
-    dfs()
+    // print("chickensCount[$originalChickenCount] - m[$m] => ${originalChickenCount - m}\n")
+    dfs2()
     bw.write("$minRoad\n")
 
     bw.flush()
     bw.close()
     br.close()
+}
+/*
+    개선 dfs
+*/
+private fun dfs2(idx : Int = 0, depth : Int = 0){
+    if(depth == m){
+        var city = 0
+        for(home in homes){
+            var min = Int.MAX_VALUE
+            for(chicken in selectChicekns){
+                min = Math.min(min, getLength(chicken, home))
+            }
+            city += min
+        }
+        minRoad = Math.min(city, minRoad)
+        return
+    }
+    for(i in idx until chickens.size){
+        if(visit[i] == false){
+            visit[i] = true
+            selectChicekns[depth] = chickens[i]
+            dfs2(i + 1, depth + 1)
+            visit[i] = false
+        }
+    }   
 }
 /*
     dfs 루트가 이상한거같은데
@@ -136,6 +188,9 @@ private fun getCityChickenRoad() : Int{
     return cityChickenRoad
 }
 
+private fun getLength(p1 : Pair<Int, Int>, p2 : Pair<Int, Int>) : Int {
+    return Math.abs(p1.first - p2.first) + Math.abs(p1.second - p2.second)
+}
 private fun getChickenRoad(home : Pair<Int, Int>) : Int{
     var min = Int.MAX_VALUE
     for(chicken in chickens){
@@ -143,7 +198,4 @@ private fun getChickenRoad(home : Pair<Int, Int>) : Int{
     }
     print("home[${home.first}][${home.second}] : $min\n")
     return min
-}
-private fun getLength(p1 : Pair<Int, Int>, p2 : Pair<Int, Int>) : Int {
-    return Math.abs(p1.first - p2.first) + Math.abs(p1.second - p2.second)
 }
