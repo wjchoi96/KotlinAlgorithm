@@ -32,6 +32,12 @@
     
     1초
 */
+/*
+    제출
+    1. 성공
+
+    
+*/
 
 /*
     본래 치킨집 크기 c
@@ -42,43 +48,101 @@
     2. 현 상태에서 치킨거리 구하기
     3. 반복
 */  
-
+import java.io.*
+import java.util.StringTokenizer
 private lateinit var board : Array<Array<Int>>
-private lateinit var chickens : Array<Pair<Int, Int>>
-private var chickensCount = 0
+private var chickens : ArrayList<Pair<Int, Int>> = ArrayList()
+private var originalChickenCount = 0
 private var m = 0 // 페업시키지 않고 살려둘 치킨집
 private var n = 0
-private fun dfs(x : Int = 0, y : Int = 0, depth : Int){
-    if(depth == chickensCount - m){ 
-        val value = getChickenRoad() // 치킨거리 구하기
-        // 최소값 갱신
+private var minRoad = Int.MAX_VALUE
+fun main(args : Array<String>){
+    val bw = BufferedWriter(OutputStreamWriter(System.out))
+    val br = BufferedReader(InputStreamReader(System.`in`))
+    var st = StringTokenizer(br.readLine())
+
+    n = st.nextToken().toInt()
+    m = st.nextToken().toInt()
+    board = Array(n){Array(n){0}}
+    for(x in 0 until n){
+        st = StringTokenizer(br.readLine())
+        for(y in 0 until n){
+            board[x][y] = st.nextToken().toInt()
+            if(board[x][y] == 2){
+                chickens.add(Pair(x, y))
+                originalChickenCount++
+            }
+        }
+    }
+
+    print("chickensCount[$originalChickenCount] - m[$m] => ${originalChickenCount - m}\n")
+    dfs()
+    bw.write("$minRoad\n")
+
+    bw.flush()
+    bw.close()
+    br.close()
+}
+/*
+    dfs 루트가 이상한거같은데
+    0,1 => dfs(0,1) called
+    0,3 => dfs(0,3) called
+
+    1,1 => 건너뛰고
+    1,3 => dfs(1,3) called
+
+    2,1 -> 건너뛰고
+    2,3
+
+*/
+/*
+    2개의 for문으로 순회하며 dfs를 수행하는경우
+    x, y 를 모두 dfs 인자로 전달받아, 순회의 시작 idx로 사용해선 안된다
+    => y축을 끝까지 순회하고 다음 x축이 되었을때 y가 0부터가 아닌 dfs인자로 전달된 y부터 시작한다
+    => 순회가 제대로 안된다
+    보통 x축을 전달해주고 y는 처음 인자부터 시작하는게 좋다
+    => y축을 다 순히하고 x축을 하나씩 넘어가는 방법이 된다
+*/
+private fun dfs(x : Int = 0, depth : Int = 0){
+    if(depth == originalChickenCount - m){
+        // print("catch $depth\n") 
+        minRoad = Math.min(minRoad, getCityChickenRoad())  // 치킨거리 구하기, 최소값 갱신
         return
     }
     for(nx in x until n){
-        for(ny in y until n){
+        for(ny in 0 until n){
+            // print("node[$nx][$ny] when [$x][0]: $depth\n")
             if(board[nx][ny] == 2){ // 치킨집이라면
                 board[nx][ny] = 0 // 폐업 시킨다
-                chickensCount--
-                dfs(nx, ny+1, depth + 1) 
+                chickens.remove(Pair(nx, ny))
+                // print("destroy[$nx][$ny] when $depth\n")
+                dfs(nx, depth + 1) // nx+1 하면 안된다
                 board[nx][ny] = 2 // 다시 살려줌
-                chickensCount++
+                chickens.add(Pair(nx, ny))
             }
         }
     }
 }
-// 거리를 구할떄는 x,y 에 +1씩 해줘야하나?
-// 어차피 차이를 구하니까 필요없을듯
 
-private fun getChickenRoad(){
-    var road = 0
+private fun getCityChickenRoad() : Int{
+    var cityChickenRoad = 0
     for(x in 0 until n){
         for(y in 0 until n){
-            // 이거 아니다. home 을 찾은다음, home 에서 치킨거리를 구해야한다(집에서 가장 가까운 거리의 치킨집과의 거리 => 치킨거리)
             if(board[x][y] == 1){ // 집 발견
-                
+                cityChickenRoad += getChickenRoad(Pair(x, y))
             }
         }
     }
+    return cityChickenRoad
+}
+
+private fun getChickenRoad(home : Pair<Int, Int>) : Int{
+    var min = Int.MAX_VALUE
+    for(chicken in chickens){
+        min = Math.min(getLength(home, chicken), min)
+    }
+    print("home[${home.first}][${home.second}] : $min\n")
+    return min
 }
 private fun getLength(p1 : Pair<Int, Int>, p2 : Pair<Int, Int>) : Int {
     return Math.abs(p1.first - p2.first) + Math.abs(p1.second - p2.second)
