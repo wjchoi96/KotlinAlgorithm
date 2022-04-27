@@ -47,6 +47,7 @@
 */
 
 /*
+    cctv 개수
     board 입력받으며 cctv level과 좌표값을 저장한다
 
     cctv를 하나씩 배치해본다고 생각하자
@@ -65,6 +66,72 @@
     4. 고려x
     => 경우의수 1개
 
-    
-
 */
+
+private var n = 0
+private lateinit var board : Array<Array<Int>>
+private var cctvs : ArrayList<Pair<Int, Int>> = ArrayList()
+private var cctvCount = 0
+private const val lookArea = 9
+private const val wall = 6
+private const val up = 0
+private const val down = 1
+private const val right = 2
+private const val left = 3
+private fun dfs(idx : Int = 0, depth : Int = 0){
+    if(depth == cctvCount){
+        return
+    }
+    for(i in idx until cctvs.size){
+        when(board[cctvs[i].first][cctvs[i].second]){
+            1 -> {
+                for(way in 0 until 4){
+                    look(way, cctvs[i])
+                    dfs(i + 1, depth + 1)
+                }
+            }
+            2 -> {
+                for(way in 0 until 3 step(2)){// 0, 2 두번실행
+                    look(way, cctvs[i]) // up, right
+                    look(way + 1, cctvs[i])// down, left
+                    dfs(i + 1, depth + 1)
+                }
+            }
+            3 -> {
+                for(notLook in 0 until 4){
+                    for(way in 0 until 4){ // 한방향을 제외하고 모두 바라본다
+                        if(way == notLook){
+                            continue
+                        }
+                        look(way, cctvs[i])
+                    }
+                    dfs(i + 1, depth + 1)
+                }
+            }
+            4 -> {
+                for(way in 0 until 4){ // 4방향을 전부 보고 넘어간다
+                    look(way, cctvs[i])
+                }
+                dfs(i + 1, depth + 1)
+            }
+        }
+    }
+}
+// draw # method 
+// 어떻게 구현해야 모든 레벨에서 사용가능할까
+// 방향을 줘야한다
+private fun look(way : Int, cctv : Pair<Int, Int>){
+    when(way){
+        up -> {
+            for(x in cctv.first downTo 0){
+                if(board[x][cctv.second] == wall){
+                    break
+                }
+                board[x][cctv.second] = lookArea
+            }
+        }
+        down -> {}
+        right -> {}
+        left -> {}
+    }
+}
