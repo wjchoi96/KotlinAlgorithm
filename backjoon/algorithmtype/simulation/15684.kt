@@ -110,10 +110,10 @@
     3. board 를 copy 하여 브루트포스 방식으로도 구현
 
     개선 제출
-    1. 성공
+    1. 성공 : dfs2 시리즈
      - 개선안 1,2 적용
 
-    2. 
+    2. 성공 : dfs3 시리즈
      - 개선안 1,2,3 적용
 */
 /*
@@ -166,7 +166,7 @@ fun main(args : Array<String>){
         }
     }
 
-    dfs2()
+    dfs3(map=board)
     bw.write("${n*m-max-wallCount-cctvs.size}\n")
 
     bw.flush()
@@ -174,6 +174,121 @@ fun main(args : Array<String>){
     br.close()
 }
 
+// ============= 개선안2 ==========================
+/*
+    브루트 포스 방식으로 개선
+    board를 매번 cctv 배치마다 copy 하는 방식
+*/
+private fun dfs3(depth : Int = 0, map : Array<Array<Int>>){
+    if(depth == cctvs.size){
+        max = Math.max(max, getLookArea2(map)) // 감시지대의 최대값을 구한다
+        return
+    }
+    when(board[cctvs[depth].first][cctvs[depth].second]){
+        1 -> {
+            for(idx in 0 until Way.values().size){
+                val way = Way.values()[idx]
+                val copy = getCopyMap(map)
+                look3(way, cctvs[depth], copy)
+                dfs3(depth + 1, copy)
+            }
+        }
+        2 -> {
+            for(idx in 0 until Way.values().size-1 step(2)){ // 0, 2 두번실행
+                val copy = getCopyMap(map)
+                val way = Way.values()[idx]
+                val way2 = Way.values()[idx+1]
+                look3(way, cctvs[depth], copy)
+                look3(way2, cctvs[depth], copy)
+                dfs3(depth + 1, copy)
+            }
+        }
+        3 -> {
+            for(idx in 0 until 2){
+                for(idx2 in 2 until 4){
+                    val copy = getCopyMap(map)
+                    val way = Way.values()[idx]
+                    val way2 = Way.values()[idx2]
+                    look3(way, cctvs[depth], copy) 
+                    look3(way2, cctvs[depth], copy) 
+                    dfs3(depth + 1, copy)
+                }
+            }
+        }
+        4 -> {
+            for(notLook in 0 until Way.values().size){
+                val copy = getCopyMap(map)
+                for(idx in 0 until Way.values().size){ // 한방향을 제외하고 모두 바라본다
+                    if(idx == notLook){
+                        continue
+                    }
+                    look3(Way.values()[idx], cctvs[depth], copy)
+                }
+                dfs3(depth + 1, copy)
+            }
+        }
+        5 -> {
+            val copy = getCopyMap(map)
+            for(idx in 0 until Way.values().size){ // 4방향을 전부 보고 넘어간다
+                look3(Way.values()[idx], cctvs[depth], copy)
+            }
+            dfs3(depth + 1, copy)
+        }
+    }
+}
+
+private fun getCopyMap(original : Array<Array<Int>>) : Array<Array<Int>> {
+    val copy = Array(n){Array(m){0}}
+    for(x in 0 until n){
+        for(y in 0 until m){
+            copy[x][y] = original[x][y]
+        }
+    }
+    return copy
+}
+private fun look3(way : Way, cctv : Pair<Int, Int>, copyMap : Array<Array<Int>>) : Int {
+    var count = 0
+    var visit = Pair(cctv.first + dx[way.v], cctv.second + dy[way.v])
+    while(visit.first in 0..n-1 && visit.second in 0..m-1){
+        if(copyMap[visit.first][visit.second] == wall){
+            break
+        }
+        if(copyMap[visit.first][visit.second] in cctvRange){
+            visit = Pair(visit.first + dx[way.v], visit.second + dy[way.v])
+            continue
+        }
+        if(copyMap[visit.first][visit.second] >= lookArea){
+            copyMap[visit.first][visit.second]++
+        }else{
+            copyMap[visit.first][visit.second] = lookArea
+        }
+        count++
+        visit = Pair(visit.first + dx[way.v], visit.second + dy[way.v])
+    }
+    return count
+}
+private fun getLookArea2(map : Array<Array<Int>>) : Int {
+    var count = 0
+    print("\ngetLookArea2=====\n")
+    for(x in 0 until n){
+        for(y in 0 until m){
+            if(map[x][y] >= lookArea){
+                print("9 ")
+                count++
+            }else{
+                print("${map[x][y]} ")
+            }
+        }
+        print("\n")
+    }
+    return count
+}
+
+
+// ===================== second solve ===================
+/*
+    백트래킹 방식의 최적화 코드
+*/
 private fun dfs2(depth : Int = 0){
     if(depth == cctvs.size){
         max = Math.max(max, getLookArea()) // 감시지대의 최대값을 구한다
@@ -315,7 +430,6 @@ private fun getLookArea() : Int {
     printBoard()
     return count
 }
-
 
 // ===================== first solve =====================
 /*
