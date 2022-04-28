@@ -42,13 +42,20 @@
 /*
     제출
     1. 성공
+
+    개선
+    1. 스티커를 입력받으면서, 동시에 붙일 수 있나 체크하고 돌리고 하네?
+    => 이러면 stickers 배열도 필요가 없긴하다
+
+    개선안 제출
+    1. 성공
+    - 개선1안 적용
 */
 import java.io.*
 import java.util.StringTokenizer
 private var n = 0
 private var m = 0
 private lateinit var board : Array<Array<Int>> 
-private lateinit var stickers : Array<Sticker>
 fun main(args : Array<String>){
     val bw = BufferedWriter(OutputStreamWriter(System.out))
     val br = BufferedReader(InputStreamReader(System.`in`))
@@ -59,7 +66,7 @@ fun main(args : Array<String>){
     val s = st.nextToken().toInt()
 
     board = Array(n){Array(m){0}}
-    stickers = Array(s) { 
+    for(i in 0 until s){
         val (sn, sm) = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
         val area = Array(sn){Array(sm){0}}
         for(x in 0 until sn){
@@ -68,12 +75,9 @@ fun main(args : Array<String>){
                 area[x][y] = st.nextToken().toInt()
             }
         }
-        Sticker(area)
+        checkStickers(Sticker(area))
     }
 
-    for(i in 0 until stickers.size){
-        checkStickers(i)
-    }
     print("\nfinish===\n")
     printBoard()
 
@@ -92,12 +96,7 @@ fun main(args : Array<String>){
     br.close()
 }
 
-private fun checkStickers(depth : Int){
-    if(depth == stickers.size){
-        return
-    }
-    val sticker = stickers[depth]
-    print("sticker[$depth]\n")
+private fun checkStickers(sticker : Sticker){
     sticker.printSticker()
     
     //n-sticker.n 의 남은 칸수 + 1번 만큼 loop이 돌아야하는데
@@ -109,7 +108,6 @@ private fun checkStickers(depth : Int){
         for(y in 0 until m+1-sticker.m){
             if(canAttackSticker(sticker, Pair(x,y))){
                 attackSticker(sticker, Pair(x,y))
-                print("attach[$depth]----\n")
                 printBoard()
                 return
             }
@@ -117,7 +115,7 @@ private fun checkStickers(depth : Int){
     }
      // 현재 스티커를 못 붙여서 회전시킨 경우 재귀로 재호출한다
     if(sticker.rotate()){
-        checkStickers(depth)
+        checkStickers(sticker)
     }    
 }
 private fun canAttackSticker(sticker : Sticker, from : Pair<Int,Int>) : Boolean{
@@ -249,3 +247,61 @@ private fun printBoard(){
         print("\n")
     }
 }
+
+/*
+스티커 회전 규칙 풀이
+1 1 1 1 1
+0 0 0 1 0
+
+to
+
+0 1
+0 1
+0 1
+1 1
+0 1
+
+n = 2, m = 5
+[0,0] -> [0,1]
+[0,1] -> [1,1]
+[0,2] -> [2,1]
+[0,3] -> [3,1]
+[0,4] -> [4,1]
+
+n = 5, m = 2
+[1,0] -> [0,0]
+[1,1] -> [1,0]
+[1,2] -> [2,0]
+[1,3] -> [3,0]
+[1,4] -> [4,0]
+
+가장 위쪽행(x==0)이 가장 오른쪽열(y==m-1)로
+가장 아래쪽행(x==n-1)이 가장 왼쪽열(y==0)
+
+[0, 0] -> [by, am-bx-1]
+[0, 1] -> [by, am-bx-1] 
+[0, 2] -> [by, am-bx-1]
+[0, 3] -> [by, am-bx-1]
+[0, 4] -> [by, am-bx-1] 
+
+[1, 0] -> [by, am-bx-1]
+[1, 1] -> [by, am-bx-1]
+[1, 2] -> [by, am-bx-1]
+[1, 3] -> [by, am-bx-1]
+[1, 4] -> [by, am-bx-1]
+
+======================
+[5, 4]
+1 0 1 0
+1 1 1 0
+1 0 1 0
+0 0 0 0
+0 0 0 0
+
+[5, 2]
+0 1
+0 1
+0 1
+1 1
+0 1
+*/
