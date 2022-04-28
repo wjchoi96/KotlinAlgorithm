@@ -39,67 +39,87 @@
     - 시작점에서 스티커의 크기만큼 board를 순회하며 스티커가 붙을 수 있나 확인
 */
 
+/*
+    제출
+    1. 성공
+*/
+import java.io.*
+import java.util.StringTokenizer
 private var n = 0
 private var m = 0
 private lateinit var board : Array<Array<Int>> 
 private lateinit var stickers : Array<Sticker>
-data class Sticker( 
-    val n : Int,
-    val m : Int,
-    val area : Array<Array<Int>>,
-    private val rotateCount : Int = 0
-){
-    fun rotate() : Boolean {
-        if(rotateCount > 4){
-            return false
+fun main(args : Array<String>){
+    val bw = BufferedWriter(OutputStreamWriter(System.out))
+    val br = BufferedReader(InputStreamReader(System.`in`))
+    var st = StringTokenizer(br.readLine())
+
+    n = st.nextToken().toInt()
+    m = st.nextToken().toInt()
+    val s = st.nextToken().toInt()
+
+    board = Array(n){Array(m){0}}
+    stickers = Array(s) { 
+        val (sn, sm) = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+        val area = Array(sn){Array(sm){0}}
+        for(x in 0 until sn){
+            st = StringTokenizer(br.readLine())
+            for(y in 0 until sm){
+                area[x][y] = st.nextToken().toInt()
+            }
         }
-        // do rotate
-        return true
+        Sticker(area)
     }
-}
-enum class Rotate {
 
+    for(i in 0 until stickers.size){
+        checkStickers(i)
+    }
+    print("\nfinish===\n")
+    printBoard()
+
+    var count = 0
+    for(x in 0 until n){
+        for(y in 0 until m){
+            if(board[x][y] != 0){
+                count++
+            }
+        }
+    }
+    bw.write("$count\n")
+
+    bw.flush()
+    bw.close()
+    br.close()
 }
 
-private fun checkStickers(depth : Int = 0){
+private fun checkStickers(depth : Int){
     if(depth == stickers.size){
         return
     }
     val sticker = stickers[depth]
-    var isAttach = false
-    for(x in 0 until n){
-        for(y in 0 until m){
-            if(board[x][y] != 0){
-                continue
-            }
+    print("sticker[$depth]\n")
+    sticker.printSticker()
+    
+    //n-sticker.n 의 남은 칸수 + 1번 만큼 loop이 돌아야하는데
+    //5-3 = 2 => 0 until 2 => 0,1 => 하지만 0,1,2 까지 해줘야한다
+    //5-4 = 1 => 0 until 1 -> 0 => 하지만 0,1 까지 해줘야한다
+    //5-5 = 0 => 0 until 0 -> null => 하지만 0 까지  체크해야한다
+    //n+1-sticker.n
+    for(x in 0 until n+1-sticker.n){  
+        for(y in 0 until m+1-sticker.m){
             if(canAttackSticker(sticker, Pair(x,y))){
                 attackSticker(sticker, Pair(x,y))
-                isAttach = true
+                print("attach[$depth]----\n")
+                printBoard()
+                return
             }
         }
     }
-    if(!isAttach && sticker.rotate()){
-        checkStickers(depth) // 현재 스티커를 못 붙여서 돌린 경우 
-    }else { // 현재스티커를 붙여서든, 결국 못붙여서 버렸든 다음 depth 로 넘어간다
-        checkStickers(depth + 1)
-    }
-    
+     // 현재 스티커를 못 붙여서 회전시킨 경우 재귀로 재호출한다
+    if(sticker.rotate()){
+        checkStickers(depth)
+    }    
 }
-
-/*
-        0 0 0 0
-        0 0 0 0
-        0 0 0 0
-
-        n = 3
-        m = 4
-
-        0 -> 0,0
-        3 -> 0,3
-        4 -> 1,0
-        5 -> 1,1
-        8 -> 2,0
-    */
 private fun canAttackSticker(sticker : Sticker, from : Pair<Int,Int>) : Boolean{
     if(from.first + sticker.n > n || from.second + sticker.m > m){
         return false
@@ -116,7 +136,6 @@ private fun canAttackSticker(sticker : Sticker, from : Pair<Int,Int>) : Boolean{
     return true
 }
 
-
 private fun attackSticker(sticker : Sticker, from : Pair<Int,Int>){
     for(x in 0 until sticker.n){
         for(y in 0 until sticker.m){
@@ -129,21 +148,104 @@ private fun attackSticker(sticker : Sticker, from : Pair<Int,Int>){
     }
 
 }
-
-private fun rotateSticker(idx : Int){
-    // rotate가 까다롭네
-    // 이거야 말로 1차원 배열로 처리해서 쭈루루룩 옮겨야 하지 않을까
-    val original = stickers[idx]
-    val newArea = Array(original.m){Array(original.n){0}} // 어느 방향이건 90도 회전
-    val size = original.n * original.m
-    var (x, y) = arrayOf(0,0)
-    for(i in 0 until size){
-        (x, y) = arrayOf(i/m, i%m)
-        
+data class Sticker( 
+    var area : Array<Array<Int>>,
+    private var rotateCount : Int = 0
+){
+    val n : Int
+        get() = area.size
+    val m : Int
+        get() {
+            return if(area.isEmpty()){
+                0
+            }else{
+                area.first().size
+            }
+        }
+    fun printSticker(){
+        print("sticker===\n")
+        for(x in 0 until n){
+            for(y in 0 until m){
+                print("${area[x][y]} ")
+            }
+            print("\n")
+        }
+    }
+    fun rotate() : Boolean {
+        if(rotateCount > 4){
+            return false
+        }
+        rotateCount++
+        // print("before rotate[$rotateCount], size[$n, $m]\n")
+        // printSticker()
+        val newArea = Array(this.m){Array(this.n){0}} // 어느 방향이건 90도 회전
+        for(x in 0 until n){
+            for(y in 0 until m){
+                val (nx, ny) = arrayOf(y, n-x-1) //[by, am-bx-1] [beforeY, afterM-beforeX-1]
+                // print("[$x, $y] to [$nx, $ny]\n")
+                newArea[nx][ny] = area[x][y]
+            }
+        }
+        area = newArea
+        // print("after rotate[$rotateCount], size[$n, $m]\n")
+        // printSticker()
+        return true
+    }
+    private fun getIdx(idx : Int, y : Int) : Pair<Int, Int> {
+        return Pair(idx/y, idx%y)
     }
 }
-// 2차원배열을 1차원배열로 펼쳤을때의 idx를 넣으면, 2차원배열의 idx로 리턴
-// y가 우선 증가되도록 펼친다 => (0,0) (0,1) (1,0) (1,1) => 0..4
-private fun getIdx(idx : Int, n : Int, m : Int) : Pair<Int, Int> {
-    return Pair(0, 0)
+/*
+process rotate stiker idx
+
+1 1 1 1 1
+0 0 0 1 0
+
+to
+
+0 1
+0 1
+0 1
+1 1
+0 1
+
+n = 2, m = 5
+[0,0] -> [0,1]
+[0,1] -> [1,1]
+[0,2] -> [2,1]
+[0,3] -> [3,1]
+[0,4] -> [4,1]
+
+n = 5, m = 2
+[1,0] -> [0,0]
+[1,1] -> [1,0]
+[1,2] -> [2,0]
+[1,3] -> [3,0]
+[1,4] -> [4,0]
+
+가장 위쪽행(x==0)이 가장 오른쪽열(y==m-1)로
+가장 아래쪽행(x==n-1)이 가장 왼쪽열(y==0)
+
+[0, 0] -> [by, am-bx-1]
+[0, 1] -> [by, am-bx-1] 
+[0, 2] -> [by, am-bx-1]
+[0, 3] -> [by, am-bx-1]
+[0, 4] -> [by, am-bx-1] 
+
+[1, 0] -> [by, am-bx-1]
+[1, 1] -> [by, am-bx-1]
+[1, 2] -> [by, am-bx-1]
+[1, 3] -> [by, am-bx-1]
+[1, 4] -> [by, am-bx-1]
+
+*/
+
+
+private fun printBoard(){
+    for(x in 0 until n){
+        for(y in 0 until m){
+            print("${board[x][y]} ")
+        }
+        print("\n")
+    }
 }
