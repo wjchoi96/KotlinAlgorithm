@@ -24,28 +24,58 @@ fun main(args : Array<String>){
     val br = System.`in`.bufferedReader()
 
     val mMap : MutableMap<String, String> = HashMap() // HashMap<String, String> = HashMap()
+    val hashSet = HashSet<String>()
     val n = br.readLine().toInt()
     for(i in 0 until n){
         val (name, operator) = br.readLine().split(' ')
         when(operator){
-            "enter" -> mMap[name] = name //mMap.put(name, name)
-            "leave" -> mMap.remove(name)
+            "enter" -> {
+                mMap[name] = name  //mMap.put(name, name)
+                hashSet.add(name)
+            }
+            "leave" -> {
+                mMap.remove(name)
+                hashSet.remove(name)
+            }
         }
     }
-    // mMap = mMap.toSortedMap(compareBy<String>{it}.reversed())
-    // val list = mMap.toList().sortedByDescending{(k,_) -> k}.forEach {
-    //     print("${it.first}\n")
+
+    // map keys to array list (values : 값들)
+    // val keys = ArrayList(mMap.keys).apply{
+    //     sort()
+    //     reverse()
     // }
-    // for((k,_) in list){
+    // for(k in keys){
     //     print("$k\n")
     // }
 
-    val keys = ArrayList(mMap.keys)
-    keys.sort()
-    keys.reverse()
-    for(k in keys){
+    // map keys to array 
+    // val mapToArray = mMap.keys.toTypedArray().apply {
+    //     sort()
+    //     reverse()
+    // }
+    // for(k in 0 until mapToArray.size){
+    //     print("${list[k]}\n")
+    // }
+
+   
+    // set to array
+    // val setToArray = hashSet.toTypedArray().apply{
+    //     sort()
+    //     reverse()
+    // }
+    // for(k in 0 until setToArray.size){
+    //     print("${list[k]}\n")
+    // }
+
+    val setToList = ArrayList(hashSet).apply {
+        sort()
+        reverse()
+    }
+    for(k in setToList){
         print("$k\n")
     }
+    
 
     bw.flush()
     bw.close()
