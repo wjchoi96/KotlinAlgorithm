@@ -55,8 +55,17 @@ fun main(args : Array<String>){
         nameList.add(value) // 꺼내올땐 -1 해줘야한다
     }
     for(i in 0 until m){
-        val value = br.readLine().run{toIntOrNull() ?: this}
-        if(value is Int) {
+        // toIntOrNull 을 사용해 int인지 체크하는 방식
+        // val value = br.readLine().run{toIntOrNull() ?: this}
+        // if(value is Int) {
+        //     bw.write("${nameList[value.toInt()-1]}\n")
+        // }else{
+        //     bw.write("${hashMap[value]}\n")
+        // }
+
+        //isDisit를 사용해 판별하는 방식
+        val value = br.readLine()
+        if(value.first().isDigit()){ // 숫자는 true 리턴
             bw.write("${nameList[value.toInt()-1]}\n")
         }else{
             bw.write("${hashMap[value]}\n")
