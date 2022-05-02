@@ -91,24 +91,108 @@
     - row가 얕은복사로 진행되고있었다
 
     3. 맞았습니다
+    - pushRowCol 
+
+    개선
+    - 코드 양을 줄일 수 있는 곳이 없을까
+
+    1. pushBlock, move, merge block을 개선
+    //참고 : https://www.acmicpc.net/source/29119881
+    - row or col을 순회하며 block을 찾고, 해당 block값을 list에 저장
+    해당 block이 있던 위치는 0으로 변경
+    이때 먼저 merge or move되어야 할 block먼저 add되어야한다(이 순서는 지금 push row col 하는것처럼 하면된다)
+    - block list를 0부터 순회하며 i+1 item과 비교해서 같은 값이라면 합치고, i+1 값은 제거
+    - 이러면 모든 block들이 merge는 한번만 수행한다
+
+    해당 작업을 거친 block list를 board에 적용
+    => idx 계산은 dv를 이용
+    1. x, y중 둘중 하나는 고정되어야하고 하나는 start지점으로부터 +-idx 작업을 수행해야한다
+    => push row col에 방향에 따른 start초기값을 구하는 작업이 되어있다
+    => push row col에 방향에 따른 idx이동값을 구하는 작업이 되어있다
+    이동해야하는 축의 idx는 +-1, 멈춰있어야 하는 축은 0
+    block list의 idx를 dv의 x,y값을 곱하고, start 초기값에 더해준다
+    => 멈춰있어야 할 축은 +0이되어서 그대로 멈춰있고
+    => 움직여야 할 축은 +-1이 적용된다
+    => push row col의 순회과정과 비슷하다
+
+    개선 제출
+    1. 성공
+    : pushRowCol2 에 구현
+
+
+    !! 백트래킹도 board copy 를 통해 쉽게 구현이 되는구나
+    1. board 원본을 copy해준다
+    2. copy는 그대로 두고 board를 가지고 play game
+    3. 지금 회차가 끝나면 보관해놨던 copy(원본데이터를 가지고있다) 를 board로 적용
 */
-private enum class Direction(val v : Int){
-    Up(0),
-    Down(1),
-    Right(2),
-    Left(3),
-}
-// 게임판 전체를 밀어버리는 메소드
-private fun pushBoard(d : Direction){
-    combine = Array(n){Array(n){false}} //  한 번의 이동에서 이미 합쳐진 블록은 또 다른 블록과 다시 합쳐질 수 없다
-    // print("pushBoard $d\n")
-    for(i in 0 until n){
-        pushRowCol(i, d)
+
+//  ================== 개선 ==================
+private fun pushRowCol2(rowCol : Int, d : Direction){
+    val dStart = arrayOf(
+        Pair(n-1, rowCol), 
+        Pair(0, rowCol),
+        Pair(rowCol, n-1),
+        Pair(rowCol, 0)
+    )
+    // while문에 걸맞는 종료조건이 되기 위해 +- 1 씩 더 해준다
+    val dEnd = arrayOf(
+        Pair(-1, rowCol),
+        Pair(n, rowCol),
+        Pair(rowCol, -1),
+        Pair(rowCol, n)
+    )
+    val dv = arrayOf(
+        Pair(-1, 0),
+        Pair(1, 0),
+        Pair(0, -1),
+        Pair(0, 1)
+    )
+    var start = dStart[d.v]
+    val end = dEnd[d.v]
+    // 한 열 혹은 횡을 모두 순회하며 block을 찾고, 찾은 block은 밀어버린다
+    val blockList = ArrayList<Int>()
+    while(start.first != end.first || start.second != end.second){
+        if(board[start.first][start.second] != 0){ // block을 찾았다
+            blockList.add(board[start.first][start.second])
+            maxBlock = Math.max(maxBlock, board[start.first][start.second]) // 합쳐지는것 + 처음 초기화시에 체크
+            board[start.first][start.second] = 0
+        }
+        start = Pair(start.first + dv[d.v].first, start.second + dv[d.v].second)
+    }
+
+    processBlockList(blockList).forEachIndexed { i, v ->
+        // 이러면 하나는 무조건 0이므로 계속 0일거고
+        // -를 해야하는곳은 -index, +을 해야하는곳은 +index가 된다
+        // start 초기값에 + 해주면 된다( 빼야할값은 음수라서 알아서 빠지고, 더해야 할값은 더해지고, 그대로 있어야 할값은 +0이 되어서 그대로)
+        val dx = dv[d.v].first * i
+        val dy = dv[d.v].second * i
+        print("i : $i, dx : $dx, dy : $dy\n")
+        print("[${dStart[d.v].first}][${dStart[d.v].second-dy}]\n")
+        board[dStart[d.v].first + dx][dStart[d.v].second + dy] = v
     }
 }
-// 하나의 열 또는 행의 블록을 모두 밀어버리는 메소드
-private fun pushRowCol(rowCol : Int, d : Direction){
-    /*
+
+private fun processBlockList(list : ArrayList<Int>) : List<Int>{
+    var i = 0
+    while(i < list.size - 1){
+        // 현재 block과 다음 block이 같다면
+        // 0에 가까운 block이 먼저 추가된 block
+        // up의 경우 n-1 to 0
+        // down의 경우 0 to n-1
+        // 먼저 처리되어야 할 block 먼저 추가해주는것
+        if(list[i] == list[i+1]){ 
+            list[i] *= 2 // merge
+            maxBlock = Math.max(maxBlock, list[i]) // 합쳐지는것 + 처음 초기화시에 체크
+            list.removeAt(i+1) // merge 작업이 된 block은 제거
+        }
+        i++
+    }
+    return list
+}
+
+/*
+    push row col method
+    
         up, down 이면 x축을 순회하며 block을 찾아야하고
         right, left 이면 y축을 순회하며 block을 찾아야한다
 
@@ -131,7 +215,31 @@ private fun pushRowCol(rowCol : Int, d : Direction){
         down
         (row, 0) to (row, n-1)
         미려는 방향쪽에서 시작해서 미려는 방향쪽에 있는 block부터 밀어줘야한다
-    */
+    
+    push block method
+            
+        벽을 만난 경우... 흠
+        x를 체크해야하는지, y를 체크해야하는지 어케알지
+        x==wall || y==wall 로 해놓고, 
+        대상이 아닌 축은 -1 이런거로 설정해놓으면 절대 같을 일이 없다
+        
+
+*/
+private enum class Direction(val v : Int){
+    Up(0),
+    Down(1),
+    Right(2),
+    Left(3),
+}
+// 게임판 전체를 밀어버리는 메소드
+private fun pushBoard(d : Direction){
+    combine = Array(n){Array(n){false}} //  한 번의 이동에서 이미 합쳐진 블록은 또 다른 블록과 다시 합쳐질 수 없다
+    for(i in 0 until n){
+        pushRowCol2(i, d)
+    }
+}
+// 하나의 열 또는 행의 블록을 모두 밀어버리는 메소드
+private fun pushRowCol(rowCol : Int, d : Direction){
     val dStart = arrayOf(
         Pair(n-1, rowCol), 
         Pair(0, rowCol),
@@ -155,16 +263,10 @@ private fun pushRowCol(rowCol : Int, d : Direction){
     val end = dEnd[d.v]
     // 한 열 혹은 횡을 모두 순회하며 block을 찾고, 찾은 block은 밀어버린다
     while(start.first != end.first || start.second != end.second){
-        // print("check [${start.first}][${start.second}] => ")
         if(board[start.first][start.second] != 0){ // block을 찾았다
-            // print("block!!\n")
-            // maxBlock = Math.max(maxBlock, board[start.first][start.second]) // block을 만나면 처리
-            checkMax(board[start.first][start.second])
+            maxBlock = Math.max(maxBlock, board[start.first][start.second])
             pushBlock(start, d)
         }
-        // else{
-            // print(" 0\n")
-        // }
         start = Pair(start.first + dv[d.v].first, start.second + dv[d.v].second)
     }
 }
@@ -180,20 +282,9 @@ private fun pushBlock(b : Pair<Int, Int>, d : Direction){
         Pair(-1, 0)
     ) // 방향에 따른 종료조건(벽을 만나면 종료)
     val wall = dWall[d.v]
-    /*
-        block을 찾으면 해당 메소드가 호출되는거니까
-        현재 무조건 while문 첫번째부터 시작이된다
-    */
-    
     var block = b
     var nextSpace = Pair(block.first + dx[d.v], block.second + dy[d.v])
     while(true){
-        /*
-            벽을 만난 경우... 흠
-            x를 체크해야하는지, y를 체크해야하는지 어케알지
-            x==wall || y==wall 로 해놓고, 
-            대상이 아닌 축은 -1 이런거로 설정해놓으면 절대 같을 일이 없다
-        */
         // block을 만나지않고 벽을 만남 => 벽으로 move
         if(block.first == wall.first || block.second == wall.second){
             moveBlock(from=b, to=block)
@@ -227,10 +318,7 @@ private fun mergeBlock(from : Pair<Int, Int>, to : Pair<Int, Int>){
     combine[from.first][from.second] = false
     board[from.first][from.second] = 0
 
-    // maxBlock = Math.max(maxBlock, board[to.first][to.second])
-    checkMax(board[to.first][to.second])
-    // print("merge block => from[${from.first}][${from.second}] - to[${to.first}][${to.second}]\n")
-    // printBoard()
+    maxBlock = Math.max(maxBlock, board[to.first][to.second])
 }
 private fun moveBlock(from : Pair<Int, Int>, to : Pair<Int, Int>){
     if(from == to){ 
@@ -242,21 +330,13 @@ private fun moveBlock(from : Pair<Int, Int>, to : Pair<Int, Int>){
     combine[from.first][from.second] = false
     board[from.first][from.second] = 0
 
-    // maxBlock = Math.max(maxBlock, board[to.first][to.second])
-    checkMax(board[to.first][to.second])
-    // print("move block => from[${from.first}][${from.second}] - to[${to.first}][${to.second}]\n")
-    // printBoard()
+    maxBlock = Math.max(maxBlock, board[to.first][to.second])
 }
 
-/*
-    방향이 이상하다
-    merge
-*/
 private var n = 0
 private lateinit var originalBoard : Array<Array<Int>>
 private lateinit var board : Array<Array<Int>>
 private lateinit var combine : Array<Array<Boolean>>
-private var debugList : ArrayList<Array<Array<Int>>> = ArrayList()
 private var maxBlock = Int.MIN_VALUE
 fun main(args : Array<String>){
     val bw = System.out.bufferedWriter()
@@ -277,6 +357,31 @@ fun main(args : Array<String>){
     bw.close()
     br.close()
 }
+private fun playGame(){
+    Direction.values().forEach { d1 ->
+        Direction.values().forEach { d2 ->
+            Direction.values().forEach { d3 ->
+                Direction.values().forEach { d4 ->
+                    Direction.values().forEach { d5 ->
+                        copyMap()
+                        val dArr = arrayOf(d1, d2, d3, d4, d5)
+                        for(i in 0 until 5){
+                            pushBoard(dArr[i])
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+private fun copyMap(){
+    board = Array(n){Array(n){0}}
+    for(x in 0 until n){
+        for(y in 0 until n){
+            board[x][y] = originalBoard[x][y]
+        }
+    }
+}
 /*
     시간복잡도 계산
     4*4*4*4*4 = 1024가지의 push 경우의 수
@@ -294,84 +399,6 @@ fun main(args : Array<String>){
     3억 정도니까 가능할듯
 */
 
-private fun playGame(){
-    // 4가지의 경우의 수를 조합해 5번 실행
-
-    // copyMap()                    
-    // pushBoard(Direction.Up)
-    // print("up\n")
-    // printBoard()
-    // pushBoard(Direction.Down)
-    // print("down\n")
-    // printBoard()
-    // pushBoard(Direction.Right)
-    // print("right\n")
-    // printBoard()
-    // pushBoard(Direction.Up)
-    // print("up\n")
-    // printBoard()
-    // pushBoard(Direction.Left)
-    // print("left\n")
-    // printBoard()
-    // return
-
-    Direction.values().forEach { d1 ->
-        Direction.values().forEach { d2 ->
-            Direction.values().forEach { d3 ->
-                Direction.values().forEach { d4 ->
-                    Direction.values().forEach { d5 ->
-                        copyMap()
-                        val dArr = arrayOf(d1, d2, d3, d4, d5)
-                        print("start new game[${dArr[0]} ${dArr[1]} ${dArr[2]} ${dArr[3]} ${dArr[4]}]\n")
-                        debugList.clear()
-                        for(i in 0 until 5){
-                            pushBoard(dArr[i])
-                            // addDebugMap()
-                        }
-                        // printBoard()
-                        if(maxBlock == 64){
-                            printDebugBoardList()
-                            return
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-private fun copyMap(){
-    board = Array(n){Array(n){0}}
-    for(x in 0 until n){
-        for(y in 0 until n){
-            board[x][y] = originalBoard[x][y]
-        }
-    }
-    print("copy map after ")
-    printBoard()
-}
-
-private fun addDebugMap(){
-    val copy = Array(n){Array(n){0}}
-    for(i in 0 until n){
-        copy[i] = board[i]
-    }
-    debugList.add(copy)
-    print("add debug map => ${debugList.size}\n")
-    printBoard()
-}
-
-private var isPrint = false
-private fun checkMax(v1 : Int){
-    if(v1 == 64){
-        if(!isPrint){
-            print("catch 64=======\n")
-            printBoard()
-            isPrint = true
-        }
-    }
-    maxBlock = Math.max(maxBlock, v1)
-}
-
 private fun printBoard(){
     print("=====print borad ====\n")
     for(x in 0 until n){
@@ -382,18 +409,6 @@ private fun printBoard(){
     }
 }
 
-private fun printDebugBoardList(){
-    print("=====debug list=====\n")
-    for((idx, b) in debugList.withIndex()){
-        print("debug[$idx]\n")
-        for(x in 0 until n){
-            for(y in 0 until n){
-                print("${b[x][y]} ")
-            }
-            print("\n")
-        }
-    }
-}
 /*
 test case
 3
