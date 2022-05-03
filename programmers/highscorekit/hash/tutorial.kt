@@ -10,4 +10,7 @@
 
     3. [solve] 위장 : camouflage.kt
     level 2
+
+    4. [solve] 베스트 앨범 : bestAlbum
+    level 3
 */
