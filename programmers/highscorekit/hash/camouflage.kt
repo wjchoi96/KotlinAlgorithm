@@ -92,15 +92,27 @@
 */
 
 fun main(args : Array<String>){
+    // val clothes = arrayOf(
+    //     arrayOf("yellowhat", "headgear"),
+    //     arrayOf("bluesunglasses", "eyewear"),
+    //     arrayOf("green_turban", "headgear")
+    // )
     val clothes = arrayOf(
-        arrayOf("yellowhat", "headgear"),
-        arrayOf("bluesunglasses", "eyewear"),
-        arrayOf("green_turban", "headgear")
+        arrayOf("crowmask", "face"),
+        arrayOf("bluesunglasses", "face"),
+        arrayOf("smoky_makeup", "face")
     )
 
-    // val clothes = arrayOf(
-    //     arrayOf("crowmask", "face"),
-    //     arrayOf("bluesunglasses", "face"),
-    //     arrayOf("smoky_makeup", "face")
-    // )
+    val map = HashMap<String, Int>()
+    for(x in 0 until clothes.size){
+        val category = clothes[x][1] 
+        // 옷의 종류별로 카운팅
+        map[category] = map.getOrDefault(category, 0) + 1
+    }
+    var res = 1
+    map.forEach { _, v ->
+        res *= v+1 // 해당 옷의 종류 + 해당 종류를 안입은 경우의 수
+    }
+    res-- // 모든 옷을 안입은 경우의 수
+    print("${res}\n")
 }
