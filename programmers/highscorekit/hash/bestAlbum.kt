@@ -35,7 +35,7 @@ fun main(args : Array<String>){
     val plays = intArrayOf(
         500, 600, 150, 800, 2500, 800
     )
-    val res = solution(generes, plays)
+    val res = shortCode(generes, plays) //solution(generes, plays)
     for(i in res){
         print("$i ")
     }
@@ -78,6 +78,14 @@ fun solution(generes: Array<String>, plays: IntArray): IntArray {
             res.add(musicList[i])
         }
     }
-    
     return res.toIntArray()
+}
+
+private fun shortCode(genres: Array<String>, plays: IntArray) : IntArray {
+    return genres.indices.groupBy { genres[it] } // list에서 두 값을 묶어서 Map<key, value> 로 만들어준다, key: group을 묶어둘 조건, value: key 조건에 만족하는 원소들 리스트
+        .toList()
+        .sortedByDescending { it.second.sumBy { plays[it] } }
+        .map { it.second.sortedByDescending { plays[it] }.take(2) }
+        .flatten()
+        .toIntArray()
 }
