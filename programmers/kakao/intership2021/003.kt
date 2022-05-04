@@ -89,6 +89,7 @@ fun main(args : Array<String>){
 // LinkedList를 사용안하더라도 정확성 테스트는 통과할수있다는데
 // StringBuilder 를 사용하니까 효율성도 어느정도 통과하는게 생기네
 // 실패 (런타임 에러) 대체 뭔데
+// 성공!! => 수정이력 4번
 private class Kakao003Solve {
     private var removeStack = Stack<Int>()
     private var size = 0
