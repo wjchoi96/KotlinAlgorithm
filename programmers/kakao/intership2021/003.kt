@@ -41,9 +41,22 @@
     - tc 반타작
 
     2. remove 이후 삭제되지 않은 행을 선 택해야한다
-    - tc 2개정도 런타임에러
+    - tc 2개 런타임에러
+    - 효율성 개박살
 
-    3. 내일 linked list 로 풀어보자
+    3. 2번에서 OX 문자열 설정하는것을 String+ 연산이 아닌 StringBuilder append로 변경
+    - tc 2개 런타임에러
+    - 효율성 절반 통과
+
+    4. 원랴방식에서 배열을 제거하고 size, pointer 로만 접근하는 방식 수행
+    - StringBuilder의 insert 연산의 시간복잡도를 알아내보자
+    - insertAt은 O(1), insert는O(n)이라고 기억
+    //https://loosie.tistory.com/339
+    =>>> 정확성 효율성 모두 통과!
+
+    4. arrayList 사용하는 방식도 가능성은 있다. restore 할때 p를 조정 안해주는게 문제였던거 같다
+
+    5. linkedList로 구현해보자
 */
 
 import java.util.Stack
@@ -55,10 +68,64 @@ fun main(args : Array<String>){
     val n = 8
     val k = 2
 
-    val res = Kakao003().solution(n, k, cmd)
+    val res = Kakao003Try1().solution(n, k, cmd)
     print("$res\n")
 }
+// 처음부터 다시 해보자
+// LinkedList를 사용안하더라도 정확성 테스트는 통과할수있다는데
+// StringBuilder 를 사용하니까 효율성도 어느정도 통과하는게 생기네
+// 실패 (런타임 에러) 대체 뭔데
 private class Kakao003 {
+    private var removeStack = Stack<Int>()
+    private var size = 0
+    private var p = 0
+    fun solution(n: Int, k: Int, cmd: Array<String>): String {
+        p = k
+        size = n
+        for(i in 0 until cmd.size){
+            val op = cmd[i].split(' ')
+            when(op[0]){
+                "U" -> up(op[1].toInt())
+                "D" -> down(op[1].toInt())
+                "C" -> remove()
+                "Z" -> restore()
+            }
+        }
+        val res = StringBuilder()
+        for(i in 0 until size){
+            res.append("O")
+        }
+        //https://loosie.tistory.com/339
+        while(!removeStack.isEmpty()){
+            res.insert(removeStack.pop().toInt(), "X")
+        }
+        return res.toString()
+    }
+    private fun up(count : Int){
+        p-=count
+    }
+    private fun down(count : Int){
+        p+=count
+    }
+    private fun remove(){
+        removeStack.push(p)
+        if(p==size-1){
+            p-- // 한칸 위
+        }
+        size-- // size가 줄기때문에 알아서 한칸 아래(++)한 효과가 된다
+    }
+    private fun restore(){
+        val restore = removeStack.pop()
+        if(restore <= p){
+            p++
+        }
+        size++
+    }
+}
+// try2 : 전날 풀었을땐 tc 2개뺴곤 통화
+// 효율성 개 박살 => StringBuilder 사용으로 바꾸니 효율성도 어느정도 통과한게 생긴다
+// 21, 27 런타임 에러 대체 뭔데
+private class Kakao003Try2 {
     private var removeStack = Stack<Int>()
     private lateinit var list : Array<Int>
     private var p = 0
@@ -119,6 +186,7 @@ private class Kakao003 {
 }
 
 // try 1 => 3개 빼고 다 fail
+// restore시 p조정을 안해준 문제 발견
 private class Kakao003Try1 {
     private var removeStack = Stack<Int>()
     private val list : ArrayList<Int> = ArrayList<Int>()
