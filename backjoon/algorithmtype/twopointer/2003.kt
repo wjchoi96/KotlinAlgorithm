@@ -55,7 +55,7 @@ fun main(args : Array<String>){
 
     while(true){
         print("[$start to $end] : $sum\n")
-        if(start<n && (sum >=m || end == n)){ // start 종료조건
+        if(start<n && (sum >=m || end == n)){ // start 증가조건
             if(sum == m){
                 result++
             }
