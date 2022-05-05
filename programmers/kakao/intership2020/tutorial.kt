@@ -1,6 +1,7 @@
 /*
     프로그래머스
     2020 카카오 채용 연계형 인턴십
+    //https://tech.kakao.com/2020/07/01/2020-internship-test/
 
     1. [solve] 키패드 누르기(level 1) : 001.kt 
     - 풀었는데 좀 이렇게 푸는게 맞나 싶은 구현이였다 => 근데 다른사람 풀이 보니까 맞는듯
@@ -15,6 +16,7 @@
     - start 1603 - end 1717 => 50%
     - 정확성100, 효율성 일부 통과
     - 효율성은 투포인터 알고리즘을 사용해야 하는듯 싶다
-    
+    //https://mhwan.tistory.com/58
+    //https://blog.encrypted.gg/1004
 
 */
