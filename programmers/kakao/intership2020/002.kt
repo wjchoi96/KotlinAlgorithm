@@ -55,19 +55,115 @@
     => int 값 초과;
 
     2. 성공
+    => solve1
+
+*/
+/*
+    개선
+    1. 특정 연산자를 계산해버리는방법
+    - number, operator 을 list로 사용
+    - number[i] operator[i] number[i+1] 수행 후
+    해당 값을 number[i+1]에 대입, remove number[i], remove operator[i]
+    
+        remove 는 O(N)
+        연산자 하나당 o(N)작업을 2개
+
+        장점은 다음 idx를 indexOfFirst를 통해 빠르게 나아가는것이나
+        indexOfFirst도 o(N)아닌가
+
+        그러면 연산자 하나당 o(N) 3개
+
+        내방식은 stack to list 할때 O(N)2번이 끝
+        => 연산자의 한 종류를 모두 끝마칠때
+        나머지는 모두 o(1)
+        => 내가 푼 방식이 더 나은듯. 가독성만 올려볼까
+
+        => 다만 linkedList 라면 remove시간복잡도가 O(1)이다
+        => LinkedList 라면 이게 더 보기도좋고 빠를것
+    
+    => Kakako002Solve2 성공
 
 */
 import java.util.Stack
 fun main(args : Array<String>){
-    // val str = "100-200*300-500+20" 
+    val str = "100-200*300-500+20" 
     // val str = "50*6-3*2"
     // val str = "200-300-500-600*40+500+500" // 1248000
     // int값 초과
-    val str = "177-661*999*99-133+221+334+555-166-144-551-166*166-166*166-133*88*55-11*4+55*888*454*12+11-66+444*99" //6083974714
-    Kakako003().solution(str)
+    // val str = "177-661*999*99-133+221+334+555-166-144-551-166*166-166*166-133*88*55-11*4+55*888*454*12+11-66+444*99" //6083974714
+    Kakako002Solve2().solution(str)
 }
 
-private class Kakako003 {
+
+// ============== 성공 ==================
+private class Kakako002Solve2 {
+    private val prioritys = arrayOf(
+        arrayOf('*', '+', '-'),
+        arrayOf('*', '-', '+'),
+        arrayOf('+', '*', '-'),
+        arrayOf('+', '-', '*'),
+        arrayOf('-', '*', '+'),
+        arrayOf('-', '+', '*')
+    )
+    
+    fun solution(expression: String): Long {
+        var numbersStr = expression.replace("*", " ")
+        numbersStr = numbersStr.replace("+", " ")
+        numbersStr = numbersStr.replace("-", " ")
+
+        var numbers = numbersStr.split(' ').map{it.toLong()}.toMutableList()
+        var operators = MutableList<Char>(numbers.size-1){' '}
+        var oIdx = 0
+        for(i in 0 until expression.count()){
+            if(!expression[i].isDigit()){
+                operators[oIdx++] = expression[i]
+            }
+        }
+
+        var max : Long = 0
+        repeat(prioritys.size){
+            val tNumbers = numbers.toMutableList()
+            val tOperators = operators.toMutableList()
+            for(i in 0 until prioritys[it].size){
+                doCalculation(prioritys[it][i], tNumbers, tOperators)
+            }
+            val res = tNumbers.first()
+            max = Math.max(max, Math.abs(res))
+        }
+        print("max : $max\n")
+        return max
+    }
+
+    // 하나의 operator 을 끝내버린다
+    private fun doCalculation(operator : Char, numbers : MutableList<Long>, operators : MutableList<Char>){
+        print("start[$operator]: $numbers\n")
+        var i = operators.indexOfFirst { it==operator }
+        while(i>=0){
+            if(operators[i] == operator){
+                numbers[i+1] = calculation(numbers[i], numbers[i+1], operator)
+                numbers.removeAt(i)
+                operators.removeAt(i)
+                print("n : $numbers\n")
+            }
+            i = operators.indexOfFirst { it==operator } // for문을 통해 size로 접근하면 중간에 remove를 수행하기때문에 나중에 index out of range 뜬다
+        }
+    }
+
+    private fun calculation(x : Long, y : Long, op : Char) : Long {
+        // print("$x $op $y\n")
+        return when(op){
+            '+' -> x+y
+            '*' -> x*y
+            '-' -> x-y
+            else -> x+y
+        }
+    }
+
+}
+
+
+// ============== 성공 ==================
+private class Kakako002Solve1 {
     private val prioritys = arrayOf(
         arrayOf('*', '+', '-'),
         arrayOf('*', '-', '+'),
@@ -91,11 +187,7 @@ private class Kakako003 {
                 operators[oIdx++] = expression[i]
             }
         }
-        print("numbers : ${numbers.toList()}\n")
-        // print("operators : ${operators.toList()}\n")
-        val max = doCalcuation(numbers.toTypedArray(), operators)
-        print("max : $max\n")
-        return max
+        return doCalcuation(numbers.toTypedArray(), operators)
     }
 
     private fun doCalcuation(oNumbers : Array<Long>, oOperators : Array<Char>) : Long {
@@ -120,12 +212,9 @@ private class Kakako003 {
                 operators = oStack.toList().toTypedArray()
                 nStack.clear()
                 oStack.clear()
-                print("numbers : ${numbers.toList()}\n")
-                // print("operators : ${operators.toList()}\n")
             }
             val res = Math.abs(numbers.first())
             max = Math.max(max,res.toLong())
-            print("=====res[$it] : $res, max : $max =====\n")
         }
         return max
     }
