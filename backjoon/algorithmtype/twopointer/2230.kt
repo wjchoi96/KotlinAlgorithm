@@ -23,6 +23,24 @@
 /*
     제출
     1. 틀렸습니다
+    - 알고리즘 설계를 잘못한거같다
+    - 바킹독님 해설 일부 참고
+
+    2. 틀렸습니다(40~50%)
+    - start가 end를 따라잡을 경우의 수도 존재할거같다
+
+    3. 성공
+    - start == end 가 될수도 있다
+    - 해당 종료조건을 제거 후 성공
+*/
+/*
+    start = 0
+    end = start + 1
+
+    end - start >= m 이 되는 최초의 지점이 되면 start++
+    end - start < m or end == n-1 => end++
+    start == end or start == n or end == n => 종료
+    
 */
 fun main(args : Array<String>){
     val br = System.`in`.bufferedReader()
@@ -37,17 +55,17 @@ fun main(args : Array<String>){
     print("${arr.toList()}\n")
 
     var start = 0
-    var end = n-1
+    var end = start+1
     var min = Int.MAX_VALUE
-    while(start <= end){
+    while(start != n && end != n){
         val minus = arr[end]-arr[start]
-        if(minus >= m){
-            min = Math.min(min, minus)
-        }
+        print("${arr[end]}[$end] - ${arr[start]}[$start] = $minus\n")
         when {
-            minus == m -> break
-            minus > m -> start++
-            minus < m -> end--
+            minus >= m -> {
+                start++
+                min = Math.min(min, minus)
+            }
+            minus < m -> end++
         }
     }
     bw.write("$min\n")
