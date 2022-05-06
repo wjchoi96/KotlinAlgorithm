@@ -60,7 +60,73 @@
     => 이걸 end<n 으로 변경해도 성공한다
 
 */
+
+/*
+    개선 제출
+    
+    1. 실패(72%)
+    - end값이 가리키고 있는 값도 선택중이게 변경해서 진행해봤다
+
+    2. 성공
+    - end값의 범위가 달라짐에따라 전체 인덱싱이 틀려진다
+    - 인덱싱이 굉장히 까다롭다
+
+*/
 fun main(args : Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()   
+
+    val (n, s) = br.readLine().split(' ').map{it.toInt()}
+    val arr = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+    print("${arr.toList()}\n")
+
+    /*
+        solve1은 end가 다음 idx를 미리 가리키고 있는 형식인데
+        end가 현재 가리키고있는 값이 적용되어 있는 방식으로 진행해보자
+    */
+    var min = Int.MAX_VALUE
+    var start = 0
+    var end = 0
+    var sum = arr[end]
+    while(true){
+        if(end == n-1 && start == n){
+            break
+        }
+        print("[$start to $end] : $sum\n")
+        if(sum>=s || end == n-1){
+            if(sum>=s){
+                min = Math.min(min, end+1-start)  // 현재 가리키는 end도 선택된것이기 때문에 +1
+                print("catch : ${end+1-start} to min : $min\n")
+            }
+            sum -= arr[start++]
+        } else if(sum < s){
+            sum += arr[++end] // end값을 증가시키고, 증가된 end가 가리키는 값을 sum에 적용
+        }
+    }
+   
+    if(min == Int.MAX_VALUE){
+        bw.write("0\n")
+    }else{
+        bw.write("$min\n")
+    }
+    
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+
+// ========= 성공 ============
+    /*
+        지금은 end가 가리키고 있는 값은 적용이 안되고, end가++될때 현재 가리키던값을 증가하고 다음값을 가리킨다
+        즉 다음값을 미리 가리키고있는 상태
+
+        초기값 start=0, end=0 인 상태는 아무것도 선택하지 않은 상태
+        조건을 만족하지 않아서 sum+=arr[end++] 되면서 arr[0]값이 적용되고 end는 1로 올라간다
+
+        이렇기 때문에 end가 n-1일때 종료되면 안되고 end가 n일때 종료가 되어야한다
+    */
+private fun solve1(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()   
 
