@@ -88,10 +88,7 @@ fun main(args : Array<String>){
     var start = 0
     var end = 0
     var sum = arr[end]
-    while(true){
-        if(end == n-1 && start == n){
-            break
-        }
+    while(start < n){
         print("[$start to $end] : $sum\n")
         if(sum>=s || end == n-1){
             if(sum>=s){
