@@ -51,9 +51,14 @@
     => 지금 idx부터 모든 보석을 다 사도 category 를 다 못사는 경우 처리
 
     2. 
+    => 실제list를 사용 안하는 dfs
     정확성 100%
     효율성 [2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 15]실패
     => 효율성은 투포인터알고리즘을 사용해야 하는듯 하다
+    => Kakao003UseDfs
+
+    3. 성공
+    => 투포인터 알고리즘을 학습 후 구현
 
 */
 
@@ -61,13 +66,122 @@ fun main(args : Array<String>){
     val gems = arrayOf(
         // "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
         // "AA", "AB", "AC", "AA", "AC"
-        // "XYZ", "XYZ", "XYZ"
-        "ZZZ", "YYY", "NNNN", "YYY", "BBB"
+        "XYZ", "XYZ", "XYZ"
+        // "ZZZ", "YYY", "NNNN", "YYY", "BBB"
     )
     Kakao003().solution(gems)
 }
 
+/*
+    투포인터 사용 방식으로 다시 풀어보자
+    start 1938 solve 2017
+
+    진열대list
+    구간 내 결과 처리
+
+    보석의 종류의 개수 
+    => gems를 입력받아 hashMap으로 정리한다
+    => gMap : HashMap<String, Int> => 보석, 개수
+    => gMap의 size가 보석의 종류의 개수
+
+    start = 0
+    end = 0
+    sum = 0
+    => start~end범위 내에 보석의 종류수
+    => 내가 현재 구입한 보석목록 이 필요하다
+    => buyMap : HashMap<String, Int> => 보석, 개수
+    => sum => buyMap의 size가 될것
+
+    진열대idx로 보석의 카테고리를 알아내는 방법
+    idx를 넣었을때, 보석의 종류를 리턴하는 map
+    catMap : HashMap<Int, String> => idx, 보석 
+    => catMap도 gems를 통해 입력받는다
+
+    end 증가 조건
+    - 조건을 만족 못할때 and
+    - end != size 
+
+    start 증가조건
+    - 조건을 만족할때 or
+    - end == size
+
+    종료조건
+    - start == n and end == n
+
+    자료구조의 종류
+    1. 각 보석의 개수를 저장하는 gCatMap : HashMap<String, Int> 
+    2. 진열대idx와 보석을 대칭시켜주는 gidxMap : HashMap<Int, String>
+    3. 현재 구매한 보석의 개수 gBuyMap : HashMap<String, Int> 
+
+*/
 private class Kakao003 {
+    private val gCatMap = HashMap<String, Int>()
+    private val gIdxMap = HashMap<Int, String>()
+    private val gBuyMap = HashMap<String, Int>()
+    private var shopCount = 0
+    private var gemsCatCount = 0
+
+
+    /*
+        buyGemsCount 구하는 법
+        [0, 0] => 0개
+        [0, 1] => 1개
+        [0, 4] => 4개 
+        => end - start
+    */
+    private var start = 0
+    private var end = 0
+    private val buyGemsCount : Int
+        get() = end - start 
+    private val buyCatCount : Int
+        get() = gBuyMap.size
+
+    fun solution(gems: Array<String>): IntArray {
+        shopCount = gems.size
+        for(i in 0 until gems.size){
+            gCatMap[gems[i]] = gCatMap.getOrDefault(gems[i], 0) + 1 // 보석의 종류 수 저장
+            gIdxMap[i] = gems[i] // 진열대 idx 와 보석을 대칭
+        }
+        gemsCatCount = gCatMap.size
+
+        var minBuyGemsCount = Int.MAX_VALUE
+        var resStart = 0
+        var resEnd = 0
+        while(start < shopCount){
+            print("v [$start, $end] => gems : $buyGemsCount, cats : $buyCatCount\n")
+            if(buyCatCount >= gemsCatCount || end == shopCount){
+                if(buyCatCount == gemsCatCount){ 
+                    print("catch [$start, $end] => gems : $buyGemsCount, cats : $buyCatCount\n")
+                    if(buyGemsCount < minBuyGemsCount){ // 여기서 체크해야하는것은 보석의 종류수 비교가아닌, 구매한 진열대 개수이다
+                        minBuyGemsCount = buyGemsCount
+                        resStart = start+1 // 진열대는 1번부터 시작하지만, idx는 0번부터 시작하기 때문
+                        resEnd = end //end+1-1 => 현재end가 가리키고 있는 값은 구매에 포함되지않았기때문에-1을 해줘야한다. 하지만 start와 마찬가지의 이유로 +1을 해줘야 하기때문에 그대로 유지
+                        print("finally catch [$start, $end] => gems : $buyGemsCount, cats : $buyCatCount\n")
+                    }
+                }
+                // start++ 시 gBuyMap 에서 start가 가리키고 있던 진열대의 보석 구매를 취소
+                gBuyMap[gIdxMap[start]!!] = gBuyMap.get(gIdxMap[start])!! - 1 
+                // 해당 작업을 마치고 해당 보석에 대응하는 구매 count 가 0이하라면 아예 제거
+                if(gBuyMap.getOrDefault(gIdxMap[start]!!, 0) <= 0){
+                    gBuyMap.remove(gIdxMap[start])
+                }
+                start++
+            }else if(buyCatCount < gemsCatCount){
+                // end++ 과 연계되는 작업 실시
+                gBuyMap[gIdxMap[end]!!] = gBuyMap.getOrDefault(gIdxMap[end++]!!, 0) + 1
+            }
+        }
+        print("[$resStart, $resEnd]\n")
+        return intArrayOf(resStart, resEnd)
+    }
+}
+
+
+/*
+    정확성 100%
+    효율성 [2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 15]실패
+*/
+private class Kakao003UseDfs {
     private val gMap = HashMap<String, Int>()
     private lateinit var purchase : Array<Boolean>
     private var catCount = 0
@@ -138,3 +252,4 @@ private class Kakao003 {
         1번진열대부터 시작이니, +1 해줘야한다
     */
 }
+
