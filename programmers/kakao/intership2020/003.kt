@@ -64,9 +64,9 @@
 
 fun main(args : Array<String>){
     val gems = arrayOf(
-        // "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
+        "DIA", "RUBY", "RUBY", "DIA", "DIA", "EMERALD", "SAPPHIRE", "DIA"
         // "AA", "AB", "AC", "AA", "AC"
-        "XYZ", "XYZ", "XYZ"
+        // "XYZ", "XYZ", "XYZ"
         // "ZZZ", "YYY", "NNNN", "YYY", "BBB"
     )
     Kakao003().solution(gems)
@@ -109,13 +109,12 @@ fun main(args : Array<String>){
     - start == n and end == n
 
     자료구조의 종류
-    1. 각 보석의 개수를 저장하는 gCatMap : HashMap<String, Int> 
+    1. 각 보석의 개수를 저장하는 gCatMap : HashMap<String, Int>  => 어차피 카테고리 개수 구하기용이라 toSet().size 를 통해 대체
     2. 진열대idx와 보석을 대칭시켜주는 gidxMap : HashMap<Int, String>
     3. 현재 구매한 보석의 개수 gBuyMap : HashMap<String, Int> 
 
 */
 private class Kakao003 {
-    private val gCatMap = HashMap<String, Int>()
     private val gIdxMap = HashMap<Int, String>()
     private val gBuyMap = HashMap<String, Int>()
     private var shopCount = 0
@@ -138,11 +137,10 @@ private class Kakao003 {
 
     fun solution(gems: Array<String>): IntArray {
         shopCount = gems.size
-        for(i in 0 until gems.size){
-            gCatMap[gems[i]] = gCatMap.getOrDefault(gems[i], 0) + 1 // 보석의 종류 수 저장
-            gIdxMap[i] = gems[i] // 진열대 idx 와 보석을 대칭
+        gemsCatCount = gems.toSet().size // set 은 중복 허용을 안하기때문에 보석 종류수를 구할 수 있다
+        gems.forEachIndexed{ i, v ->
+            gIdxMap[i] = v // 진열대 idx 와 보석을 대칭
         }
-        gemsCatCount = gCatMap.size
 
         var minBuyGemsCount = Int.MAX_VALUE
         var resStart = 0
