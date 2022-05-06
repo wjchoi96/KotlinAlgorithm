@@ -69,7 +69,7 @@ fun main(args : Array<String>){
         // "XYZ", "XYZ", "XYZ"
         // "ZZZ", "YYY", "NNNN", "YYY", "BBB"
     )
-    Kakao003().solution(gems)
+    Kakao003GoodCode().solution(gems)
 }
 
 /*
@@ -251,3 +251,49 @@ private class Kakao003UseDfs {
     */
 }
 
+// 다른사람 풀이인데, 짧아서 공부해보고 싶어졌다
+// 대박이네;
+private class Kakao003GoodCode {
+    fun solution(gems: Array<String>): IntArray {
+        val answer = intArrayOf(1, gems.size)
+        val tokenKindSize = gems.toSet().size // 보석 종류 개수
+        /*
+            https://namget.tistory.com/entry/fold-%ED%95%A8%EC%88%98-fold-%ED%95%A8%EC%88%98-%EC%95%8C%EC%95%84%EB%B3%B4%EA%B8%B0
+            foldIndexed : fold 에 index정보까지 추가된것
+            fold  
+            초기값을 설정해주고 왼쪽부터 오른쪽까지 현재의 계산값에 각각을 적용
+            gems.foldIndexed(LinkedHashMap<String, Int>()) { index, gemMap, gem ->
+            index : gems의 index
+            gemMap : LinkedHashMap<String, Int>() 객체
+            gem : gems의 각 item
+        */ 
+        gems.foldIndexed(LinkedHashMap<String, Int>()) { index, gemMap, gem ->
+            print("$gemMap\n")
+            /*
+                보석의 뒷 idx를 gemMap에 저장하는 작업
+            */
+            gemMap.remove(gem) 
+            gemMap[gem] = index 
+
+            /*
+                보석의 모든 종류가 map에 담기면
+                map에는 해당 보석 종류별로 가장뒷idx가 저장되어있는것
+                first : map에 담겨있는 보석 카테고리들 중 가장 앞에있는것
+                last : 가장 뒤에 있는것
+
+                결국 모든 보석을 모든 범위를 리턴하는것이다 
+            */
+            if (gemMap.size == tokenKindSize) {
+                val start = gemMap.values.first()
+                val end = gemMap.values.last()
+                if (end - start < answer[1] - answer[0]) {
+                    answer[0] = start + 1
+                    answer[1] = end + 1
+                }
+            }
+            gemMap
+        }
+        print("${answer.toList()}\n")
+        return answer
+    }
+}
