@@ -21,4 +21,7 @@
 
     연습문제
     1. 백준 10808 (solve)
+    2. barkingDogArr002 (solve)
+
+
 */
