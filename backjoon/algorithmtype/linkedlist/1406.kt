@@ -73,6 +73,16 @@
     2. 런타임에러(5%)(StackOverflow)
 
     3. 런타임에러(5%)(StackOverflow)
+    - 입력문제
+    => 1개를 입력하면 2개로 입력받는 문제가 존재했었다
+
+    - 맨 왼쪽에서 moveRight 했을 경우 문제
+    => null 에서 moveRight 했기때문에 null이 나오는 문제가 존재
+    해당 반례 링크
+    https://www.acmicpc.net/board/view/37758
+
+    4. 성공
+
 */
 
 
@@ -84,31 +94,32 @@ fun main(args : Array<String>){
 
     val str = br.readLine()
     val linkedList = CharLinkedList(str)
-    println("${linkedList.print()}")
     val m = br.readLine().toInt()
+    
+    println("${linkedList.print()}")
 
     repeat(m){
         val op = br.readLine().split(' ')
         when(op[0]){
             "L" -> {
-                // println("move left")
+                println("move left")
                 linkedList.moveCursorLeft()
-                // println("${linkedList.print()}")
+                println("${linkedList.print()}")
             }
             "D" -> {
-                // println("move right")
+                println("move right")
                 linkedList.moveCursorRight()
-                // println("${linkedList.print()}")
+                println("${linkedList.print()}")
             }
             "B" -> {
-                // println("remove cursor")
+                println("remove cursor")
                 linkedList.removeAtCursor()
-                // println("${linkedList.print()}")
+                println("${linkedList.print()}")
             }
             "P" -> {
-                // println("add cursor ${op[1]}")
+                println("add cursor ${op[1]}")
                 linkedList.addAtCursor(op[1][0])
-                // println("${linkedList.print()}")
+                println("${linkedList.print()}")
             }
         }
     }
@@ -136,7 +147,7 @@ private data class Node(
 }
 private class CharLinkedList {
     private var start : Node? = null
-    private var cursor : Node? = null // null => 커서의 오른끝
+    private var cursor : Node? = null // null => list의 왼쪽 끝
 
     constructor(str : String){
         if(str.isEmpty()){
@@ -144,32 +155,35 @@ private class CharLinkedList {
         }
         start = Node(str[0])
         var node = start!!
-        for(i in 1 until str.count()-1){
+        for(i in 1 until str.count()){
             node.next = Node(str[i], node)
             node = node.next!!
         }
-        node.next = Node(str[str.count()-1], node)
-        cursor = node.next
+        cursor = node
     }
 
     fun moveCursorLeft(){
         cursor = cursor?.prev
     }
     fun moveCursorRight(){
-        if(cursor?.next == null){
+        if(cursor == null){
+            cursor = start
+            return 
+        }else if(cursor?.next == null){
             return
         }
-        cursor = cursor?.next
+        cursor = cursor?.next // 최대 마지막 node를 가리킬 수 있다
     }
     fun addAtCursor(data : Char){
-        if(start == null){// 데이터가 없는경우
+        if(start == null){ // list 가 비어있는 경우 
             cursor = add(data)
             return
         } else if(cursor == null){ // cursor가 맨 앞에 있을때
             // start 의 왼쪽에 추가 => start 교체
-            start?.prev = Node(data, null, start)
-            start = start?.prev
-            cursor = start
+            val newNode = Node(data, null, start)
+            start?.prev = newNode
+            start = newNode
+            cursor = newNode
             return
         }
         // 현재 cursor가 앞으로 가게 추가
@@ -180,7 +194,7 @@ private class CharLinkedList {
         cursor = newNode
     }
     fun removeAtCursor(){
-        if(cursor == null){
+        if(cursor == null){ // cursor가 맨 앞에 있을때
             return
         }else if(cursor == start){ // start 제거
             start = start?.next
