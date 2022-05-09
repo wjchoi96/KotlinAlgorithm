@@ -63,6 +63,10 @@ private class LinkedListImplements<T> {
             currentNode.prev = newNode
             node.prev = Node<T>(data, )
         */
+        if(at == 0 && start == null){
+            start = Node<T>(data)
+            return true
+        }
         val node = getNode(at) ?: return false
         val newNode = Node<T>(data, node?.prev, node)
         node.prev?.next = newNode
@@ -80,11 +84,11 @@ private class LinkedListImplements<T> {
         var idx = 0
         var node = start!!
         while(node.next != null){
-            node = node.next!!
-            idx++
             if(idx == at){
                 break
             }
+            node = node.next!!
+            idx++
         }
         size--
         node.prev?.next = node.next
@@ -101,17 +105,14 @@ private class LinkedListImplements<T> {
         if(size <= at){
             return null // throw Exception
         }
-        if(at == 0){
-            return start
-        }
         var idx = 0
         var node = start!!
         while(node.next != null){ // 해당 idx까지 전진
-            node = node.next!!
-            idx++
             if(idx == at){
                 break
             }
+            node = node.next!!
+            idx++
         }
         return node
     }
