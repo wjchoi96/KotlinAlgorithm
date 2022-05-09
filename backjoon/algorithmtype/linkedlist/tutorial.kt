@@ -63,7 +63,13 @@
 
     
     연습문제
-    1. 백준 1406
+    1. 백준 1406(solve)
+    - 기본적인 linkedList 를 사용하면 시간초과가 발생한다
+    => addAt, removeAt 이 O(n) 연산이기 때문
+    => 해결하기 위해서는 현재 커서가 가리키고있는 node의 정보를 기억해야한다
+    => 이를 위해서는 기본 LinkedList + listIterator 를 사용하거나
+    => cursor정보를 가지고있는 linkedList 를 구현해야한다
+    => 추가로 stack 2개를 사용하는 방법도 존재한다고 한다
 
     
 */
