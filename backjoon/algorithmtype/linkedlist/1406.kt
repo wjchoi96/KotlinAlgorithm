@@ -83,12 +83,124 @@
 
     4. 성공
 
+    LinkedList + ListIterator 방식으로 시도
+    1. 성공
+
 */
 
-
-// StackOverflow exception 
 // ListIterator 를 사용해서 java.util.LinkedList 사용해서 하면 시간초과 피할 수 있다함
+// 해당 방식으로 구현 시도
+/*
+    listIterator : 이전과 다음 item의 정보를 가진 Iterator
+    1. 범위를 벗어나서도 이동을 한다
+    2. add하면 현재 + 1 위치에 add 된다
+    3. remove => 가장 마지막에 next, previous 로 반환된 요소 제거
+    4. LinkedList().listIterator(idx) 로 들어가는 idx가 nextIdx가 되는것
+    - 실제로 현재 idx는 -1 된다고 생각하면 된다
+
+    -1 ~ size 까지 이동하도록 설정?
+    size 에서 remove 하면 왼쪽인 size-1 item이 remove 된다
+
+    근데 item 이 없으면 previous 를 호출을 못하는데 -1로 어케감
+    0~size 해야할듯
+
+    item 3개
+    item idx 
+    0,1,2
+
+    list iterator 로는
+    0,1,2,3 => 이렇게 3갠 위치?
+
+    왼쪽 item을 추가 제거
+
+    0,1,2,3 으로 결정
+    1. iterator remove
+    => cursor == 0 return
+    => iterator.previous(); iterator.remove() 수행
+    - 종합하면 if(iterator.hasPrevious()) iterator.remove() 가 된다
+
+    2. interator add
+    => 그냥 add
+    
+    3. moveLeft => hasLeft가 허용할때까지 이동
+    -> 0위치에선 remove 하지않고
+    -> 나머지는 왼쪽으로 한칸 이동해서 remove 한다
+    -> size가3일때 커서가 위치할수 있는 위치를 0,1,2,3 로 정했기 때문
+    - 0이 -1역할?? 느낌
+
+    4. moveRight => hasRight 가 허용할때까지 이동
+    -> 맨마지막에서 add 하면 +1 위치에 add된다
+
+    
+
+    
+*/
+import java.util.LinkedList
 fun main(args : Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()   
+
+    val str = br.readLine()
+    val m = br.readLine().toInt()
+    val linkedList = LinkedList<Char>(str.toList())
+    val listIterator = linkedList.listIterator()
+    val debug = linkedList.listIterator(linkedList.size-1) // 여기 생성자로 들어가는 idx가 next값이 된다
+    // 근데 왜 size=4 이고 size-3 은 3인데 왜 2로 되어있는거지
+    println("\nlist size : ${linkedList.size}, ${linkedList.size-1}, debug at ${debug.nextIndex()-1}")
+    while(listIterator.hasNext()){
+        println("move to ${listIterator.nextIndex()}")
+        listIterator.next()
+    }
+    println("iterator at ${listIterator.nextIndex()-1}, debug at ${debug.nextIndex()-1}")
+
+    repeat(m){
+        val op = br.readLine().split(' ')
+        println("$linkedList, ${listIterator.nextIndex()-1}")
+        when(op[0]){
+            "L" -> {
+                println("move left from ${listIterator.previousIndex()+1}")
+                if(listIterator.hasPrevious()){
+                    listIterator.previous()
+                }
+            }
+            "D" -> {
+                println("move right from ${listIterator.nextIndex()-1}")
+                if(listIterator.hasNext()){
+                    listIterator.next()
+                }
+            }
+            "B" -> {
+                println("remove at [${listIterator.nextIndex()-1}]]")
+                if(listIterator.hasPrevious()){
+                    listIterator.previous()
+                    listIterator.remove()
+                }
+            }
+            "P" -> {
+                println("add at [${listIterator.nextIndex()-1}] ${op[1]}")
+                listIterator.add(op[1][0])
+            }
+        }
+    }
+    println("finish")
+    println("$linkedList")
+
+    val iterator = linkedList.iterator()
+    val sb = StringBuilder()
+    while(iterator.hasNext()){
+        sb.append("${iterator.next()}")
+    }
+    bw.write("${sb.toString()}")
+
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+
+// ============== sovle 1 ====================
+// cursor 정보를 내장하는 linkedList 구현
+private fun solve1(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()   
 
