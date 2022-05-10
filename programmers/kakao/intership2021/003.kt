@@ -34,6 +34,25 @@
 */
 
 /*
+    제출 이력
+    1. array + pointer 방식
+    => Kakao003Try2
+    : tc두개 런타임에러
+    : move 시 삭제된 item들을 건너뛰면서 배열을 순회하는게 문제인가 싶다
+
+    2. arrayList + StringBuilder insert
+    => Kakao003Try1
+    : 정확성 통과, 효율성 소수만 통과하고 실패
+    : arrayList add,remove 연산의 특성상 효율성을 통과 할 수 없다
+
+    3. pointer 방식
+    => Kakao003Solve
+    : 배열이 있다고 가정하고, pointer, size 로만 작업
+    : 실제로 배열의 값(이름)이 필요가 없기때문에 가능한 방식
+
+    4. LinkedList 방식
+    4.1 : 직접 구현
+    4.2 : ListIterator
 
 */
 
@@ -71,9 +90,11 @@
     - arrayList를 사용해서는 효율성을 통과할 수 없다고 판단된다
 
     5. linkedList로 구현해보자
+    => Kakao003UseLinkedList
 */
 
 import java.util.Stack
+import java.util.LinkedList
 fun main(args : Array<String>){
     val cmd = arrayOf(
         // "D 2","C","U 3","C","D 4","C","U 2","Z","Z"
@@ -82,13 +103,72 @@ fun main(args : Array<String>){
     val n = 8
     val k = 2
 
-    val res = Kakao003Solve().solution(n, k, cmd)
+    val res = Kakao003UseLinkedList().solution(n, k, cmd)
     print("$res\n")
 }
+
+// ========= LinkedList + ListIterable 사용해서 풀어보자
+private class Kakao003UseLinkedList {
+    private var removeStack = Stack<Int>()
+    private lateinit var list : LinkedList<Int>
+    private lateinit var iterator : MutableListIterator<Int>
+    fun solution(n: Int, k: Int, cmd: Array<String>): String {
+        var idx = 0
+        val tempList = Array(n){it}
+        list = LinkedList<Int>(tempList.toList())
+        iterator = list.listIterator()
+        while(iterator.hasNext()){
+            iterator.next()
+            if(++idx == k) break
+        }
+        for(i in 0 until cmd.size){
+            val op = cmd[i].split(' ')
+            when(op[0]){
+                "U" -> up(op[1].toInt())
+                "D" -> down(op[1].toInt())
+                "C" -> remove()
+                "Z" -> undo()
+            }
+        }
+        val sb = StringBuilder()
+        for(i in 0 until list.size){
+            sb.append("O")
+        }
+        while(!removeStack.isEmpty()){
+            sb.insert(removeStack.pop(), 'X')
+        }
+        return sb.toString()
+    }
+    private fun up(move : Int){
+        var moveCount = 0
+        while(iterator.hasPrevious()){
+            iterator.previous()
+            if(++moveCount == move) break
+        }
+    }
+    private fun down(move : Int){
+        var moveCount = 0
+        while(iterator.hasNext()){
+            iterator.next()
+            if(++moveCount == move) break
+        }
+    }
+    private fun remove(){
+        // remove 는 마지막으로 리턴한 next or previous 값을 제거
+        removeStack.push(iterator.next()-1) // 지워지는 idx 추가
+        iterator.remove()
+    }
+    private fun undo(){
+        // 커서는 그대로, addAt 을 어쩔수 없이 수행해야하나
+        // iterator 사용중에 list 에 접근해서 add, remove 수행이 exception 이 발생했었는데
+        // iterator을 사용한 add 는 현재 idx+1 에 add시킨다(nextIndex에)
+        val idx = removeStack.pop()
+        list.add(idx, idx)
+    }
+}
+
 // 처음부터 다시 해보자
-// LinkedList를 사용안하더라도 정확성 테스트는 통과할수있다는데
-// StringBuilder 를 사용하니까 효율성도 어느정도 통과하는게 생기네
-// 실패 (런타임 에러) 대체 뭔데
+// list를 실제로 사용하지않고, 포인터만 이동시켜서 수행하는 방식
 // 성공!! => 수정이력 4번
 private class Kakao003Solve {
     private var removeStack = Stack<Int>()
@@ -137,6 +217,7 @@ private class Kakao003Solve {
         size++
     }
 }
+
 // try2 : 전날 풀었을땐 tc 2개뺴곤 통화
 // 효율성 개 박살 => StringBuilder 사용으로 바꾸니 효율성도 어느정도 통과한게 생긴다
 // 21, 27 런타임 에러 대체 뭔데
@@ -242,9 +323,10 @@ private class Kakao003Try1 {
             => 아니다 이건 여기서는 못쓴다
             => linkedList나 배열을 사용해서 idx가 remove, restore을 해도 원래 자리대로 유지되는 상태에서만 가능
         */
-        var count = 0
+        // var count = 0
         while(!removeStack.isEmpty()){
-            res.setCharAt(removeStack.pop()+count++, 'X')
+            res.insert(removeStack.pop(), 'X')
+            //res.setCharAt(removeStack.pop()+count++, 'X')
         }
         return res.toString()
     }
