@@ -89,8 +89,10 @@
     - 이는 arrayList의 add, add(at)연산이 O(n)이여서 그렇다
     - arrayList를 사용해서는 효율성을 통과할 수 없다고 판단된다
 
-    5. linkedList로 구현해보자
+    5. custom linkedList로 구현해보자
     => Kakao003UseLinkedList
+    => 정확성 통과
+    => 효율성 통과
 */
 
 import java.util.Stack
@@ -108,63 +110,223 @@ fun main(args : Array<String>){
 }
 
 // ========= LinkedList + ListIterable 사용해서 풀어보자
-private class Kakao003UseLinkedList {
-    private var removeStack = Stack<Int>()
-    private lateinit var list : LinkedList<Int>
-    private lateinit var iterator : MutableListIterator<Int>
-    fun solution(n: Int, k: Int, cmd: Array<String>): String {
-        var idx = 0
-        val tempList = Array(n){it}
-        list = LinkedList<Int>(tempList.toList())
-        iterator = list.listIterator()
-        while(iterator.hasNext()){
-            iterator.next()
-            if(++idx == k) break
+/*
+    remove, undo 를 O(1)에 수행하기 위해서는
+    removeStack 에 node 자체를 저장해야한다 => ListIterable 사용 불가능
+    remove, undo 작업을 커스텀해야하기 때문에 linkedList 자체를 구현해야한다
+    단 모든기능은 필요없고 move 에 필요한 listIterator 기능과
+    remove, undo 기능만 구현하자
+
+    제출
+    1. 통과
+*/
+private data class KakaoNode(
+    var data : Int,
+    var prev : KakaoNode?,
+    var next : KakaoNode? 
+){
+    val originalData : Int = data
+    constructor(data : Int) : this(data, null, null)
+    constructor(data : Int, prev : KakaoNode?) : this(data, prev, null)
+    override fun toString() : String {
+        return "node : prev[${prev?.data}], data[${data}], next[${next?.data}]"
+    }
+}
+
+private class Kakao003LinkedList {
+    private var start : KakaoNode? = null
+    private var cursor : KakaoNode? = null
+    private var nodeCount = 0
+    val size : Int 
+        get() = nodeCount
+    private val removeNodeData = -1
+
+    constructor(size : Int){
+        val list = Array<Int>(size){it} // 값이 존재하는 node 는 1
+        add(list)
+    }
+    override fun toString() : String{
+        val sb = StringBuilder().apply{append("[ ")}
+        var node = start // start 부터 시작
+        while(node != null){ //  마지막 노드까지
+            sb.append("${node.data} ")
+            node = node.next 
         }
+        sb.append("], cursor[${cursor?.data}]")
+        return sb.toString()
+    }
+    fun getNodesStatus() : String {
+        println("node count : $size")
+        val sb = StringBuilder()
+        var node = start // start 부터 시작
+        while(node != null){ //  마지막 노드까지
+            when(node.data){ 
+                removeNodeData -> sb.append("X")
+                else -> sb.append("O")
+            }
+            print("node[${node.data}] ")
+            node = node.next 
+        }
+        println("")
+        return sb.toString()
+    }
+    fun select(at : Int){
+        println("select $at")
+        if(start == null){
+            return
+        }
+        if(at == 0){
+            cursor = start
+            return
+        }
+        var node = start!!
+        var nodeCount = 0
+        while(node.next != null){
+            node = node.next!!
+            if(++nodeCount == at){ // at 까지 갈수 있다면 가고 없다면 최대한 진행한다음 멈춘다
+                break
+            }
+        }
+        cursor = node
+    }
+    fun moveUp(at : Int){
+        println("moveUp from[${cursor?.data}] count $at")
+        if(cursor == null){
+            return
+        }
+        var moveCount = 0
+        var node = cursor!!
+        while(node.prev != null){
+            println("move")
+            node = node.prev!!
+            if(++moveCount == at){
+                break
+            }
+        }
+        cursor = node
+    }
+    fun moveDown(at : Int){
+        println("moveDown from[${cursor?.data}] count $at")
+        if(cursor == null){
+            return
+        }
+        var moveCount = 0
+        var node = cursor!!
+        while(node.next != null){
+            println("move")
+            node = node.next!!
+            if(++moveCount == at){
+                break
+            }
+        }
+        cursor = node
+    }
+    fun removeCursor(stack : Stack<KakaoNode>){
+        println("removeCursor[${cursor?.data}]")
+        if(cursor == null){
+            return
+        }
+        cursor!!.data = removeNodeData // remove 되는 node 는 0으로 변경
+        cursor!!.next?.prev = cursor!!.prev
+        cursor!!.prev?.next = cursor!!.next
+        stack.push(cursor!!)
+        nodeCount--
+        // 이 다음 커서가 가리켜야 할 노드는?
+        // 바로 아래행을(next node)를 선택합니다
+        // 단, 삭제된 행이 가장 마지막 행인경우( if node.next == null )
+        // 바로 윗 행(prev node)을 선택합니다
+        if(cursor!!.next != null){
+            cursor = cursor!!.next!!
+            println("cursor select next(down) ${cursor?.data}")
+        }else{
+            cursor = cursor!!.prev
+            println("cursor select prev(up) ${cursor?.data}")
+        }
+        debugLog()
+    }
+    fun undo(node : KakaoNode){
+        println("undo[${node.originalData}]")
+        // 끊어졌던 노드를 다시 이어준다
+        emptyUndo(node)
+        node.data = node.originalData // undo 되는 node는 값을 본래 값으로로 다시 설정
+        // 이 다음 커서가 가리켜야 할 노드는?
+        // 지금 가리키고 있는 노드를 그대로 유지하면 된다
+        debugLog()
+    }
+    fun emptyUndo(node : KakaoNode){
+        // node를 다시 복구시켜주지만, data는 삭제된 node값인 0으로 그대로 설정
+        node.prev?.next = node
+        node.next?.prev = node
+        nodeCount++
+    }
+    private fun add(data : Int){
+        if(start == null){
+            start = KakaoNode(data)
+            nodeCount++
+            return
+        }
+        var node = start!!
+        while(node.next != null){
+            node = node.next!!
+        }
+        node.next = KakaoNode(data, node)
+        nodeCount++
+    }
+    private fun add(dataList : Array<Int>){
+        if(dataList.isEmpty()){
+            return
+        }
+        var dataIdx = 0
+        if(start == null){
+            start = KakaoNode(dataList[dataIdx++])
+            println("add start : $start")
+            nodeCount++
+        }
+        var node = start!!
+        while(node.next != null){
+            node = node.next!!
+        } // 현재 마지막 노드로 이동
+        while(dataIdx in 0 until dataList.size){ // data 가 남아있다면
+            node.next = KakaoNode(dataList[dataIdx++], node) // 다음 노드에 data 저장
+            node = node.next!! // 다음 노드로 이동
+            println("add node : $node")
+            nodeCount++
+        }
+    }
+
+    private fun debugLog(){
+        var node = start
+        while(node != null){
+            println("$node")
+            node = node.next
+        }
+    }
+
+}
+
+private class Kakao003UseLinkedList {
+    private var removeStack = Stack<KakaoNode>()
+    private lateinit var list : Kakao003LinkedList
+    fun solution(n: Int, k: Int, cmd: Array<String>): String {
+        list = Kakao003LinkedList(n)
+        list.select(k)
+        println("$list")
         for(i in 0 until cmd.size){
             val op = cmd[i].split(' ')
             when(op[0]){
-                "U" -> up(op[1].toInt())
-                "D" -> down(op[1].toInt())
-                "C" -> remove()
-                "Z" -> undo()
+                "U" -> list.moveUp(op[1].toInt())
+                "D" -> list.moveDown(op[1].toInt())
+                "C" -> list.removeCursor(removeStack)
+                "Z" -> list.undo(removeStack.pop())
             }
-        }
-        val sb = StringBuilder()
-        for(i in 0 until list.size){
-            sb.append("O")
+            println("$list")
         }
         while(!removeStack.isEmpty()){
-            sb.insert(removeStack.pop(), 'X')
+            list.emptyUndo(removeStack.pop()) // 삭제되었던 노드를 삭제된 노드 표시하고 복구시켜준다
         }
-        return sb.toString()
+        return list.getNodesStatus()
     }
-    private fun up(move : Int){
-        var moveCount = 0
-        while(iterator.hasPrevious()){
-            iterator.previous()
-            if(++moveCount == move) break
-        }
-    }
-    private fun down(move : Int){
-        var moveCount = 0
-        while(iterator.hasNext()){
-            iterator.next()
-            if(++moveCount == move) break
-        }
-    }
-    private fun remove(){
-        // remove 는 마지막으로 리턴한 next or previous 값을 제거
-        removeStack.push(iterator.next()-1) // 지워지는 idx 추가
-        iterator.remove()
-    }
-    private fun undo(){
-        // 커서는 그대로, addAt 을 어쩔수 없이 수행해야하나
-        // iterator 사용중에 list 에 접근해서 add, remove 수행이 exception 이 발생했었는데
-        // iterator을 사용한 add 는 현재 idx+1 에 add시킨다(nextIndex에)
-        val idx = removeStack.pop()
-        list.add(idx, idx)
-    }
+    
 }
 
 // 처음부터 다시 해보자
@@ -173,6 +335,9 @@ private class Kakao003UseLinkedList {
 private class Kakao003Solve {
     private var removeStack = Stack<Int>()
     private var size = 0
+    fun getSize() : Int {
+        return size
+    }
     private var p = 0
     fun solution(n: Int, k: Int, cmd: Array<String>): String {
         p = k
