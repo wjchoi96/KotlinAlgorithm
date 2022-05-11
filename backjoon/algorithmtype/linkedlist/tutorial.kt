@@ -99,9 +99,11 @@
     => 없다면 만나지못하고 끝에 도달
     : 시간복잡도O(n), 공간복잡도 O(1)
 
-    5. 카카오 2021 인턴 기출문제 3번 표 편집
+    5. 카카오 2021 인턴 기출문제 3번 표 편집(solve)
     https://programmers.co.kr/learn/courses/30/lessons/81303
     => 연결리스트로 구현해보자
     => 구현해보기 전에 ListIterator로 1번문제 다시 구현해보고 진행해보자
+    => remove, undo 작업을 o(1)에 수행하기 위해서는 list iterator 사용 불가
+    : removeStack에 노드를 push, pop 해야하기때문에 linkedList 를 구현하여 풀이 성공
     
 */
