@@ -46,8 +46,15 @@
     제출
     1. 성공
     - 근데 코드가 약간 맘에 안듬
+*/
+/*
+    refactor
+    1. 다리길이만큼 0을 offer해두면 조건식 하나로 통합 가능할듯
+    2. 그에따라서 조건식 수정
+    참고  https://www.acmicpc.net/source/42855223
 
-    2. 
+    제출
+    1. 성공
 */
 
 import java.util.LinkedList
@@ -55,40 +62,34 @@ import java.util.Queue
 fun main(args: Array<String>){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter() 
-
-    val queue : Queue<Int> = LinkedList()
     val (n, w, l) = br.readLine().split(' ').map{it.toInt()}
     val trucks: Array<Int> = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+    val queue : Queue<Int> = LinkedList()
+    repeat(w){
+        queue.offer(0) // 다리 길이만큼 0을 채워둔다
+    }
 
-    var passCount = 0
     var currentWeight = 0
     var truckIdx = 0
-    var offerCount = 0
-    while(passCount != n){
-        // 트럭이 남아있고, 현재 트럭이 offer되었을때 최대하중을 넘지 않는다면
-        if(truckIdx < n && currentWeight + trucks[truckIdx] <= l){
+    var time = 0
+    while(truckIdx < n){ // 마지막게 진입 성공하면 끝나네
+        val poll = queue.poll()
+        currentWeight -= poll
+        println("poll: $poll")
+        if(currentWeight + trucks[truckIdx] <= l){
             currentWeight += trucks[truckIdx]
             queue.offer(trucks[truckIdx++])
         }else{
-            if(truckIdx < n && queue.size == w && currentWeight - (queue.firstOrNull()?:0) + trucks[truckIdx] <= l){
-                currentWeight += trucks[truckIdx]
-                queue.offer(trucks[truckIdx++])
-            }else{
-                queue.offer(0)
-            }
+            queue.offer(0)
         }
-        offerCount++
+        time++
         println("offer: ${queue.last()}")
-        if(queue.size > w){
-            val poll = queue.poll()
-            if(poll != 0) {
-                currentWeight-=poll
-                passCount++
-            }
-            println("poll: $poll")
-        }
     }
-    bw.write("$offerCount\n")
+    while(!queue.isEmpty()){
+        time++
+        queue.poll()
+    }
+    bw.write("$time\n")
     
 
     br.close()
