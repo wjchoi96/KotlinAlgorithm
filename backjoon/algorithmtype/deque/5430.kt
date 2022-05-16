@@ -67,58 +67,42 @@
     - 이걸 왜 못찾았지
 
     3. 정답
-    - 최적화 무조건 필요
+    - 최적화 무조건 필요 
+*/
+/*
+    개선
+    1. 어차피 reverse작업이 boolean 변수를 toggle하는게 전부이니, opStack 이 필요없다
+    2. 출력부분 개선
+    - linkedList 를 toString 하면 공백이 포함된 문자열이 리턴되는데, 공백을 제거한 뒤 출력
+    - reverse 해야하는 경우 reverse 이후 출력
+
+    제출
+    1. 성공
 */
 
 import java.util.Deque
-import java.util.Stack
 import java.util.LinkedList
 fun main(args: Array<String>){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()   
-    val opStack: Stack<Char> = Stack()
-    val values: Deque<Int> = LinkedList()
     
     val tc = br.readLine().toInt()
     loop@for(loop in 0 until tc){
         var reverseStatus = false
         val op = br.readLine().toCharArray()
         val size = br.readLine().toInt()
-        values.clear()
-        var value = br.readLine()
-        value = value.replace("[", "")
-        value = value.replace("]", "")
+    
+        val values: Deque<Int> = LinkedList()
+        var value = br.readLine().replace("[", "").replace("]", "")
         if(!value.isEmpty()){
             value.split(',').map{it.toInt()}.forEach {
                 values.offer(it)
             }
         }
-
         for(i in 0 until op.size){
-            // 같은 연산이 연속되어 나오는것을 확인
-            // 가장 마지막에 넣은 연산이랑, 현재 연산이 다르다면, 이전에 입력되어있는 연산들을 모두 실행, 이후 현재 연산 push
-            // stack 으로 해야할듯
-            // R만 수행하면된다
             if(op[i] == 'R'){
-                if(!opStack.isEmpty() && opStack.peek() != op[i]){
-                    var dCount = opStack.size
-                    if(dCount%2 == 1){
-                        reverseStatus = !reverseStatus // 홀수라면 reverse
-                    }
-                    opStack.clear()
-                    opStack.push(op[i])
-                }else{
-                    opStack.push(op[i])
-                }
+                reverseStatus = !reverseStatus
             }else{
-                //D 수행 이전에, opStack에 쌓인 R처리를 먼저 진행
-                if(!opStack.isEmpty()){
-                    var dCount = opStack.size
-                    if(dCount%2 == 1){
-                        reverseStatus = !reverseStatus // 홀수라면 reverse
-                    }
-                    opStack.clear()
-                }
                 val poll = if(reverseStatus){
                     values.pollLast()
                 }else{
@@ -130,31 +114,13 @@ fun main(args: Array<String>){
                 }
             }
         }
-        if(!opStack.isEmpty()){
-            var dCount = opStack.size
-            if(dCount%2 == 1){
-                reverseStatus = !reverseStatus // 홀수라면 reverse
-            }
-            opStack.clear()
+        if(reverseStatus){
+            bw.write("${values.reversed().toString().replace(" ", "")}\n")
+        }else{
+            bw.write("${values.toString().replace(" ", "")}\n")
         }
-        bw.write("[")
-        while(!values.isEmpty() && values.size != 1){
-            if(!reverseStatus)
-                bw.write("${values.pollFirst()},")
-            else
-                bw.write("${values.pollLast()},")
-        }
-        if(!values.isEmpty()){
-            if(!reverseStatus)
-                bw.write("${values.pollFirst()}")
-            else
-                bw.write("${values.pollLast()}")
-        }
-        bw.write("]\n")
     }
     
-
-
     br.close()
     bw.flush()
     bw.close()
