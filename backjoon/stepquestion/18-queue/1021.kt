@@ -1,6 +1,11 @@
 //sliver4
 //18-6
 /*
+    해당 파일은 풀지 못한 파일
+    생각을 어떻게 진행었는지 남겨두기위해 그대로 유지
+    algorithmtype.deque.1021.kt 에 성공한 코드 작성
+*/
+/*
     1. 첫번째 원소를 뽑아낸다 => front++ 된다
     2. 왼쪽으로 한 칸 이동시킨다 => a1, ..., ak가 a2, ..., ak, a1 => offer(poll)
     3. 오른쪽으로 한 칸 이동시킨다 => a1, ..., ak가 ak, a1, ..., ak-1 => offerFirst(pollLast)
