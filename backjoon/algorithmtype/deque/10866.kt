@@ -13,10 +13,50 @@
 /*
     지난번엔 원형 덱으로 구현했었네
     제출
-    1. 성공
+    1. 성공 - 선형 덱 구현
+    2. 성공 - 덱 콜렉션 사용
 */
 
+import java.util.LinkedList
+import java.util.Deque
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()   
+    val n = br.readLine().toInt()
+    val deque : Deque<Int> = LinkedList()
+    
+    repeat(n) {
+        val op = br.readLine().split(' ')
+        when(op[0]){
+            "push_back" -> deque.offerLast(op[1].toInt())
+            "push_front" -> deque.offerFirst(op[1].toInt())
+            "pop_back" -> {
+                val poll = deque.pollLast()
+                bw.write("${if(poll==null)-1 else poll}\n")
+            }
+            "pop_front" -> {
+                val poll = deque.pollFirst()
+                bw.write("${if(poll==null)-1 else poll}\n")
+            }
+            "size" -> bw.write("${deque.size}\n")
+            "empty" -> bw.write("${if(deque.size == 0)1 else 0}\n")
+            "front" -> {
+                val first = deque.peekFirst()
+                bw.write("${if(first==null)-1 else first}\n")
+            }
+            "back" -> {
+                val last = deque.peekLast()
+                bw.write("${if(last==null)-1 else last}\n")
+            }
+        }
+    }
+    br.close()
+    bw.flush()
+    bw.close()
+}
+
+// solve1 use custom deque
+private fun solve1(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()   
     val n = br.readLine().toInt()
