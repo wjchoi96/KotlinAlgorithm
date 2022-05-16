@@ -47,10 +47,59 @@
     제출
     1. 성공
 */
+/*
+    개선
+    1. 한쪽으로만 회전하여 횟수를 구하고, 해당 횟수를 전체count에서 뺀 값과 비교하여 더 적은 값을 출력
+    => 한쪽으로 회전하여 값을 제거했다는건, 반대로 회전했다면 size-count 횟수일거라는 계산인가?
+    => 다만 최악의 경우 시간복잡도가 많이 늘어나는 구현 방법. 코드는 깔끔하긴 하다
+    https://www.acmicpc.net/source/22262909
+
+    => 현재 방법은 매 회전마다 indexOf를 수행한다
+    indexOf의 시간복잡도는 O(n)
+    
+    => 위의 방법의 최악의 시간복잡도는 O(n)
+
+    더 개선된 방법인것 같으니 구현 시도
+
+    제출
+    1. 성공
+
+*/
 
 import java.util.Deque
 import java.util.LinkedList
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()   
+
+    val (n, _) = br.readLine().split(' ').map{it.toInt()}
+    val deque: Deque<Int> = LinkedList()
+    repeat(n){
+        deque.offerLast(it+1) // 뒤로 넣는다
+    }
+    val values = br.readLine().split(' ').map{it.toInt()}
+    var count = 0
+    values.forEach {
+        var rotateCount = 0
+        while(deque.peekFirst() != it){ // 찾는값이 나올때까지 한쪽으로 회전
+            deque.offerFirst(deque.pollLast())
+            rotateCount++
+        }
+        count += if(deque.size-rotateCount>rotateCount)rotateCount else deque.size-rotateCount // 더 적은값을 넣어준다
+        deque.pollFirst()
+    }
+    bw.write("${count}\n")
+
+    br.close()
+    bw.flush()
+    bw.close()
+}
+
+/*
+    매 회저마다 indexOf를 수행
+    indexOf의 시간복잡도는 O(n)이니 바람직한 상황이 아니다
+*/
+private fun solve1(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()   
 
