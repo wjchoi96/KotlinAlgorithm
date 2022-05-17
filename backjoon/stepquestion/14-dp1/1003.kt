@@ -1,8 +1,8 @@
 // 15-1 
 // sliver3
 import java.io.*
-var arr : Array<Array<Int>> = Array(41){Array(2){-1}}
-var fabonacciArr : Array<Int> = Array(41){-1} // 이전에 푼 방식
+private var arr : Array<Array<Int>> = Array(41){Array(2){-1}}
+private var fabonacciArr : Array<Int> = Array(41){-1} // 이전에 푼 방식
 fun main(arg : Array<String>){
     val br = BufferedReader(InputStreamReader(System.`in`))
     val bw = BufferedWriter(OutputStreamWriter(System.out))
