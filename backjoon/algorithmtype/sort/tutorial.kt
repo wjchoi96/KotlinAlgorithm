@@ -1,6 +1,7 @@
 /*
     바킹독님 알고리즘 강의 중 정렬 단원
     https://blog.encrypted.gg/955(원시, 머지, 퀵)
+    https://blog.encrypted.gg/966?category=773649(카운팅, )
 
     - 원시(기초정렬)
     1. 선택정렬
@@ -23,4 +24,8 @@
 
     2. quickSort
     - quicksorttut.kt
+
+    3. counting sort
+    - countingsorttut
+
 */
