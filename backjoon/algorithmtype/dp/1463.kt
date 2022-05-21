@@ -77,10 +77,53 @@
     1. 어떻게 이런 접근방식에 도달했는지는 모르겠지만, 숏코딩을 통해 개선된 형태의 코드를 발견
     - 이해가 어려운 코드는 아니기에 바로 적용은 가능했으나, 이러한 접근방식을 생각해 내는것이 중요할듯
 
+    2. bfs방식으로 풀이
+    - 개선은 아니지만, 다양한 방식의 풀이에 도전
+    - 성공
+
 */
 
-private lateinit var dp: Array<Int>
+import java.util.Queue
+import java.util.LinkedList
+private lateinit var dp: Array<Int> // use at solve1, solve2
+private lateinit var disit: Array<Int> // use at bfs
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+    
+    val n = br.readLine().toInt()
+    disit = Array(n+1){-1}
+
+    fun bfs(x: Int=1){
+        val queue : Queue<Int> = LinkedList()
+        queue.offer(x)
+        disit[x] = 0
+        while(!queue.isEmpty()){
+            val node = queue.poll()
+            val d = arrayOf(node+1, node*2, node*3)
+            for(i in 0 until 3){
+                val newNode = d[i]
+                if(newNode>=disit.size){
+                    continue
+                }
+                if(disit[newNode] != -1){
+                    continue
+                }
+                queue.offer(newNode)
+                disit[newNode] = disit[node]+1
+            }
+        }
+    }
+    bfs()
+    println("${disit.toList()}")
+    bw.write("${disit[n]}\n")
+    bw.flush()
+    br.close()
+    bw.close()
+}
+
+// 숏코딩을 통해 발견한 코드
+private fun solve2(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
     
