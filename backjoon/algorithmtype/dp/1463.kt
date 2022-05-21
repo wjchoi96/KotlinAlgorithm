@@ -82,7 +82,18 @@
     - 성공
 
 */
+/*
+    바킹독님 접근방식
 
+    1. 테이블 정의하기
+    - dp[i]를 1로 만들기 위해 필요한 연산 사용 횟수의 최솟값
+    => dp[12]를 찾는다면?
+    2. 점화식 찾기
+    - 3으로 나누거나, 2로 나누거나, 1을 빼거나
+    => dp[12] = min(dp[4]+1, dp[6]+1, dp[11]+1)
+    3. 초기값 정의하기
+    - dp[1] = 0
+*/
 import java.util.Queue
 import java.util.LinkedList
 private lateinit var dp: Array<Int> // use at solve1, solve2
