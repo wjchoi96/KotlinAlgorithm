@@ -96,6 +96,7 @@
 */
 /*
     바킹독님 방식
+    solveBarkingDog
     1. 테이블 정의
     dp[n][c]
     => 현재까지 c개의 계단을 연속해서 밟고 n계단에 올라왔을때의 최대 점수(n계단은 반드시 밟아야 한다)
@@ -122,13 +123,34 @@
 
     3. 성공
     - bottom-top
+*/
+/*
+    새로운 방식(바킹독님이 제시하신 새로운 풀이방식. 테이블 정의까지만 주어지고 혼자 접근해보자)
+    solve2
+    
+    1. 테이블 정의
+    dp[n]: n번째 계단까지 올라섰을때, 밟지 않을 계단의 합
+    n번째 계단은 반드시 밟지 않을 계단으로 선택해야 한다
 
+    2. 점화식
+
+    3. 초기값
 */
 private lateinit var dp: Array<Int>
 private lateinit var bDp: Array<Array<Int>> // 바킹독님 방법
 private lateinit var arr: Array<Int>
 fun main(args: Array<String>){
     solveBarkingDog()
+}
+
+// solve2 : 바킹독님이 제시하신 새로운 접근 방법
+private fun solve2(){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()    
+
+    bw.flush()
+    br.close()
+    bw.close()
 }
 
 // solve 바킹독님 접근 방식 => 2차원 dp
