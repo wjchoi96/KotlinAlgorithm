@@ -34,13 +34,72 @@
     A는 오름차순 정렬(큰 수가 앞으로 오게), B는 내림차순 정렬
     A를 순회하며 현재값보다 작은 B값을 만날때까지 B배열을 순회한다
     현재 값보다 작은 B값을 만났다면 count를 전체 count 에 더한다
-*/
-/*
+
     정렬방식 제출
     1. 성공
 */
+/*
+    투포인터 방식
+    - 정렬로 은근 비슷하게 풀이한것같은데
+    - 당장 정렬과 비슷한 방식밖에 떠오르지않아서, 접근 방식을 검색을 해봤다
+    - 메모이제이션 변수를 두어서 맨 마지막에 합하는 방식을 많이 채용하는것 같기도 하다
+    #참고
+    https://baby-ohgu.tistory.com/13
 
+    시간복잡도
+
+    투포인터 방식 제출
+    1. 성공
+*/
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    val tc = br.readLine().toInt()
+    repeat(tc){
+        val (n, m) = br.readLine().split(' ').map{it.toInt()}
+        val a = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+        val b = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+        a.sort()
+        b.sort()
+
+        var aIdx = 0
+        var bIdx = 0 
+        var dp = Array(n){0}
+        var count = 0 // aIdx가 가리키는 a가 Bidx가 가리키는 b를 먹을 수 있는경우의 수
+
+        while(aIdx<n){
+            // b가 끝에 도달했거나, b가 b를 먹지 못하는 경우
+            if(bIdx == m || a[aIdx] <= b[bIdx]){
+                if(aIdx == 0){
+                    dp[0] = count
+                }else{
+                    // 이전 a가 먹을 수 있는 것들은 현재 a가 모두 먹을 수 있다
+                    dp[aIdx] = dp[aIdx-1]+count 
+                }
+                count = 0
+                aIdx++ // a 크기를 늘린다
+            }
+            // 현재 a가 현재 b를 잡아먹는 경우
+            else{
+                count++ 
+                bIdx++ // b 크기를 늘린다
+            }
+        }
+        // bw.write("${dp.toList()}\n")
+        var sum = 0
+        dp.forEach {
+            sum+=it
+        }
+        bw.write("$sum\n")
+    }
+
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+private fun solve1UseSort(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
 
