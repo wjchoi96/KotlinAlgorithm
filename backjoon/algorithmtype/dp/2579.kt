@@ -76,6 +76,16 @@
     - 첫번째 계단을 안밟아도 된다는거
     - 문제 조건이 애매한거 아닌가 이건
 */
+/*
+    solve1
+    : 이전에 풀었던 방식이 기억나서 해당 방식으로 진행 => 1차원 dp
+    : 재귀방식(top-down), for문 방식(bottom-top) 모두 구현
+    : getMaxScore, getMaxScore2
+
+    바킹독님 방식
+    : 2차원 dp를 사용하셔서 접근하신다
+    : 
+*/
 
 private lateinit var dp: Array<Int>
 private lateinit var arr: Array<Int>
@@ -87,7 +97,7 @@ fun main(args: Array<String>){
     arr = Array(n+1){0}
     repeat(n){ arr[it+1] = br.readLine().toInt() }
     initDp(n+1)
-    bw.write("${getMaxScore(n)}\n")
+    bw.write("${getMaxScore2(n)}\n")
     
     bw.flush()
     br.close()
@@ -100,15 +110,28 @@ private fun initDp(size: Int){
     dp[1] = dp[0] + arr[1]
     if(size>2)dp[2] = dp[1]+arr[2]
 }
+
+/// solve 1
 private fun getMaxScore(x: Int): Int{
     if(dp[x] != -1){
-        println("dp[$x]: ${dp[x]}")
         return dp[x]
     }
     dp[x] = Math.max(
         getMaxScore(x-2),
         getMaxScore(x-3) + arr[x-1]
     ) + arr[x]
+    return dp[x]
+}
+private fun getMaxScore2(x: Int): Int{
+    if(dp[x] != -1){
+        return dp[x]
+    }
+    for(i in 3..x){
+        dp[i] = Math.max(
+            dp[i-2],
+            dp[i-3] + arr[i-1]
+        )+arr[i]
+    }
     return dp[x]
 }
 /*
