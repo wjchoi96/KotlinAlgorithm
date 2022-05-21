@@ -32,13 +32,49 @@
 
     3. 맞았습니다
     - 공통된 코드를 하나로 합침
+
+    - map 을 사용한 구현
+    1. 틀렸습니다(4%)
+    - 가장 작은 값을 출력이 누락되었다
+
+    2. 성공
+    
 */
 /*
     반례에상
     1. 모든 입력값이 같은값이라면 현재 코드로 통과 못한다
     2. 제일 큰 값이 제일 많다면 현재코드로는 반영이 안된다
 */
+import java.util.HashMap
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    val n = br.readLine().toInt()
+    val map: HashMap<Long, Int> = HashMap()
+    val arr: Array<Long> = Array(n){0}
+    repeat(n){
+        arr[it] = br.readLine().toLong()
+    }
+    arr.sort()
+    var maxValue: Long = 0
+    var maxCount = 0
+    arr.forEach{
+        val count = map.getOrDefault(it, 0) + 1
+        if(count>maxCount){
+            maxCount = count
+            maxValue = it
+        }
+        map[it] = count
+    }
+    bw.write("$maxValue\n")
+
+    bw.flush()
+    bw.close()
+    br.close()
+}
+
+private fun solveUseSort(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
 
