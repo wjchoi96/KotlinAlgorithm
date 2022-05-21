@@ -53,12 +53,11 @@
     - tc가 잘못되었던것=> serialSum으로 걸러져서 뒤로 가게 되었던것이다
 
     3. 그렇다면 comparable로 해도 될것같은데
+    - 맞다. 이전 테스트에서는 tc가 잘못되었던것이고 아스키 코드로 비교하는거에선 숫자가 앞으로 오는게 맞다
 */
 fun main(args: Array<String>){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
-
-    println("${"12a".compareTo("aaa")}")
 
     val n = br.readLine().toInt()
     val arr = Array(n) { "" }
