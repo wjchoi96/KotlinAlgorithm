@@ -58,6 +58,13 @@
     dp[1] = arr[1]
     dp[2] = arr[1] + arr[2]
     dp[3] = arr[1] + arr[2] + arr[3]
+    
+    => 문제의 조건을 다시 이해해서 변경
+    1. 첫번째 계단이 아닌 시작점을 계단으로 포함 안한다
+    2. 시작점에서 한칸 또는 두칸을 이동해서 시작 가능 => 첫번째 계단을 안밟아도 된다
+    dp[0] = 0 // 시작점
+    dp[1] = dp[0]+arr[1]
+    dp[2] = dp[1]+arr[2]
 */
 /*
     제출
@@ -84,12 +91,98 @@
 
     바킹독님 방식
     : 2차원 dp를 사용하셔서 접근하신다
-    : 
+    : dp[n][c]
+    => 현재까지 c개의 계단을 연속해서 밟고 n계단에 올라왔을때의 최대 점수(n계단은 반드시 밟아야 한다)
 */
+/*
+    바킹독님 방식
+    1. 테이블 정의
+    dp[n][c]
+    => 현재까지 c개의 계단을 연속해서 밟고 n계단에 올라왔을때의 최대 점수(n계단은 반드시 밟아야 한다)
+    
+    2. 점화식 찾기
+    => dp[n][1] = max(dp[n-2][2], dp[n-2][1]) + this
+    => dp[n][2] = dp[n-1][1] + this
 
+    3. 초기값 설정
+    dp[0] = 0
+    dp[1][1] = arr[1]
+    dp[2][1] = arr[2]
+    dp[2][2] = dp[1][1]+arr[2]
+
+    dp[1][2] 의 경우는 없는 경우이기때문에 초기값 -1로 그대로 둔다. => 그러면 base condition에 걸리니 0으로 설정
+    어차피 max 값을 사용하기때문에 걸러진다
+
+    제출
+    1. 런타임에러(100%): ArrayIndexOutOfBounds
+    - init dp size 설정 누락
+
+    2. 성공
+    - top-bottom 
+
+    3. 성공
+    - bottom-top
+
+*/
 private lateinit var dp: Array<Int>
+private lateinit var bDp: Array<Array<Int>> // 바킹독님 방법
 private lateinit var arr: Array<Int>
 fun main(args: Array<String>){
+    solveBarkingDog()
+}
+
+// solve 바킹독님 접근 방식 => 2차원 dp
+private fun solveBarkingDog(){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    val n = br.readLine().toInt()
+    arr = Array(n+1){0}
+    repeat(n){ arr[it+1] = br.readLine().toInt() }
+    initBarkingDogDp(n+1)
+    
+    getBarkingDogMaxScore2(n)
+    bw.write("${Math.max(bDp[n][1], bDp[n][2])}\n")
+    
+    bw.flush()
+    br.close()
+    bw.close()
+}
+
+private fun initBarkingDogDp(size: Int){
+    bDp = Array(size){Array(3){-1}}
+    for(i in 0..2) bDp[0][i] = 0
+    bDp[1][1] = arr[1]
+    bDp[1][2] = 0 // 해당 경우는 없지만 -1로 두면 base condition에 걸리니 0으로 설정
+    if(size<=2) return
+    bDp[2][1] = Math.max(bDp[0][1], bDp[0][2]) + arr[2]
+    bDp[2][2] = bDp[1][1]+arr[2]
+}
+// top-bottom
+private fun getBarkingDogMaxScore(x: Int, c: Int): Int {
+    if(bDp[x][c] != -1){
+        return bDp[x][c]
+    }
+    bDp[x][1] = Math.max(
+        getBarkingDogMaxScore(x-2, 1),
+        getBarkingDogMaxScore(x-2, 2)
+    ) + arr[x]
+    bDp[x][2] = getBarkingDogMaxScore(x-1, 1) + arr[x]
+    return bDp[x][c]
+}
+// bottom-top
+private fun getBarkingDogMaxScore2(x: Int) {
+    for(i in 3..x){
+        bDp[i][1] = Math.max(
+            bDp[i-2][1],
+            bDp[i-2][2]
+        ) + arr[i]
+        bDp[i][2] = bDp[i-1][1] + arr[i]
+    }
+}
+
+/// solve 1 => 1차원 dp
+private fun solve1(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
 
@@ -103,15 +196,13 @@ fun main(args: Array<String>){
     br.close()
     bw.close()
 }
-
 private fun initDp(size: Int){
     dp = Array(size){-1}
     dp[0] = 0
     dp[1] = dp[0] + arr[1]
     if(size>2)dp[2] = dp[1]+arr[2]
 }
-
-/// solve 1
+// top-bottom
 private fun getMaxScore(x: Int): Int{
     if(dp[x] != -1){
         return dp[x]
@@ -122,6 +213,7 @@ private fun getMaxScore(x: Int): Int{
     ) + arr[x]
     return dp[x]
 }
+// bottom-top
 private fun getMaxScore2(x: Int): Int{
     if(dp[x] != -1){
         return dp[x]
