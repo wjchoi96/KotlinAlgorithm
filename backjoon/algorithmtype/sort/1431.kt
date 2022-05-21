@@ -20,7 +20,7 @@
 */
 /*
     comparator, comparable, sortWith 에 대해 한번 더 깊게 공부가 되었다
-    
+
     comparator, comparable 차리
     https://st-lab.tistory.com/243
 
@@ -33,7 +33,7 @@
     A<B => -1
     를 보통 return A-B로 나타낸다
     
-    sortWith 의 인자로는 comparBy를 사용해 여러개의 comparable을 보내거나
+    sortWith 의 인자로는 compareBy를 사용해 여러개의 comparable을 보내거나
     compartor을 받는다
 */
 /*
@@ -43,9 +43,50 @@
 
     2. 성공
 */
+/*
+    개선
+    1. 결과 출력 코드
+    2. string 비교 코드
+    - 굳이 일일히 해줄 필요없이 아스키 코드값으로 비교를 해주는 comparTo 를 사용하거나 
+    - 대소관계에 따른 출력값을 설정해주면 된다
+    - 근데 테스트할때는 왜 틀렸던거지
+    - tc가 잘못되었던것=> serialSum으로 걸러져서 뒤로 가게 되었던것이다
 
-import kotlin.collections.sortWith
+    3. 그렇다면 comparable로 해도 될것같은데
+*/
 fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    println("${"12a".compareTo("aaa")}")
+
+    val n = br.readLine().toInt()
+    val arr = Array(n) { "" }
+    repeat(n){
+        arr[it] = br.readLine()
+    }
+    arr.sortWith(compareBy(
+        {it.count()},
+        {it.serialSum()},
+        {it}
+    ))
+    arr.forEach { println("$it") }
+
+    bw.flush()
+    br.close()
+    bw.close()
+}
+private fun String.serialSum(): Int{
+    var sum = 0
+    for(i in 0 until count()){
+        if(this[i].isDigit()){
+            sum+=this[i].toString().toInt()
+        }
+    }
+    return sum
+}
+
+private fun solve2(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()
 
@@ -55,17 +96,37 @@ fun main(args: Array<String>){
         arr[it] = br.readLine()
     }
     arr.sortWith(Comparator<String>{ a,b ->
-         //1. 길이
-        if(a.count() != b.count()){
-            a.count()-b.count()
-        }else{
-            //2. 합계
-            val aSum = getSerialSum(a)
-            val bSum = getSerialSum(b)
-            if(aSum != bSum){
-                aSum-bSum
-            }else {
-                // 3. 사전순(일반적인 사전순과는 다르게, 숫자가 앞으로 온다)
+        when {
+            a.count() < b.count() -> -1
+            a.count() > b.count() -> 1
+            a.serialSum() < b.serialSum() -> -1
+            a.serialSum() > b.serialSum() -> 1
+            else -> if(a>b)1 else -1 //a.compareTo(b)
+        }
+    })
+    arr.forEach { println("$it") }
+
+    bw.flush()
+    br.close()
+    bw.close()
+}
+
+private fun solve1(){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    val n = br.readLine().toInt()
+    val arr = Array(n) { "" }
+    repeat(n){
+        arr[it] = br.readLine()
+    }
+    arr.sortWith(Comparator<String>{ a,b ->
+        when {
+            a.count() > b.count() -> 1
+            a.count() < b.count() -> -1
+            a.serialSum() < b.serialSum() -> 1
+            a.serialSum() > b.serialSum() -> -1
+            else -> {
                 var res = 0
                 for(i in 0 until a.count()){
                     val ai = a[i]
@@ -90,23 +151,9 @@ fun main(args: Array<String>){
             }
         }
     })
-
-    // println("${arr.toList()}")
-
-    for(i in 0 until arr.size){
-        bw.write("${arr[i]}\n")
-    }
+    arr.forEach { println("$it") }
 
     bw.flush()
     br.close()
     bw.close()
-}
-private fun getSerialSum(serialCode: String): Int{
-    var sum = 0
-    for(i in 0 until serialCode.count()){
-        if(serialCode[i].isDigit()){
-            sum+=serialCode[i].toString().toInt()
-        }
-    }
-    return sum
 }
