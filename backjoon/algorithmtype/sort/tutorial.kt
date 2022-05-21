@@ -31,5 +31,7 @@
     4. Radix sort
     - radixsorttut.kt
 
+    정렬 응용 문제
+    1. 백준 1431(solve)
 
 */
