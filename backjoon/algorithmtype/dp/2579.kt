@@ -129,28 +129,94 @@
     solve2
     
     1. 테이블 정의
-    dp[n]: n번째 계단까지 올라섰을때, 밟지 않을 계단의 합
+    dp[n]: n번째 계단까지 올라섰을때, 밟지 않을 계단의 합의 최소값
     n번째 계단은 반드시 밟지 않을 계단으로 선택해야 한다
 
     2. 점화식
+    n번째 계단을 밟지 않았다면, n-1 계단은 무조건 밟아야한다
+    n-2, n-3중 하나는 무조건 밟아야한다
+
+    dp[0] = 0
+    dp[1] = arr[1] // 자기 자신만 안 밟는다
+    dp[2] = arr[2] // 자기 자신만 안 밟는다
+    dp[3] = arr[3] // 자기 자신만 안 밟는다 => 이게 최소값이기 때문
+    dp[4] = min(dp[1], dp[2]) + this
+    : 0,2,3 / 0,1,3
+    
+    dp[n] = min(dp[n-3], dp[n-2]) + arr[n]
 
     3. 초기값
+    n-3 까지 가야하니, 최소 3개는 채워져있어야한다
+    dp[0] = 0
+    dp[1] = arr[1]
+    dp[2] = arr[2]
+    dp[3] = dp[1] + this
+
+    4. 출력값
+    : dp는 n번째 계단까지 올라섰을때, 밟지 않을 계단의 합의 최소값. n번째 계단은 밟히면 안된다
+    n번째 계단을 밟았을때 점수의 최대값을 구해야하니
+    n-2계단을 밟지않고 n-2까지 왔을때 안밟은 계단 점수의 최소값,
+    n-1계단을 밟지않고 n-1까지 왔을때 안밟은 계단 점수의 최소값 중 작은것을 max에서 뺀다
+
+    제출
+    1. 틀렸습니다(15%)
+    - 바킹독님 풀이를 좀더 확인
+
+    2. 런타임에러(100%): ArrayIndexOutOfBounds
+    - n=1 일때 발생
+    - dp init 코드가 아닌, getSolve2MinScore 에 n-2가 들어가기 때문
+
+    3. 맞았습니다
+    - 답을 안보고도 접근정도는 되어야할텐데 아직 멀었다
+    
 */
 private lateinit var dp: Array<Int>
 private lateinit var bDp: Array<Array<Int>> // 바킹독님 방법
 private lateinit var arr: Array<Int>
 fun main(args: Array<String>){
-    solveBarkingDog()
+    solve2()
 }
 
 // solve2 : 바킹독님이 제시하신 새로운 접근 방법
 private fun solve2(){
     val br = System.`in`.bufferedReader()
     val bw = System.out.bufferedWriter()    
+    val n = br.readLine().toInt()
+    var max = 0
+    arr = Array(n+1){0}
+    repeat(n){ arr[it+1] = br.readLine().toInt(); max+= arr[it+1] }
+
+    dp = Array(n+1){-1}
+    dp[0] = 0
+    dp[1] = arr[1]
+    if(n>2)dp[2] = arr[2]
+    if(n>3)dp[3] = arr[3]
+
+    if(n>=2){
+        var res = Math.min(
+            getSolve2MinScore(n-2),
+            getSolve2MinScore(n-1)
+        )
+        bw.write("max[$max], res[$res]\n")
+        res = max-res
+        bw.write("$res\n")
+    }else{
+        bw.write("$max\n")
+    }
+
 
     bw.flush()
     br.close()
     bw.close()
+}
+//top to bottom
+private fun getSolve2MinScore(x: Int): Int{
+    if(dp[x] != -1) return dp[x]
+    dp[x] = Math.min(
+        getSolve2MinScore(x-3),
+        getSolve2MinScore(x-2)
+    ) + arr[x]
+    return dp[x]
 }
 
 // solve 바킹독님 접근 방식 => 2차원 dp
