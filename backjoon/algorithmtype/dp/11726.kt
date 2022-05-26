@@ -92,4 +92,71 @@
     2. n의 조합을 찾는것
     예) 4는 [1,3],[2,2],[3,1] 로 나타낼 수 있다
     예) 5는 [1,4],[2,3],[3,2],[4,1] 로 나타낼 수 있다
+
+    바킹독님 점화식 풀이
+    1. 1*1 타일을 채우는것만 생각
+    - 2*1을 채우고, 2*n-1 이 남는상황
+    2. 1*2 2개를 채우고, 2*n-2 가 남는상황
+
+    점화식 
+    dp[n] = dp[n-1] + dp[n-2]
 */
+/*
+    1. 테이블 정의하기
+    dp[n] = 2*n 직사각형을 채우는 경우의 수 % 10007
+
+    2. 점화식
+    dp[n] = dp[n-1] + dp[n-2]
+
+    3. 초기값
+    dp[1] = 1
+    dp[2] = 2
+
+    #느낀점
+    조금 더 작은 단위로 규칙을 찾아보기도 해야겠다
+*/
+/*
+    제출
+
+    1. 틀렸습니다(99%)
+    - top-bottom
+    - 2 입력시 1나옴
+
+    2. 성공
+    - top-bottom
+
+    3. 성공
+    - bottom-top
+
+    init dp 에서 size실수를 계속 한다
+
+*/
+private lateinit var dp: Array<Int>
+fun main(args: Array<String>){
+    val br = System.`in`.bufferedReader()
+    val bw = System.out.bufferedWriter()
+
+    val n = br.readLine().toInt()
+    dp = Array(n+1){-1}
+    dp[0] = 0
+    dp[1] = 1
+    if(n>=2)dp[2] = 2
+
+    // for(i in 3..n){
+    //     dp[i] = (dp[i-1]+dp[i-2])%10007
+    // }
+    // bw.write("${dp[n]}\n")
+    bw.write("${getRes(n)}\n")
+    
+
+    bw.flush()
+    br.close()
+    bw.close()
+}
+
+// top-bottom
+private fun getRes(x: Int): Int{
+    if(dp[x] != -1) return dp[x]
+    dp[x] = getRes(x-1) + getRes(x-2)
+    return dp[x]
+}
