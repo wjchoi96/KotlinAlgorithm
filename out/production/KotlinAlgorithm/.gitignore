@@ -1,0 +1,9 @@
+*.jar
+*.xml
+*.iml
+.idea/
+
+
+# push permission 문제 해결
+# token 생성
+# basic 으로 로그인 시도 ( token key 값을 암호로 입력 )
