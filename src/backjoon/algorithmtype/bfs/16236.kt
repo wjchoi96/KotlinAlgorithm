@@ -1,4 +1,4 @@
-//gold3
+package src.backjoon.algorithmtype.bfs//gold3
 /*
     n*m
     아기상어 1마리

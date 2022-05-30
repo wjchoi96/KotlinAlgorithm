@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.backtracking
 //gold4
 /*
     사다리 조작
