@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.dfs
 // dfs 유형
 /*
     dfs

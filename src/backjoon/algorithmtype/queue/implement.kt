@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.queue
 /*
     바킹독님 알고리즘 강의 중 큐 단원 구현
 */
