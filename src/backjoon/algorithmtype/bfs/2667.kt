@@ -1,4 +1,4 @@
-//sliver1
+package src.backjoon.algorithmtype.bfs//sliver1
 /*
     네이버 카페 문제50선 중 bfs 유형
 

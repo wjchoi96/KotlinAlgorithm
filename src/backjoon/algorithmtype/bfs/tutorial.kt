@@ -1,4 +1,4 @@
-/*
+package src.backjoon.algorithmtype.bfs/*
     bfs
     너비 우선 탐색
 
