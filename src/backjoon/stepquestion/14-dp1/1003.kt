@@ -1,4 +1,5 @@
-// 15-1 
+package src.backjoon.stepquestion.`14-dp1`
+// 15-1
 // sliver3
 import java.io.*
 private var arr : Array<Array<Int>> = Array(41){Array(2){-1}}

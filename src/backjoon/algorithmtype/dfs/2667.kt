@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.dfs
 //sliver1
 /*
     네이버 카페 문제50선중 dfs 유형
