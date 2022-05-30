@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.simulation
 // gold4
 /*
     바킹독님 알고리즘 강의 중 시뮬레이션 단원

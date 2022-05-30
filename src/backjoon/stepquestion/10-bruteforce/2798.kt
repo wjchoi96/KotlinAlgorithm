@@ -1,3 +1,4 @@
+package src.backjoon.stepquestion.`10-bruteforce`
 // bronze 2
 // 11-1
 
