@@ -1,4 +1,4 @@
-//sliver 1
+package src.backjoon.algorithmtype.bfs//sliver 1
 /*
     바캉독님 강의 도중 나온 연습문제
     미로찾기

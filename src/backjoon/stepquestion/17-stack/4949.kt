@@ -1,3 +1,4 @@
+package src.backjoon.stepquestion.`17-stack`
 //sliver 4
 // 17-4
 /*
@@ -61,17 +62,17 @@ private fun push(c : Char){
     stack[++p] = c
 }
 private fun pop() : Char? {
-    if(p<0){
+    if(p <0){
         return null
     }
     return stack[p--]
 }
 private fun peek() : Char? {
-    if(p<0){
+    if(p <0){
         return null
     }
     return stack[p]
 }
 private fun isEmpty() : Boolean {
-    return p<0
+    return p <0
 }
