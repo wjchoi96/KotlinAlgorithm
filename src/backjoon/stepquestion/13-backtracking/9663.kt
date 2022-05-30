@@ -20,63 +20,68 @@
     1차원배열 + for문 1개(idx를 x좌표로 취급, 위에랑 행,열 바꾼방식) 학습목적으로 시도 후 성공(dfs1)
 */
 import java.io.*
-var count = 0
 fun main(args : Array<String>){
-    val br = BufferedReader(InputStreamReader(System.`in`))
-    val bw = BufferedWriter(OutputStreamWriter(System.out))
-
-    val size = br.readLine().toInt()
-
-    // val arr : Array<Int> = Array(size){-1}
-    var arr1 : Array<Point> = Array(size) { Point(-1,- 1) }
-
-    dfs(size, 0, arr1)
-    bw.write("$count\n")
-
-    bw.flush()
-    bw.close()
-    br.close()
+    Solution9663().solve()
 }
 
-// 2차원 배열로 어케하지?
+class Solution9663 {
+    private var count = 0
+    fun solve(){
+        val br = BufferedReader(InputStreamReader(System.`in`))
+        val bw = BufferedWriter(OutputStreamWriter(System.out))
+
+        val size = br.readLine().toInt()
+
+        // val arr : Array<Int> = Array(size){-1}
+        val arr1 : Array<Point> = Array(size) { Point(-1,- 1) }
+
+        dfs(size, 0, arr1)
+        bw.write("$count\n")
+
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+
+    // 2차원 배열로 어케하지?
 // 0으로 초기화하고 말을 놓으면 1 놓지 않으면 0으로 구분 => 생각한 방법이 맞기는한데..
-private fun dfs5(n : Int, depth : Int, arr : Array<Array<Int>>){
+    private fun dfs5(n : Int, depth : Int, arr : Array<Array<Int>>){
 
-}
+    }
 
-// dfs1 만들어보자
+    // dfs1 만들어보자
 /*
-    depth 가 x 
+    depth 가 x
 */
-private fun dfs1(n : Int, depth : Int, arr : Array<Int>){
-    if(n == depth){
-        count++
-        return
-    }
-    for(i in 0 until n){
-        arr[depth] = i // (depth, i)
-        //공격범위가 아니라면
-        if(!checkQueenAtack(depth, arr)){
-            dfs1(n, depth+1, arr) // 다음 x칸으로 넘어간다
+    private fun dfs1(n : Int, depth : Int, arr : Array<Int>){
+        if(n == depth){
+            count++
+            return
+        }
+        for(i in 0 until n){
+            arr[depth] = i // (depth, i)
+            //공격범위가 아니라면
+            if(!checkQueenAtack(depth, arr)){
+                dfs1(n, depth+1, arr) // 다음 x칸으로 넘어간다
+            }
         }
     }
-}
-//퀸의 공격범위라면 true
-private fun checkQueenAtack(depth : Int, arr : Array<Int>) : Boolean{
-    for(i in 0 until depth){
-        // 같은 y열
-        if(arr[i] == arr[depth]){
-            return true
+    //퀸의 공격범위라면 true
+    private fun checkQueenAtack(depth : Int, arr : Array<Int>) : Boolean{
+        for(i in 0 until depth){
+            // 같은 y열
+            if(arr[i] == arr[depth]){
+                return true
+            }
+            //대각선
+            else if(Math.abs(arr[i]-arr[depth]) == Math.abs(i-depth)){
+                return true
+            }
         }
-        //대각선
-        else if(Math.abs(arr[i]-arr[depth]) == Math.abs(i-depth)){
-            return true
-        }
+        return false
     }
-    return false
-}
 
-// point 써서 만들어보자
+    // point 써서 만들어보자
 // => point 쓰는건 메모리 초과네
 // => 시간도 초과된다
 // => for문 하나만 돌도록 개량했는데도 메모리초과
@@ -88,94 +93,94 @@ private fun checkQueenAtack(depth : Int, arr : Array<Int>) : Boolean{
     해당 중복을 잡으려면 내림차순, 오름차순으로 정렬된 값만 뽑아내자
     -> 같은 x,y값이 안나오니까 x값이든 y값이든 하나를 기준으로 정렬하자
 */
-private fun dfs(n : Int, depth : Int, arr : Array<Point>){
-    if(depth == n){
-        count++
-        print("dfs finish($count) : { ")
-        for(value in arr){
-            print("(${value.x}, ${value.y}) ")
+    private fun dfs(n : Int, depth : Int, arr : Array<Point>){
+        if(depth == n){
+            count++
+            print("dfs finish($count) : { ")
+            for(value in arr){
+                print("(${value.x}, ${value.y}) ")
+            }
+            print("} \n")
+            return
         }
-        print("} \n")
-        return
-    }
 
-    // depth = x값
-    // i = y값
-    for(i in 0 until n){
-        arr[depth] = Point(depth, i)
-        if(!checkPointQueenAtack(depth, arr)){
-            dfs(n, depth+1, arr)
-        }
-    }
-}
-//퀸의 공격범위라면 true
-private fun checkPointQueenAtack(depth : Int, arr : Array<Point>) : Boolean{
-    for(i in 0 until depth){
-        // 같은 y열
-        if(arr[i].y == arr[depth].y){
-            return true
-        }
-        //대각선
-        else if(checkDiagonal(arr[i], arr[depth])){
-            return true
-        }
-    }
-    return false
-}
-
-// 대각선이면 true
-private fun checkDiagonal(item : Point, old : Point) : Boolean{
-    return Math.abs(item.x-old.x) == Math.abs(item.y-old.y)
-}
-
-private class Point internal constructor (
-    val x : Int,
-    val y : Int
-){}
-
-private fun oldDfs(n : Int, depth : Int, arr : Array<Point>){
-    for(x in 0 until n){
-        var xBlock = false
-        for(y in 0 until n){
-            var yBlock = false
-            if(depth == 0){
-                arr[depth] = Point(x, y)
+        // depth = x값
+        // i = y값
+        for(i in 0 until n){
+            arr[depth] = Point(depth, i)
+            if(!checkPointQueenAtack(depth, arr)){
                 dfs(n, depth+1, arr)
-            }else{
-                for(i in 0 until depth){
-                    // 이전에 같은 x 값이 있다면 x를 다음으로 넘어간다
-                    if(arr[i].x == x){
-                        xBlock = true
-                        break
-                    }
-                    // x 값 기준으로 오름차순 정렬
-                    else if(arr[i].x > x){
-                        xBlock = true
-                        break
-                    }
-                    // 같은 y값이 있다면 y를 다음으로 넘어간다
-                    else if(arr[i].y == y){
-                        yBlock = true
-                        continue
-                    }
-                    // 대각선인 값이 있다면 다음 loop 체크
-                    else if(checkDiagonal(Point(x, y), arr[i])){
-                        yBlock = true
-                        continue
-                    }
-                }
-                // 이전에 같은 x 값이 있다면 x를 다음으로 넘어간다
-                if(xBlock){
-                    break
-                }
-                if(!yBlock){
+            }
+        }
+    }
+    //퀸의 공격범위라면 true
+    private fun checkPointQueenAtack(depth : Int, arr : Array<Point>) : Boolean{
+        for(i in 0 until depth){
+            // 같은 y열
+            if(arr[i].y == arr[depth].y){
+                return true
+            }
+            //대각선
+            else if(checkDiagonal(arr[i], arr[depth])){
+                return true
+            }
+        }
+        return false
+    }
+
+    // 대각선이면 true
+    private fun checkDiagonal(item : Point, old : Point) : Boolean{
+        return Math.abs(item.x-old.x) == Math.abs(item.y-old.y)
+    }
+
+    private class Point internal constructor (
+        val x : Int,
+        val y : Int
+    ){}
+
+    private fun oldDfs(n : Int, depth : Int, arr : Array<Point>){
+        for(x in 0 until n){
+            var xBlock = false
+            for(y in 0 until n){
+                var yBlock = false
+                if(depth == 0){
                     arr[depth] = Point(x, y)
                     dfs(n, depth+1, arr)
+                }else{
+                    for(i in 0 until depth){
+                        // 이전에 같은 x 값이 있다면 x를 다음으로 넘어간다
+                        if(arr[i].x == x){
+                            xBlock = true
+                            break
+                        }
+                        // x 값 기준으로 오름차순 정렬
+                        else if(arr[i].x > x){
+                            xBlock = true
+                            break
+                        }
+                        // 같은 y값이 있다면 y를 다음으로 넘어간다
+                        else if(arr[i].y == y){
+                            yBlock = true
+                            continue
+                        }
+                        // 대각선인 값이 있다면 다음 loop 체크
+                        else if(checkDiagonal(Point(x, y), arr[i])){
+                            yBlock = true
+                            continue
+                        }
+                    }
+                    // 이전에 같은 x 값이 있다면 x를 다음으로 넘어간다
+                    if(xBlock){
+                        break
+                    }
+                    if(!yBlock){
+                        arr[depth] = Point(x, y)
+                        dfs(n, depth+1, arr)
+                    }
                 }
             }
         }
     }
-}
 
 
 
@@ -183,58 +188,58 @@ private fun oldDfs(n : Int, depth : Int, arr : Array<Point>){
 
 
 
-private fun dfs2(n : Int, depth : Int, arr : Array<Int>){
-    if(depth == n){
-        count++
-        print("dfs2 finish($count) : { ")
-        for(i in 0 until depth){
-            print("(${arr[i]}, ${i}) ")
+    private fun dfs2(n : Int, depth : Int, arr : Array<Int>){
+        if(depth == n){
+            count++
+            print("dfs2 finish($count) : { ")
+            for(i in 0 until depth){
+                print("(${arr[i]}, ${i}) ")
+            }
+            print("}\n")
+            return
         }
-        print("}\n")
-        return
-    }
-    // depth 가 열
-    // 행 loop
-    for(i in 0 until n){
-        arr[depth] = i // depth 열의 i행
-        //해당 열에 퀸을 놓을수 있는지 판단
-        if(checkQueenAttack2(arr, depth)){
-            //공격받는다면
-            continue // 다음 행으로 이동해서 체크
-        }else{
-            //안전하다면 다음 열로 이동
-            // print("save node : (${arr[depth]}, $depth)\n")
-            dfs2(n, depth+1, arr)
+        // depth 가 열
+        // 행 loop
+        for(i in 0 until n){
+            arr[depth] = i // depth 열의 i행
+            //해당 열에 퀸을 놓을수 있는지 판단
+            if(checkQueenAttack2(arr, depth)){
+                //공격받는다면
+                continue // 다음 행으로 이동해서 체크
+            }else{
+                //안전하다면 다음 열로 이동
+                // print("save node : (${arr[depth]}, $depth)\n")
+                dfs2(n, depth+1, arr)
+            }
         }
     }
-}
 
-// 해당 depth 에 퀸을 놓았을때 공격받는지 아닌지 체크
+    // 해당 depth 에 퀸을 놓았을때 공격받는지 아닌지 체크
 // true -> 공격받는다
-private fun checkQueenAttack2(arr : Array<Int>, depth : Int) : Boolean{
-    for(i in 0 until depth){ // 현재 depth 는 loop 에서 제외
-        //arr[i] => (arr[i], i)
+    private fun checkQueenAttack2(arr : Array<Int>, depth : Int) : Boolean{
+        for(i in 0 until depth){ // 현재 depth 는 loop 에서 제외
+            //arr[i] => (arr[i], i)
 
-        // 같은 행이라면
-        if(arr[i] == arr[depth]){
-            // print("block node1 : (${arr[depth]}, $depth)\n")
-            return true
+            // 같은 행이라면
+            if(arr[i] == arr[depth]){
+                // print("block node1 : (${arr[depth]}, $depth)\n")
+                return true
+            }
+            // 대각선이라면
+            else if(getAbsolueValue((arr[i]-arr[depth])) == getAbsolueValue((i-depth))){
+                // print("block node2 : (${arr[depth]}, $depth)\n")
+                return true
+            }
         }
-        // 대각선이라면
-        else if(getAbsolueValue((arr[i]-arr[depth])) == getAbsolueValue((i-depth))){
-            // print("block node2 : (${arr[depth]}, $depth)\n")
-            return true
+        return false
+    }
+    private fun getAbsolueValue(value : Int) : Int {
+        return if(value >= 0){
+            value
+        }else{
+            -value
         }
     }
-    return false
-}
-private fun getAbsolueValue(value : Int) : Int {
-    return if(value >= 0){
-        value
-    }else{
-        -value
-    }
-}
 /*
     대각선에 있는경우 => 열의 차와 행의 차가 같다면 대각선
     (0,0) (1,1) (2,2)
@@ -259,7 +264,7 @@ private fun getAbsolueValue(value : Int) : Int {
 
 /*
     조금 더 복잡한 백트래킹 문제
-    
+
     크기가 N * N 인 체스판 위에 퀸 N개를 서로 공격할 수 없게 놓는다
     퀸을 놓을수 있는 경우의 수를 구하라
 
@@ -273,7 +278,7 @@ private fun getAbsolueValue(value : Int) : Int {
      - 가로 + 세로 + 대각선
      - 가로 : x좌표가 같다
      - 세로 : y좌표가 같다
-     - 대각선 : 
+     - 대각선 :
      // 우상향
      1. (x+1, y+1), (x+2, y+2) ... x,y 가 n 을 넘지 않을때까지 반복
      // 좌하향
@@ -294,3 +299,4 @@ private fun getAbsolueValue(value : Int) : Int {
     3. 대각 안전 함수
     -> 1개로 퉁치는게 효율좋을지, 3개 각각 만들어도 될지 체크해보자
 */
+}

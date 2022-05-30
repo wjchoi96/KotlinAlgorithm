@@ -67,68 +67,74 @@
 
 import java.io.*
 import java.util.*
-private lateinit var queue : LinkedList<Int>
-private var count = 0
 fun main(args : Array<String>){
-    val bw = BufferedWriter(OutputStreamWriter(System.out))
-    val br = BufferedReader(InputStreamReader(System.`in`))
-    var st = StringTokenizer(br.readLine())
-    val size = st.nextToken().toInt()
-    val k = st.nextToken().toInt() // 뽑으려는 item 개수
+    Solution1021().solve()
+}
 
-    queue = LinkedList<Int>()
-    for(i in 1 until size+1){
-        queue.offer(i)
-    }
-    printQueue()
+class Solution1021{
+    private lateinit var queue : LinkedList<Int>
+    private var count = 0
+    fun solve(){
+        val bw = BufferedWriter(OutputStreamWriter(System.out))
+        val br = BufferedReader(InputStreamReader(System.`in`))
+        var st = StringTokenizer(br.readLine())
+        val size = st.nextToken().toInt()
+        val k = st.nextToken().toInt() // 뽑으려는 item 개수
 
-    st = StringTokenizer(br.readLine())
-    val searchArr = Array(k){st.nextToken().toInt()} // 뽑을 숫자를 담은 배열
-
-    for(i in 0 until k){
-        val targetIdx = queue.indexOf(searchArr[i])
-        val halfIdx = if(size%2==0){
-            size/2-1
-        }else{
-            size/2
+        queue = LinkedList<Int>()
+        for(i in 1 until size+1){
+            queue.offer(i)
         }
-        print("target : $targetIdx, halfIdx : $halfIdx\n")
-        if(targetIdx <= halfIdx){
-            for(j in 0 until targetIdx){
-                val temp = queue.pollFirst()
-                queue.offerLast(temp)
-                printQueue()
-                count++
+        printQueue()
+
+        st = StringTokenizer(br.readLine())
+        val searchArr = Array(k){st.nextToken().toInt()} // 뽑을 숫자를 담은 배열
+
+        for(i in 0 until k){
+            val targetIdx = queue.indexOf(searchArr[i])
+            val halfIdx = if(size%2==0){
+                size/2-1
+            }else{
+                size/2
             }
-        }else{
-            for(j in 0 until size-targetIdx){
-                val temp = queue.pollLast()
-                queue.offerFirst(temp)
-                printQueue()
-                count++
+            print("target : $targetIdx, halfIdx : $halfIdx\n")
+            if(targetIdx <= halfIdx){
+                for(j in 0 until targetIdx){
+                    val temp = queue.pollFirst()
+                    queue.offerLast(temp)
+                    printQueue()
+                    count++
+                }
+            }else{
+                for(j in 0 until size-targetIdx){
+                    val temp = queue.pollLast()
+                    queue.offerFirst(temp)
+                    printQueue()
+                    count++
+                }
             }
+            print("poll first : ${queue.pollFirst()}\n")
         }
-        print("poll first : ${queue.pollFirst()}\n")
-    }
 
-    bw.write("$count\n")
+        bw.write("$count\n")
 
-    bw.flush()
-    bw.close()
-    br.close()
-}
-private fun printQueue(){
-    print("[ ")
-    for(i in queue){
-        print("${i} ")
+        bw.flush()
+        bw.close()
+        br.close()
     }
-    print("]\n")
-}
-private fun moveQueueLeft(){
-    count++
-    queue.offerLast(queue.pollFirst())   
-}
-private fun moveQueueRight(){
-    count++
-    queue.offerFirst(queue.pollLast())
+    private fun printQueue(){
+        print("[ ")
+        for(i in queue){
+            print("${i} ")
+        }
+        print("]\n")
+    }
+    private fun moveQueueLeft(){
+        count++
+        queue.offerLast(queue.pollFirst())
+    }
+    private fun moveQueueRight(){
+        count++
+        queue.offerFirst(queue.pollLast())
+    }
 }
