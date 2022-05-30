@@ -125,118 +125,123 @@
 
 import java.io.*
 import java.util.StringTokenizer
-private lateinit var board : Array<Array<Int>>
-private var m = 0 // 배치되어있는 가로선의 개수
-private var n = 0 // y
-private var h = 0 // x
-private val dy = arrayOf(-1, 1)
-private var min = Int.MAX_VALUE
-
-private fun dfs(x : Int = 1, addRadder : Int = 0, maxRadder : Int){
-    if(addRadder == maxRadder){
-        if(checkRadder()) {
-            min = Math.min(min, maxRadder)
-        }
-        return
-    }
-
-    for(nx in x until h + 1){
-        for(ny in 1 until n){ //마지막 세로줄은 체크 안한다 -> 오른쪽으로만 배치
-            // 배치된 사다리가 없고, 사다리를 배치할 수 있다면
-            if(board[nx][ny] == 0 && board[nx][ny+1] == 0){ 
-                board[nx][ny] = ny+1 // 사다리 배치
-                board[nx][ny+1] = ny // 사다리 배치
-
-                dfs(nx, addRadder+1, maxRadder) // 여기를 nx+1 로할지 nx로할지에 따라서도 답이 갈린다 // https://www.acmicpc.net/board/view/85699
-
-                board[nx][ny] = 0// 사다리 철거
-                board[nx][ny+1] = 0 // 사다리 철거
-            }
-        }
-    }
-
+fun main(args : Array<String>){
+    Solution15684().solve()
 }
 
-private fun checkRadder() : Boolean {
-    for(i in 1 until n+1){
-        var x = 1
-        var y = i
-        while(x <= h){
-            if(board[x][y] != 0){ // 배치된 사다리가 있는것
-                if(board[x][y] < y){
-                    y--
-                }else{
-                    y++
+class Solution15684 {
+    private lateinit var board : Array<Array<Int>>
+    private var m = 0 // 배치되어있는 가로선의 개수
+    private var n = 0 // y
+    private var h = 0 // x
+    private val dy = arrayOf(-1, 1)
+    private var min = Int.MAX_VALUE
+
+    private fun dfs(x : Int = 1, addRadder : Int = 0, maxRadder : Int){
+        if(addRadder == maxRadder){
+            if(checkRadder()) {
+                min = Math.min(min, maxRadder)
+            }
+            return
+        }
+
+        for(nx in x until h + 1){
+            for(ny in 1 until n){ //마지막 세로줄은 체크 안한다 -> 오른쪽으로만 배치
+                // 배치된 사다리가 없고, 사다리를 배치할 수 있다면
+                if(board[nx][ny] == 0 && board[nx][ny+1] == 0){
+                    board[nx][ny] = ny+1 // 사다리 배치
+                    board[nx][ny+1] = ny // 사다리 배치
+
+                    dfs(nx, addRadder+1, maxRadder) // 여기를 nx+1 로할지 nx로할지에 따라서도 답이 갈린다 // https://www.acmicpc.net/board/view/85699
+
+                    board[nx][ny] = 0// 사다리 철거
+                    board[nx][ny+1] = 0 // 사다리 철거
                 }
             }
-            x++
         }
-        if(y != i){ 
-            return false
-        }
-    }
-    return true
-}
 
-fun main(args : Array<String>){
-    val bw = BufferedWriter(OutputStreamWriter(System.out))
-    val br = BufferedReader(InputStreamReader(System.`in`))
-    var st = StringTokenizer(br.readLine())
-
-    n = st.nextToken().toInt() // 세로선 y
-    m = st.nextToken().toInt() // 배치되어있는 사다리 개수
-    h = st.nextToken().toInt() // 가로선 x
-
-    board = Array(h+1){Array(n+1){0}}
-
-    for(i in 0 until m){ // 사다리 배치
-        st = StringTokenizer(br.readLine())
-        val x = st.nextToken().toInt()
-        val fromY = st.nextToken().toInt()
-        // 상호 연결
-        board[x][fromY] = fromY + 1
-        board[x][fromY + 1] = fromY
     }
 
-    for(i in 0 until 4){
-        dfs(maxRadder=i)
-    }
-
-    bw.write("${if(min == Int.MAX_VALUE)-1 else min}\n")
-
-    bw.flush()
-    bw.close()
-    br.close()
-}
-
-// ##################### try 1 개선 ######################
-private var minRadder = 3 // maxRadder 와 같게 하면 된다
-private fun dfs2(x : Int = 1, addRadder : Int = 0){
-    if(minRadder < addRadder){
-        return
-    }
-    if(checkRadder()){
-        minRadder = Math.min(minRadder, addRadder)
-        return
-    }
-    for(nx in x until h+1){
-        for(ny in 1 until n){
-            if(board[nx][ny] == 0 && board[nx][ny+1] == 0){
-                board[nx][ny] = ny+1
-                board[nx][ny+1] = ny
-
-                dfs(nx, addRadder + 1)
-
-                board[nx][ny] = 0
-                board[nx][ny+1] = 0
+    private fun checkRadder() : Boolean {
+        for(i in 1 until n+1){
+            var x = 1
+            var y = i
+            while(x <= h){
+                if(board[x][y] != 0){ // 배치된 사다리가 있는것
+                    if(board[x][y] < y){
+                        y--
+                    }else{
+                        y++
+                    }
+                }
+                x++
+            }
+            if(y != i){
+                return false
             }
         }
+        return true
     }
-    
-}
-private fun canAddRadder(x : Int, y : Int) : Boolean {
-    return board[x][y] == 0
-}
+
+    fun solve(){
+        val bw = BufferedWriter(OutputStreamWriter(System.out))
+        val br = BufferedReader(InputStreamReader(System.`in`))
+        var st = StringTokenizer(br.readLine())
+
+        n = st.nextToken().toInt() // 세로선 y
+        m = st.nextToken().toInt() // 배치되어있는 사다리 개수
+        h = st.nextToken().toInt() // 가로선 x
+
+        board = Array(h+1){Array(n+1){0}}
+
+        for(i in 0 until m){ // 사다리 배치
+            st = StringTokenizer(br.readLine())
+            val x = st.nextToken().toInt()
+            val fromY = st.nextToken().toInt()
+            // 상호 연결
+            board[x][fromY] = fromY + 1
+            board[x][fromY + 1] = fromY
+        }
+
+        for(i in 0 until 4){
+            dfs(maxRadder=i)
+        }
+
+        bw.write("${if(min == Int.MAX_VALUE)-1 else min}\n")
+
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+
+    // ##################### try 1 개선 ######################
+    private var minRadder = 3 // maxRadder 와 같게 하면 된다
+    private fun dfs2(x : Int = 1, addRadder : Int = 0){
+        if(minRadder < addRadder){
+            return
+        }
+        if(checkRadder()){
+            minRadder = Math.min(minRadder, addRadder)
+            return
+        }
+        for(nx in x until h+1){
+            for(ny in 1 until n){
+                if(board[nx][ny] == 0 && board[nx][ny+1] == 0){
+                    board[nx][ny] = ny+1
+                    board[nx][ny+1] = ny
+
+                    dfs2(nx, addRadder + 1)
+
+                    board[nx][ny] = 0
+                    board[nx][ny+1] = 0
+                }
+            }
+        }
+
+    }
+    private fun canAddRadder(x : Int, y : Int) : Boolean {
+        return board[x][y] == 0
+    }
 
 // ##################### try 1 ######################
 // private fun dfsTry1(fromY : Int = 1, x : Int = 1, y : Int = 1, addRadder : Int = 0){
@@ -261,7 +266,7 @@ private fun canAddRadder(x : Int, y : Int) : Boolean {
 //             continue
 //         }
 //         // 배치할수있다면 배치하는 가지
-//         if(canAddRadder(x, ny)){ 
+//         if(canAddRadder(x, ny)){
 //             board[x][y] = ny // [x,y] -> [x,ny]로 사다리 배치
 //             dfsTry1(fromY, x, ny, addRadder + 1) // 사다리 배치한 좌표로 이동
 //             board[x][y] = 0 // 백트래킹을 위해 사다리 배치 취소
@@ -272,3 +277,4 @@ private fun canAddRadder(x : Int, y : Int) : Boolean {
 // private fun canAddRadder(x : Int, y : Int) : Boolean {
 //     return board[x][y] == 0
 // }
+}
