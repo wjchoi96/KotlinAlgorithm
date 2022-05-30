@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.backtracking
 /*
     바킹독님 강의 중 백트래킹 단원
     https://blog.encrypted.gg/919
