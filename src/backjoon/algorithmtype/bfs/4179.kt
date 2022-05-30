@@ -1,4 +1,4 @@
-//gold4
+package src.backjoon.algorithmtype.bfs//gold4
 /*
     바캉독님 bfs강의에 나온 연습문제
 

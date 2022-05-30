@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.backtracking
 //sliver3
 /*
     바킹독님 백트래킹 단원에서 제시된 연습문제
