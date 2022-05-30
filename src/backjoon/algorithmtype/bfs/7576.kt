@@ -1,4 +1,4 @@
-// gold5
+package src.backjoon.algorithmtype.bfs// gold5
 /*
     바캉독님 bfs 강의 도중 나온 연습문제
     해당 문제를 보고 bfs라고 인지 가능한지 확인

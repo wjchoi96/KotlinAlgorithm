@@ -1,4 +1,4 @@
-//gold3
+package src.backjoon.algorithmtype.bfs//gold3
 /*
     네이버 카페 문제50선 중 bfs문제
 

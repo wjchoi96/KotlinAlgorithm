@@ -1,4 +1,4 @@
-//gold5
+package src.backjoon.algorithmtype.bfs//gold5
 /*
     네이버 카페 문제 50선 중 bfs 유형
 
