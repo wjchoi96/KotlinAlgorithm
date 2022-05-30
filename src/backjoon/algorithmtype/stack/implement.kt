@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.stack
 /*
     바킹독님 알고리즘 강의 중 stack 구현
 */
