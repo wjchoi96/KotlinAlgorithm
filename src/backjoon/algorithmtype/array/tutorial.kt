@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.array
 /*
     바킹독님 알고리즘 강의 중 배열 단원
 

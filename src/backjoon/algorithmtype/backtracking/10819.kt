@@ -1,3 +1,4 @@
+package src.backjoon.algorithmtype.backtracking
 //sliver2
 /*
     네이버 카페 문제50선 중 백트래킹 + 완전탐색 유형

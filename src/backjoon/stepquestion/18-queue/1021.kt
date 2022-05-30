@@ -1,3 +1,4 @@
+package src.backjoon.stepquestion.`18-queue`
 //sliver4
 //18-6
 /*
