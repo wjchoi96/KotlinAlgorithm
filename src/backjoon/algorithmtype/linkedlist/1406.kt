@@ -190,7 +190,7 @@ fun main(args : Array<String>){
     while(iterator.hasNext()){
         sb.append("${iterator.next()}")
     }
-    bw.write("${sb.toString()}")
+    bw.write("$sb")
 
     bw.flush()
     bw.close()
@@ -208,7 +208,7 @@ private fun solve1(){
     val linkedList = CharLinkedList(str)
     val m = br.readLine().toInt()
     
-    println("${linkedList.print()}")
+    println(linkedList.print())
 
     repeat(m){
         val op = br.readLine().split(' ')
@@ -216,27 +216,27 @@ private fun solve1(){
             "L" -> {
                 println("move left")
                 linkedList.moveCursorLeft()
-                println("${linkedList.print()}")
+                println(linkedList.print())
             }
             "D" -> {
                 println("move right")
                 linkedList.moveCursorRight()
-                println("${linkedList.print()}")
+                println(linkedList.print())
             }
             "B" -> {
                 println("remove cursor")
                 linkedList.removeAtCursor()
-                println("${linkedList.print()}")
+                println(linkedList.print())
             }
             "P" -> {
                 println("add cursor ${op[1]}")
                 linkedList.addAtCursor(op[1][0])
-                println("${linkedList.print()}")
+                println(linkedList.print())
             }
         }
     }
     println("finish")
-    println("${linkedList.print()}")
+    println(linkedList.print())
 
     bw.write("${linkedList}\n")
 
@@ -245,19 +245,20 @@ private fun solve1(){
     br.close()
 }
 
-private data class Node(
-    val data : Char,
-    var prev : Node?,
-    var next : Node?
-){
-    constructor(data : Char) : this(data, null, null)
-    constructor(data : Char, prev : Node) : this(data, prev, null)
 
-    override fun toString() : String{
-        return "$data"
-    }
-}
 private class CharLinkedList {
+    private data class Node(
+        val data : Char,
+        var prev : Node?,
+        var next : Node?
+    ){
+        constructor(data : Char) : this(data, null, null)
+        constructor(data : Char, prev : Node) : this(data, prev, null)
+
+        override fun toString() : String{
+            return "$data"
+        }
+    }
     private var start : Node? = null
     private var cursor : Node? = null // null => list의 왼쪽 끝
 
