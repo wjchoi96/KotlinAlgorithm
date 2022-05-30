@@ -1,3 +1,4 @@
+package src.backjoon.stepquestion.`14-dp1`
 //sliver 1
 // 15-5
 import java.io.*
