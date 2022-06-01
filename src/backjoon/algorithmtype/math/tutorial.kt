@@ -8,6 +8,9 @@
 
     #소수
     - primetut.kt 
-    
+
+    #최대공약수
+    - gcdtut.kt
+
 */
 
