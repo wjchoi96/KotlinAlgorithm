@@ -22,6 +22,10 @@
         우변의 분모 x를 좌변으로 옮기면 x^2<=n
         => x<=루트n
 
+    
+    연습문제
+    1. 백준 1978(solve)
+
 */
 // 2번 판정법 O(루트n)
 private fun isPrime2(n: Int): Boolean {
