@@ -69,6 +69,8 @@
     연습문제
     1. 백준 1978(solve)
 
+    2. 백준 1929(solve)
+
 */
 fun main(args: Array<String>){
     val arr = arrayOf(
