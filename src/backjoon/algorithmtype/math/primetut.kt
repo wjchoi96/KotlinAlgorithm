@@ -66,6 +66,38 @@
     n - m 을 순회하여 소수를 출력하면 된다
 
 
+    #소인수 분해
+    - 정수를 소수의 곱으로 나타내는 것
+    => 1100 = 2*2*5*5*11
+
+    #준비
+    n: 1100, i: 2
+    
+    #구현
+    1. n을 i로 나누어 떨어지지 않을 때 까지 나눈다
+    나눈 i는 소인수 목록에 추가한다
+
+    2. 더 나누어지지 않는다면 i 증가
+    - 1번 반복
+
+    3. n이 1이 될때까지 반복
+        #해당 방법의 정당성
+        1. 소인수 목록에 있는 수를 전부 곱하면 원래의 n이 되는가?
+        - 당연
+        2. 목록에 있는 수가 전부 소수인가?
+        - 작은 소인수부터 나눠왔으니 맞다
+
+    : 시간복잡도 O(n)으로 구현
+
+    #개선
+    - n을 i로 나누는 이유는 n에서 소인수 i를 빼내기 위함
+    - i^2가 n보다 커지게되면 더이상 나눠보는 작업을 하지 않더라도
+    n에는 루티n이하인 소인수가 없다, 다르게 말하면 n은 소수다 라는것을 알 수 있다
+    => i를 나눠주다가 i^2가 n보다 커졌다면, i와 n사이의 수 중 n을 나눌 수는 없다는걸 알 수 있다
+        예) 1100을 소인수 분해하다가 n:11, i:5
+        5~10 에는 11을 나눌 수가 없다
+        과정을 종료하고 n이 1이 아닌 경우 해당 수를 소인수 목록에 추가
+
     연습문제
     1. 백준 1978(solve)
 
@@ -73,11 +105,51 @@
 
 */
 fun main(args: Array<String>){
-    val arr = arrayOf(
-        1,2,3,4,5,6,7,8,9
-    )
-    val count = isPrime4(arr)
-    print("count: $count\n")
+    // val arr = arrayOf(
+    //     1,2,3,4,5,6,7,8,9
+    // )
+    // val count = isPrime4(arr)
+    // print("count: $count\n")
+
+    val primes = primeFactorization2(1100)
+    for(i in primes){
+        print("${i}\n")
+    }
+}
+
+// 소인수분해 2 개선 O(lgn)
+private fun primeFactorization2(v: Int): List<Int>{
+    var primeList = ArrayList<Int>()
+    var n = v
+    var i = 2
+    while(n!=1){
+        if(i*i>n){
+            primeList.add(n)
+            break
+        }
+        while(n%i==0){
+            n /= i
+            primeList.add(i)
+        }
+        i++
+    }
+    return primeList
+}
+
+
+// 소인수분해 1 O(n)
+private fun primeFactorization(v: Int): List<Int>{
+    var primeList = ArrayList<Int>()
+    var n = v
+    var i = 2
+    while(n!=1){
+        while(n%i==0){
+            n /= i
+            primeList.add(i)
+        }
+        i++
+    }
+    return primeList
 }
 
 // 에라스토테네스의 체 최종본?
