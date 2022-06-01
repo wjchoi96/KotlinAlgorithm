@@ -13,6 +13,10 @@
 /*
     제출
     1. 성공
+
+    2. 성공
+    - Math.sqrt 사용
+    - 해당 결과를 포함하도록 순회해야한다
 */
 fun main(args: Array<String>){
     Solution1929().solve()
