@@ -19,7 +19,7 @@
     2. 성공
 */
 
-fun main(){
+fun main(args: Array<String>){
     Solution1978().solve()
 }
 class Solution1978 {
