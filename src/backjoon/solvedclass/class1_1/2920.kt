@@ -3,6 +3,6 @@
     bronze 2
 
     음계
+    https://www.acmicpc.net/problem/2920
 
-    
 */
