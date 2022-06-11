@@ -12,3 +12,14 @@ fun main(args : Array<String>){
     bw.close()
     br.close()
 }
+
+class SolutionXXX {
+    fun solve(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+    
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+}
