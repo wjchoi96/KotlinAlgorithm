@@ -55,9 +55,20 @@ import java.util.Arrays/*
     3. 성공
     - 풀이 자체는 바킹독님 해설을 보며 진행
     - 풀긴 풀었다면, 시간복잡도 계산이나 접근 방식 생각해 내는 등에 대해 부족함을 느낀다
+
+    4. 성공-> solve2
+    - 개선안 1 적용
 */
+/*
+    개선 -> solve2
+    1. two 배열을 HashMap으로 구성한다면 이분탐색을 할 필요없이 O(1)에 값이 있는지 없는지 체크 가능
+    -> O(n^2)에 해결 가능
+    => two 만드는데 O(n^2) -> 사실 중복제거를 통해 최적화시키면 n^2 보다 줄일 수 있다
+    => U원소들끼리 차를 구해 two에 있는지 확인 O(n^2)
+*/
+import java.util.HashMap
 fun main(args: Array<String>){
-    Solution2295().solve()
+    Solution2295().solve2()
 }
 class Solution2295 {
     fun solve(){
@@ -92,6 +103,7 @@ class Solution2295 {
         bw.close()
         br.close()
     }
+    //Arrays.binarySort 라이브러리 대체 가능
     private fun Array<Int>.binarySearch(n: Int): Int {
         var start = 0
         var end = this.size-1
@@ -104,5 +116,36 @@ class Solution2295 {
             }
         }
         return -1
+    }
+
+    fun solve2(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+
+        val n = br.readLine().toInt()
+        val arr = Array(n){0}
+        val twoMap = HashMap<Int, Boolean>()
+        repeat(n){arr[it] = br.readLine().toInt()}
+        arr.sort()
+
+        for(i in 0 until n){
+            for(j in i until n){
+                twoMap[arr[i]+arr[j]] = true
+            }
+        }
+
+        println("${twoMap.keys.toList()}")
+        loop@for(i in n-1 downTo 0){
+            for(j in 0 until i+1){
+                if(twoMap.containsKey(arr[i]-arr[j])){
+                    bw.write("${arr[i]}\n")
+                    break@loop
+                }
+            }
+        }
+    
+        bw.flush()
+        bw.close()
+        br.close()
     }
 }
