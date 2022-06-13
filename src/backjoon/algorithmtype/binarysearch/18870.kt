@@ -25,10 +25,19 @@
 
     2. 성공
 
+    3. 성공
+    - 개선안 적용
+
+*/
+/*
+    개선안
+    Set 에다가 push 한 후 중복이 제거된 목록인 Set 을 List 로 변경시켜(O(n))
+    sort 이후 binarySearch
+    => solve2
 */
 import java.util.Stack
 fun main(args: Array<String>){
-    Solution18870().solve()
+    Solution18870().solve2()
 }
 class Solution18870 {
     fun solve(){
@@ -73,5 +82,25 @@ class Solution18870 {
             }
         }
         return -1
+    }
+
+    fun solve2(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+
+        val n = br.readLine().toInt()
+        val arr = br.readLine().split(' ').map{it.toInt()}
+        val set = arr.toHashSet()
+        val sortedArr = set.toList().sorted().toTypedArray()
+        
+        arr.forEach{
+            var res = binarySearch(it, sortedArr)
+            if(res<0) res = 0
+            bw.write("$res ")
+        }
+
+        bw.flush()
+        bw.close()
+        br.close()
     }
 }
