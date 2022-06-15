@@ -44,4 +44,7 @@
     - parametric search 의 대표 문제격
     6. 백준 1477(solve)
     - 잘못된 그리디 예제 중 parametric search 유형이라고 소개 된 문제
+
+    # https://www.crocus.co.kr/1000 에서 제시한 Parametric Search 연습 문제
+    7. 백준 2110(solve)
 */
