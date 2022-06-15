@@ -47,4 +47,6 @@
 
     # https://www.crocus.co.kr/1000 에서 제시한 Parametric Search 연습 문제
     7. 백준 2110(solve)
+    8. 백즌 2613
+    - 난이도가 생각보다 높아서 유형을 봤는데 dp+그리디+이분탐색 이라 한다
 */
