@@ -28,6 +28,9 @@
     0<= N <=50 (현재 휴게소 개수)
     1<= M <= 100 (더 지으려는 휴게소)
     100<= L <= 1000 (고속도로 길이)
+
+    N+M < L
+    => 반드시 M개의 휴게소를 지을 수 있다
 */
 /*
     최적화 문제: 휴게소를 M개 더 지어서 휴게소가 없는 구간의 길이의 최댓값을 최소로 한다
@@ -66,6 +69,23 @@
     - 예제는 모두 맞은 상태
 
     2. 틀렸습니다(6%)
+    
+    3. 틀렸습니다(6% 보단 더 올라갔다)
+    - 런타임 에러(/by zero)
+    - 0 90 100 같은 경우 확인
+    - mid 값 구할때 +1 을 추가로 진행
+
+    4. 틀렸습니다(16%)
+    - 런타임 에러(/by zero)
+    - 다른 블로그 정답코드와 차이가 없어보이는데.. 일단 start 초기값을 1로 주어서 진행해봄
+    
+    5. 정답
+    - start 를 0으로 놓고 어떻게 /by zero 를 통과하는거지?
+
+
+
+*/
+/*
     https://moonsbeen.tistory.com/273
     https://coder-in-war.tistory.com/m/entry/BOJ-JAVA1477-%ED%9C%B4%EA%B2%8C%EC%86%8C-%EC%84%B8%EC%9A%B0%EA%B8%B0
 
@@ -82,9 +102,6 @@
     https://blog.encrypted.gg/985
 
     mid 구할때 +1 해줘야 하는 경우에 대해 한번 더 읽어봐라
-
-
-
 */
 import java.util.StringTokenizer
 fun main(args: Array<String>){
@@ -102,7 +119,8 @@ class Solution1477 {
         val (size, add, road) = br.readLine().split(' ').map{it.toInt()}
         n = size; m = add; k = road
         arr = Array(n+2){0}
-        arr[arr.size-1] = k
+        arr[arr.size-1] = k // 시작은 0, 끝은 k
+        // 간격을 계산하기 위한 배열이기 때문에 시작을 휴게소를 설치할 수 있는 시작점인 1이 아닌 0으로 둔다
         val st = StringTokenizer(br.readLine())
         for(i in 1 until arr.size-1){
             arr[i] = st.nextToken().toInt()
@@ -116,24 +134,42 @@ class Solution1477 {
     }
     //O(lg k)
     private fun findRoadInterval(): Int{
-        var start = 0
+        var start = 1 // 0으로 둘 경우 /by zero 런타임 에러가 발생. 
         var end = k
+        //실제 탐색 범위와 start, end 값이 일치하기 때문에 mid값을 구할때 +1을 안해줘도 된다
         while(start<=end){
             val mid = (start+end)/2
             print("start[$start], mid[$mid], end[$end] ")
             val canBuild = canBuildRestArea(mid)
-            when{ 
-                canBuild>0 -> start=mid+1 // 더 많이 지은 경우 -> 간격을 넓혀서 더 적게 짓도록 한다 -> *+1을 해주는것과 안해주는것의 차이는?
-                canBuild<=0 -> end=mid-1 // 더 적게 지은 경우, 알맞게 지은 경우 -> 간격을 좁혀서 더 지을 수 있게 해준다, 간격을 좁혀서 최소값을 유도해본다
+            when{
+                canBuild>0 -> start=mid+1 // 더 많이 지었으니, 간격을 늘려 build개수를 줄이도록 한다
+                canBuild==0 -> end=mid-1 // 알맞게 지었으나, 간격을 줄여 최소값을 구하도록 유도한다
+                canBuild<0 -> end=mid-1 // 더 적게 지었으니, 간격을 줄여 build개수를 늘이도록 한다
             }
         }
+        /*
+            0 1 500 의 경우 start값이 연속으로 조정되다가 반복문이 종료된다
+            이때 반복문이 끝나는 이유는 start값이 계속 증가하다가 end값을 넘어갔(같아졌)기 때문인데, 이때의
+            start값은 canBuildRestArea 유효성 체크를 하지 않고 리턴을 하게 된다. 
+            하지만 이는 유효한 값인데 이유는, end는 유효한 mid-1을 통해 변경된 값(이거나 초기값)이기 때문에
+            유효한 값에 대한 정보를 알고있다.
+            때문에 while문의 조건을 통해 start값의 유효성을 보장할 수 있다.
+
+            이 경우 end=mid-1을 했기때문에 start값이 증가되며 반복문이 종료될때 유효했던 mid값을 가지려면
+            start<=end 로 반복 조건을 채워야한다. (start값이 end+1이 되었을때 종료되어야 유효한 값이기 때문)
+            => 그에 따라 end의 초기값도 k-1로 변경?
+            => 문제 조건이 반드시 M개의 휴게소를 지을 수 있다이니, 무조건 유효한 end값은 한번이라도 나오게 될것
+            때문에 end는 실제 탐색 범위인 k로 둔다
+
+        */
         return start
     }
     //O(n)
     private fun canBuildRestArea(interval: Int): Int{
         var count = 0
         for(i in 0 until arr.size-1){
-            val restInterval = arr[i+1]-arr[i]-1 // 휴게소 간 간격 -> -1을 하는 이유?
+            val restInterval = arr[i+1]-arr[i]-1 // 휴게소 간 간격-1
+            //-1을 하는 이유? -> 실제 거리가 10일떄, interval이 10이 나오면 휴게소를 건설하지 못해야 한다. 그런 경우에 대응하기 위함?
             count += restInterval/interval // 휴게소 간 간격에 설정한 간격이 최대가 되도록 휴게소를 몇개 설치할 수 있나
         }
         println("interval[$interval] can build rest area $count")
@@ -141,3 +177,10 @@ class Solution1477 {
     }
 
 }
+/*
+3 1 1000
+200 710 800
+
+6 7 1000
+622 411 201 555 755 82
+*/
