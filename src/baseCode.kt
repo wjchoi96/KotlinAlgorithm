@@ -3,7 +3,7 @@
     기초 입출력 코드
 */
 import java.util.StringTokenizer
-fun main(args : Array<String>){
+fun main2(args : Array<String>){
     val bw = System.out.bufferedWriter()
     val br = System.`in`.bufferedReader()
     var st = StringTokenizer(br.readLine())
@@ -13,6 +13,9 @@ fun main(args : Array<String>){
     br.close()
 }
 
+fun main(args: Array<String>){
+
+}
 class SolutionXXX {
     fun solve(){
         val bw = System.out.bufferedWriter()
