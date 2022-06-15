@@ -31,6 +31,11 @@
 
     2. 성공
 */
+/*
+    개선
+    1. c는 최소 2이니, 첫번째 집은 무조건 공유기를 설치한다고 가정하고 진행해도 잘못된 결과를 도출하지 않는다
+    => 성공
+*/
 
 fun main(args: Array<String>){
     Solution2110().solve()
@@ -53,7 +58,7 @@ class Solution2110 {
         }
         arr.sort()
 
-        val res = getWifiInterval()
+        val res = getWifiInterval2()
         bw.write("$res\n")
     
         bw.flush()
@@ -84,6 +89,45 @@ class Solution2110 {
     }
     
     private fun canBuildWifi(interval: Int): Int{
+        // c는 최소2이니, 첫번째 집은 무조건 설치하도록 설정해놔도 잘못된 답을 도출할 일이 없다
+        var count = 1
+        var pendingInterval = 0
+        print("[ b[0] ")
+        // 두번째 집 부터 이전집과의 간격을 비교하며(정확히는 이전에 설치된 집) interval보다 떨어졌다면 설치
+        for(i in 1 until n){
+            val homeInterval = arr[i]-arr[i-1]
+            if(arr[i]-arr[i-1]+pendingInterval>=interval){
+                pendingInterval = 0
+                count++
+                print("b[$i] ")
+            }else{
+                pendingInterval+=homeInterval
+                print("n[$i] ")
+            }
+        }
+        print("] ")
+        println("interval[$interval] can build wifi $count")
+        return count-c
+    }
+
+    // 이렇게 이분탐색 하는 경우도 존재
+    private fun getWifiInterval2(): Int{
+        var start = 1
+        var end = max
+        while(start+1<end){
+            val mid = (start+end)/2
+            print("start[$start], mid[$mid], end[$end] ")
+            val build = canBuildWifi(mid)
+            when {
+                build>0 -> start=mid
+                build==0 -> start=mid
+                build<0 -> end=mid // 부족하게 설치된 경우, 범위를 좁혀서 더 많이 설치할 수 있도록 유도
+            }
+        }
+        return start
+    }
+
+    private fun canBuildWifiOriginal(interval: Int): Int{
         /* 
             가장 인접한 두 공유기 사이의 거리를 interval로 하여
             => 공유기 간의 최소 거리를 interval로 하여
@@ -102,7 +146,7 @@ class Solution2110 {
         var pendingInterval = 0
         if(interval>arr[n-1]-arr[0]){
             count = -888
-        }else{
+        }else{ 
             print("[ b[0] ")
             // 두번째 집 부터 이전집과의 간격을 비교하며(정확히는 이전에 설치된 집) interval보다 떨어졌다면 설치
             for(i in 1 until n){
