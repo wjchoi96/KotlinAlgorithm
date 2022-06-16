@@ -46,6 +46,16 @@
     투포인터로 해당 합을 도출해 내고, 도출해 냈을때 그룹이 몇개가 나오는지, 나온 그룹들 중 합이 현재 값이 최대인지?
     
 */
+/*
+    dp
+    https://forstudy.tistory.com/entry/%EB%B0%B1%EC%A4%80-2613%EB%B2%88-%EC%88%AB%EC%9E%90%EA%B5%AC%EC%8A%AC-java
+    => 얘는 나랑 생각이 다른 dp이긴 한데 일단 링크
+
+    dp[startIdx][endIdx] => startIdx-endIdx 까지의 합
+    => startIdx = 0~n-2
+    => endIdx = 1~n-1 
+    즉 n-1 * n-1 사이즈
+*/
 
 
 fun main(args: Array<String>){
@@ -57,6 +67,7 @@ class Solution2613 {
     private lateinit var arr: Array<Int>
     private var max = 0 // 최대 100
     private var sum = 0 // 최대 300*100
+    private lateinit var dp: Array<Array<Int>>
     fun solve(){
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
@@ -71,13 +82,16 @@ class Solution2613 {
             max = Math.max(max, v)
             sum += v
         }
+        dp = Array(n){Array(n){0}}
+        println("max[$max] sum[$sum]")
 
-        getMaxGroupSum()
+        initDp()
     
         bw.flush()
         bw.close()
         br.close()
     }
+    //최대 O(lg 500*100) 
     private fun getMaxGroupSum(){
         var start = max
         var end = sum
@@ -85,7 +99,7 @@ class Solution2613 {
             val mid = (start+end)/2
             print("start[$start] mid[$mid] end[$end] ")
             val canGroup = canMakeGroupSum(mid)
-            println("canGroup => $canGroup")
+            println("\ncanGroup => $canGroup")
             when(canGroup){
                 true -> end=mid-1 // 가능하다면, mid를 낮춰 최소값을 구하도록 한다
                 false -> start=mid+1 // 불가능하다면, mid를 높여 가능한 값을 찾는다
@@ -94,28 +108,40 @@ class Solution2613 {
 
     }
     //m개의 그룹으로 나누면서, 그룹의 합 중 최댓값이 value가 나오도록 할 수 있는가
+    //근데 이거 dp로 저장해 놓으면 편하겠는데?
+    //dp[startIdx][endIdx] 로 저장해서?
     private fun canMakeGroupSum(value: Int): Boolean{
         var start = 0
         var end = start+1
         var group = arr[start]+arr[end]
         var prevGroup = 0
+        var prevCount = 0
         var nextGroup = sum-group
+        var nextCount = n-2
         while(start<end && end<n){
+            print("\nstartIdx[$start] endIdx[$end] ")
+            print("prev[$prevGroup] group[$group] next[$nextGroup]")
             when{
                 group<value -> {
+                    if(end==n-1) break
                     group+=arr[++end]
-                    nextGroup-=arr[end-1] // end 이후 그룹에서 end값을 빼준다
+                    nextGroup-=arr[end] // end 이후 그룹에서 end값을 빼준다
+                    nextCount--
                 } // 합이 value보다 작다면 end 를 늘려 갚을 키운다
                 group==value -> {
                     //유효성이 일치하지 않는다면, start를 올린다
-                    if(end+1-start == n-2){ // 3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
+                    if(end+1-start > n-2){ // 3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
                         group-=arr[start++]
+                        prevGroup+=arr[start-1]
+                        prevGroup++
                     }else { // 나머지 그룹의 합을 체크
-                        if(group<prevGroup){
-                            return false
-                        }else if(group<nextGroup){
-                            group+=arr[++end]
+                        if(group<prevGroup){ // 이때 나머지를 쪼개서 둘다 17보다 작다면 된다
+                            return false 
+                        }else if(group<nextGroup){  // 이때 나머지를 쪼개서 둘다 17보다 작다면 된다
+                            if(end==n-1) break
+                            group+=arr[++end] 
                             nextGroup-=arr[end-1]
+                            nextCount--
                         }else{
                             return true
                         }
@@ -124,11 +150,26 @@ class Solution2613 {
                 group>value -> {
                     group-=arr[start++]
                     prevGroup+=arr[start-1] // start 이전 그룹에 start 값을 추가해준다
+                    prevGroup++
                 } // 합이 value보다 작다면 start를 늘려 값을 줄인다
             }
         }
         return false
     }
 
-    
+    // O(2N) 
+    private fun initDp(){
+        var start = 0
+        var end = start+1
+        var group = arr[start]+arr[end]
+        while(start<end){
+            dp[start][end] = group
+            println("startIdx[$start] endIdx[$end] => ${dp[start][end]}")
+            if(end!=n-1){
+                group+=arr[++end]
+            }else{
+                group-=arr[start++]
+            }
+        }
+    }
 }
