@@ -52,12 +52,83 @@ fun main(args: Array<String>){
     Solution2613().solve()
 }
 class Solution2613 {
+    private var n = 0
+    private var m = 0
+    private lateinit var arr: Array<Int>
+    private var max = 0 // 최대 100
+    private var sum = 0 // 최대 300*100
     fun solve(){
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
+
+        br.readLine().split(' ').map{it.toInt()}.apply{
+            n = this[0]
+            m = this[1]
+        }
+        arr = Array(n){0}
+        br.readLine().split(' ').map{it.toInt()}.forEachIndexed { i,v ->
+            arr[i] = v
+            max = Math.max(max, v)
+            sum += v
+        }
+
+        getMaxGroupSum()
     
         bw.flush()
         bw.close()
         br.close()
     }
+    private fun getMaxGroupSum(){
+        var start = max
+        var end = sum
+        while(start<end){
+            val mid = (start+end)/2
+            print("start[$start] mid[$mid] end[$end] ")
+            val canGroup = canMakeGroupSum(mid)
+            println("canGroup => $canGroup")
+            when(canGroup){
+                true -> end=mid-1 // 가능하다면, mid를 낮춰 최소값을 구하도록 한다
+                false -> start=mid+1 // 불가능하다면, mid를 높여 가능한 값을 찾는다
+            }
+        }
+
+    }
+    //m개의 그룹으로 나누면서, 그룹의 합 중 최댓값이 value가 나오도록 할 수 있는가
+    private fun canMakeGroupSum(value: Int): Boolean{
+        var start = 0
+        var end = start+1
+        var group = arr[start]+arr[end]
+        var prevGroup = 0
+        var nextGroup = sum-group
+        while(start<end && end<n){
+            when{
+                group<value -> {
+                    group+=arr[++end]
+                    nextGroup-=arr[end-1] // end 이후 그룹에서 end값을 빼준다
+                } // 합이 value보다 작다면 end 를 늘려 갚을 키운다
+                group==value -> {
+                    //유효성이 일치하지 않는다면, start를 올린다
+                    if(end+1-start == n-2){ // 3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
+                        group-=arr[start++]
+                    }else { // 나머지 그룹의 합을 체크
+                        if(group<prevGroup){
+                            return false
+                        }else if(group<nextGroup){
+                            group+=arr[++end]
+                            nextGroup-=arr[end-1]
+                        }else{
+                            return true
+                        }
+                    }
+                } // 합이 value와 같다면, 유효성을 체크한다 -> 3개의 그룹이 가능한지, 나머지 구슬을 합쳐서 현재 value를 넘는지
+                group>value -> {
+                    group-=arr[start++]
+                    prevGroup+=arr[start-1] // start 이전 그룹에 start 값을 추가해준다
+                } // 합이 value보다 작다면 start를 늘려 값을 줄인다
+            }
+        }
+        return false
+    }
+
+    
 }
