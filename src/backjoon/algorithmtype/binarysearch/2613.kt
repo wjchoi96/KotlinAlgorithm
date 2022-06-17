@@ -56,6 +56,11 @@
     => endIdx = 1~n-1 
     즉 n-1 * n-1 사이즈
 */
+/*
+    제출
+    1. 틀렸습니다(6%)
+    - 시간초과 될거 같았는데 일단 틀렸다
+*/
 
 
 fun main(args: Array<String>){
@@ -68,6 +73,7 @@ class Solution2613 {
     private var max = 0 // 최대 100
     private var sum = 0 // 최대 300*100
     private lateinit var dp: Array<Array<Int>>
+    private var result: Triple<Int, Int, Int> = Triple(0, 0, 0)
     fun solve(){
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
@@ -82,10 +88,11 @@ class Solution2613 {
             max = Math.max(max, v)
             sum += v
         }
-        dp = Array(n){Array(n){0}}
+        dp = Array(n){Array(n){-1}}
         println("max[$max] sum[$sum]")
 
         initDp()
+        getMaxGroupSum()
     
         bw.flush()
         bw.close()
@@ -95,7 +102,7 @@ class Solution2613 {
     private fun getMaxGroupSum(){
         var start = max
         var end = sum
-        while(start<end){
+        while(start<=end){
             val mid = (start+end)/2
             print("start[$start] mid[$mid] end[$end] ")
             val canGroup = canMakeGroupSum(mid)
@@ -105,7 +112,7 @@ class Solution2613 {
                 false -> start=mid+1 // 불가능하다면, mid를 높여 가능한 값을 찾는다
             }
         }
-
+        println("$start\n${result.first} ${result.second} ${result.third}")
     }
     //m개의 그룹으로 나누면서, 그룹의 합 중 최댓값이 value가 나오도록 할 수 있는가
     //근데 이거 dp로 저장해 놓으면 편하겠는데?
@@ -113,63 +120,99 @@ class Solution2613 {
     private fun canMakeGroupSum(value: Int): Boolean{
         var start = 0
         var end = start+1
-        var group = arr[start]+arr[end]
-        var prevGroup = 0
-        var prevCount = 0
-        var nextGroup = sum-group
-        var nextCount = n-2
         while(start<end && end<n){
-            print("\nstartIdx[$start] endIdx[$end] ")
-            print("prev[$prevGroup] group[$group] next[$nextGroup]")
+            print("\nstartIdx[$start] endIdx[$end] => ${dp[start][end]}")
             when{
-                group<value -> {
+                dp[start][end]<value -> {
                     if(end==n-1) break
-                    group+=arr[++end]
-                    nextGroup-=arr[end] // end 이후 그룹에서 end값을 빼준다
-                    nextCount--
+                    end++
                 } // 합이 value보다 작다면 end 를 늘려 갚을 키운다
-                group==value -> {
+                dp[start][end]==value -> { 
+                    //3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
                     //유효성이 일치하지 않는다면, start를 올린다
-                    if(end+1-start > n-2){ // 3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
-                        group-=arr[start++]
-                        prevGroup+=arr[start-1]
-                        prevGroup++
+                    if(end+1-start > n-2){ 
+                        start++
                     }else { // 나머지 그룹의 합을 체크
-                        if(group<prevGroup){ // 이때 나머지를 쪼개서 둘다 17보다 작다면 된다
-                            return false 
-                        }else if(group<nextGroup){  // 이때 나머지를 쪼개서 둘다 17보다 작다면 된다
-                            if(end==n-1) break
-                            group+=arr[++end] 
-                            nextGroup-=arr[end-1]
-                            nextCount--
+                        if(start == 0){
+                            // 나머지 그룹이 더 큰 경우를 탐색
+                            for(i in end+1 until n){ 
+                                //end+1~i, i+1~n-1
+                                if(dp[start][end]>=dp[end+1][i] && dp[start][end]>=dp[i+1][n-1]){    
+                                    setResult(start to end, end+1 to i, i+1 to n-1)
+                                    return true
+                                }
+                            }
+                            start++
+                        }else if(end == n-1){
+                            for(i in 0 until start){ 
+                                //0~i, i+1~start-1
+                                if(dp[start][end]>=dp[0][i] && dp[start][end]>=dp[i+1][start-1]){   
+                                    setResult(0 to i, i+1 to start-1, start to end)
+                                    return true
+                                }
+                            }
+                            start++
                         }else{
-                            return true
+                            if(dp[start][end]>=dp[0][start-1] && dp[start][end]>=dp[end+1][n-1]){    
+                                setResult(0 to start-1, start to end, end+1 to n-1)
+                                return true
+                            }
+                            start++
                         }
                     }
                 } // 합이 value와 같다면, 유효성을 체크한다 -> 3개의 그룹이 가능한지, 나머지 구슬을 합쳐서 현재 value를 넘는지
-                group>value -> {
-                    group-=arr[start++]
-                    prevGroup+=arr[start-1] // start 이전 그룹에 start 값을 추가해준다
-                    prevGroup++
+                dp[start][end]>value -> {
+                    start++
                 } // 합이 value보다 작다면 start를 늘려 값을 줄인다
             }
         }
         return false
     }
+    private fun setResult(first: Pair<Int, Int>, mid: Pair<Int, Int>, end: Pair<Int, Int>){
+        print("\nres:: [${first.first}, ${first.second}](${dp[first.first][first.second]}),"+
+        " [${mid.first}, ${mid.second}](${dp[mid.first][mid.second]})," + 
+        " [${end.first}, ${end.second}](${dp[end.first][end.second]})")
+        result = Triple(
+            first.second+1-first.first,
+            mid.second+1-mid.first,
+            end.second+1-end.first,
+        )
+    }
 
-    // O(2N) 
+    // O(2N) -> 이거 다 채워놓으려면 n^2 이네; 
     private fun initDp(){
-        var start = 0
-        var end = start+1
-        var group = arr[start]+arr[end]
-        while(start<end){
-            dp[start][end] = group
-            println("startIdx[$start] endIdx[$end] => ${dp[start][end]}")
-            if(end!=n-1){
-                group+=arr[++end]
-            }else{
-                group-=arr[start++]
+        for(start in 0 until n){
+            var group = arr[start]
+            for(end in start until n){
+                if(start != end){
+                    group+=arr[end]
+                }
+                dp[start][end] = group
+                println("startIdx[$start] endIdx[$end] => ${dp[start][end]}")
             }
         }
+        // var start = 0
+        // var end = start
+        // var group = arr[start]
+        // while(start<=end){
+        //     dp[start][end] = group
+        //     println("startIdx[$start] endIdx[$end] => ${dp[start][end]}")
+        //     if(end!=n-1){
+        //         group+=arr[++end]
+        //     }else{
+        //         group-=arr[start++]
+        //     }
+        // }
     }
 }
+
+/*
+5 3
+1 2 3 4 5
+
+16
+0 0 0 
+이 나오네?
+
+이 경우는 최대값을 구성을 못하는 경우라 mid를 낮춰줘야하는데..
+*/
