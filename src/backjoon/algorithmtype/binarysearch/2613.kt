@@ -58,15 +58,119 @@
 */
 /*
     제출
-    1. 틀렸습니다(6%)
+    1. 틀렸습니다(9%)
     - 시간초과 될거 같았는데 일단 틀렸다
+
+    2. 틀렸습니다(9%)
+    - mid 값과 같아야만 유효성 검사로 들어가는게 아닌, mid값보다 작거나 같은 경우 유효성 검사 실시
+
+    3. 틀렸습니다(9%)
+    - 1개의 숫자도 그룹이 될 수 있는데, while 문 조건이 start<end 였다 <= 로 변경
+    5 3
+    1 2 3 4 5
+    와
+    5 3
+    5 4 3 2 1
+    의 정답이 그룹의 순서는 달라도 최댓값은 동일해야 하는데 7,9 가 나오는걸 파악하고 수정
+    - 여기부터 반례 목록으로 진행해봤다 https://www.acmicpc.net/board/view/25042
+    - 와 m이 3인걸 고정으로 생각하고 진행했네;
+    - 완전 틀렸다 싹 엎어야 한다
+    - Solution2613A 로 코드 남기고 새로 진행
+
+    4. 성공
+    - https://zoosso.tistory.com/41 를 보고 이해한다는 느낌으로 풀이
+    - parametric search 자체는 이해가 가는데, 문제의 요구조건을 구현을 잘 해내지 못하고, 이해가 잘 가지 않는다
 */
 
 
 fun main(args: Array<String>){
     Solution2613().solve()
 }
+// https://zoosso.tistory.com/415 를 보고 이해하는 쪽으로 진행
 class Solution2613 {
+    private var n = 0
+    private var m = 0
+    private lateinit var arr: Array<Int>
+    private var max = 0 // 최대 100
+    private var sum = 0 // 최대 300*100
+    private var result: Triple<Int, Int, Int> = Triple(0, 0, 0)
+    fun solve(){
+        val br = System.`in`.bufferedReader()
+
+        br.readLine().split(' ').map{it.toInt()}.apply{
+            n = this[0]
+            m = this[1]
+        }
+        arr = Array(n){0}
+        br.readLine().split(' ').map{it.toInt()}.forEachIndexed { i,v ->
+            arr[i] = v
+            max = Math.max(max, v)
+            sum += v
+        }
+        println("max[$max] sum[$sum]")
+        findMinGroupSum()
+
+        br.close()
+    }
+    private fun findMinGroupSum(){
+        var start = max
+        var end = sum
+        while(start<=end){
+            val mid = (start+end)/2
+            print("start[$start] mid[$mid] end[$end] ")
+            val canGroup = canMakeGroupSum(mid)
+            println("\ncanGroup => $canGroup")
+            when(canGroup){
+                true -> end=mid-1 // 가능하다면, mid를 낮춰 최소값을 구하도록 한다
+                false -> start=mid+1 // 불가능하다면, mid를 높여 가능한 값을 찾는다
+            }
+        }
+        printAns(start)
+    }
+    // canMakeGroupSum 이 코드를 구현하지 못하였었다 
+    private fun canMakeGroupSum(value: Int): Boolean{
+        var group = 0
+        var groupCount = 1
+        for(i in 0 until n){
+            group+=arr[i]
+            if(group>value){ // 현재값을 더했을때 value보다 커진다면
+                group=arr[i] // 현재값부터 새로운 그룹 생성
+                groupCount++
+            }
+        }
+        return groupCount<=m
+    }
+    private fun printAns(value: Int){
+        println("$value")
+        var i = 0
+        var group = 0
+        var marbleCount = 0
+        while(i<n){
+            group += arr[i]
+            if(group>value){
+                group = arr[i]
+                m--
+                print("$marbleCount ")
+                marbleCount = 0
+            }
+            marbleCount++
+            // m개의 그룹을 만들기 위해 최소한의 구슬은 남겨둔다 -> m개의 구슬 -> 하나씩이라도 배치하기 위함
+            if(n-i==m)break
+            i++
+        }
+        // 현재 그룹의 구슬을 출력해주고
+        // 나머지 구슬은 1개씩 출력
+        while(m-- != 0){
+            print("$marbleCount ")
+            marbleCount = 1
+        }
+        
+    }
+}
+
+
+// 정답을 찾아가고 있다고 생각했지만, 그룹이 3개로 고정인것 처럼 코드를 작성하여, 새로 풀이 시작
+class Solution2613A {
     private var n = 0
     private var m = 0
     private lateinit var arr: Array<Int>
@@ -114,27 +218,20 @@ class Solution2613 {
         }
         println("$start\n${result.first} ${result.second} ${result.third}")
     }
-    //m개의 그룹으로 나누면서, 그룹의 합 중 최댓값이 value가 나오도록 할 수 있는가
-    //근데 이거 dp로 저장해 놓으면 편하겠는데?
-    //dp[startIdx][endIdx] 로 저장해서?
+    // m개의 그룹으로 묶어서 value 보다 작은 최대값을 구성 가능한지
     private fun canMakeGroupSum(value: Int): Boolean{
         var start = 0
         var end = start+1
-        while(start<end && end<n){
+        while(start<=end && end<n){
             print("\nstartIdx[$start] endIdx[$end] => ${dp[start][end]}")
             when{
-                dp[start][end]<value -> {
-                    if(end==n-1) break
-                    end++
-                } // 합이 value보다 작다면 end 를 늘려 갚을 키운다
-                dp[start][end]==value -> { 
+                dp[start][end]<=value -> { 
                     //3개의 그룹을 만드려면 2개는 남기고 현재 그룹이 만들어 져야 한다
-                    //유효성이 일치하지 않는다면, start를 올린다
-                    if(end+1-start > n-2){ 
-                        start++
-                    }else { // 나머지 그룹의 합을 체크
+                    if(end+1-start >= n-2){ 
+                        if(end==n-1) break
+                        end++
+                    }else { // 그룹을 구성하여, 나머지 그룹의 합들이 현재 합보다 작은 경우를 탐색
                         if(start == 0){
-                            // 나머지 그룹이 더 큰 경우를 탐색
                             for(i in end+1 until n){ 
                                 //end+1~i, i+1~n-1
                                 if(dp[start][end]>=dp[end+1][i] && dp[start][end]>=dp[i+1][n-1]){    
@@ -142,7 +239,8 @@ class Solution2613 {
                                     return true
                                 }
                             }
-                            start++
+                            if(end==n-1) break
+                            end++
                         }else if(end == n-1){
                             for(i in 0 until start){ 
                                 //0~i, i+1~start-1
@@ -151,16 +249,18 @@ class Solution2613 {
                                     return true
                                 }
                             }
-                            start++
+                            if(end==n-1) break
+                            end++
                         }else{
                             if(dp[start][end]>=dp[0][start-1] && dp[start][end]>=dp[end+1][n-1]){    
                                 setResult(0 to start-1, start to end, end+1 to n-1)
                                 return true
                             }
-                            start++
+                            if(end==n-1) break
+                            end++
                         }
                     }
-                } // 합이 value와 같다면, 유효성을 체크한다 -> 3개의 그룹이 가능한지, 나머지 구슬을 합쳐서 현재 value를 넘는지
+                } // 합이 value 보다 작거나 같다면 같다면, 유효성을 체크한다 -> 3개의 그룹이 가능한지, 3개의 그룹으로 구성했을때, 현재의 value값을 넘지 않는 경우가 존재하는지
                 dp[start][end]>value -> {
                     start++
                 } // 합이 value보다 작다면 start를 늘려 값을 줄인다
@@ -177,6 +277,11 @@ class Solution2613 {
             mid.second+1-mid.first,
             end.second+1-end.first,
         )
+    }
+    private fun debugResult(first: Pair<Int, Int>, mid: Pair<Int, Int>, end: Pair<Int, Int>){
+        print("\ndebug:: [${first.first}, ${first.second}](${dp[first.first][first.second]}),"+
+        " [${mid.first}, ${mid.second}](${dp[mid.first][mid.second]})," + 
+        " [${end.first}, ${end.second}](${dp[end.first][end.second]})")
     }
 
     // O(2N) -> 이거 다 채워놓으려면 n^2 이네; 
