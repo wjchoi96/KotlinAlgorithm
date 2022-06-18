@@ -65,6 +65,10 @@
     => 이걸 배열을 입력받을때 진행해준다
     => https://skygood95.tistory.com/89 를 읽다가 떠올림
 */
+/*
+    개선
+    - oven 입력 코드 최적화
+*/
 
 fun main(args: Array<String>){
     Solution1756().solve()
@@ -81,12 +85,9 @@ class Solution1756 {
         br.readLine().split(' ').map{it.toInt()}.apply {
             d=this[0]; n=this[1]
         }
-        oven = Array<Int>(d){0}
-        br.readLine().split(' ').map{it.toInt()}.forEachIndexed { i,v ->
-            oven[i] = v
-            if(i != 0 && oven[i]>oven[i-1]){
-                oven[i] = oven[i-1]
-            }
+        oven = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
+        for(i in 1 until d){
+            oven[i] = Math.min(oven[i-1], oven[i])
         }
         breads = br.readLine().split(' ').map{it.toInt()}.toTypedArray()
 
