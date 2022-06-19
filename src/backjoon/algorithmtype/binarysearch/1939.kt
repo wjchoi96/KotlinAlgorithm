@@ -53,15 +53,32 @@
     - 썪을
 
     3. 메모리 초과(6%)
+    - 근데 지금 이분탐색이 의미가 없는 풀이인 것 같다는 생각이 들었다
+    https://www.acmicpc.net/board/view/89881
+    이 문제의 이분 탐색 풀이의 경우 시작 지점에서 출발해서 도착 지점으로 도달할 수 있는지를 판단해 주어야 합니다. 도달 가능성을 판단하기 위해서 가능한 모든 경로를 확인할 필요는 없으므로 BFS, DFS, 분리 집합 모두 유효한 풀이가 될 것입니다 :)
+    => 뭔소리징?
+
+    4. 메모리 초과(6%)
+    - 일단 linked list 로 구현 (정점의 개수가 많아서 bridge 배열로 했다간 너무 반복이 많아진다)
+    - bfs 조건을 수정해야 할듯
+    - https://www.acmicpc.net/board/view/45133
+    - 내 첫번째 풀이 구현대로 진행한 사람이 7% 틀렸습니다 라고 한다
+    - 메모리 초과 왜뜨지
+
+    5. 메모리 초과(6%)
+    - 이분탐색으로 중량제한 하지 않으면 큐가 터집니다... 속도도안나오고 => https://www.acmicpc.net/board/view/25076
+    - 인접 행렬이 아닌 인접 리스트로 푸는 것이 더 좋은 문제   
 
 */
 import java.util.Queue
+
 import java.util.LinkedList
 fun main(args: Array<String>){
     Solution1939().solve()
 }
 class Solution1939 {
     private lateinit var bridge: Array<Array<Int>>
+    private lateinit var graph: Array<LinkedList<Int>>
     private var n = 0
     private var m = 0
     private var maxM = 0
@@ -72,22 +89,26 @@ class Solution1939 {
         br.readLine().split(' ').map{it.toInt()}.apply{
             n = this[0]; m = this[1]
         }
+        graph = Array(n+1){LinkedList()}
         bridge = Array(n+1){Array(n+1){-1}}
         repeat(m){
             br.readLine().split(' ').map{it.toInt()}.apply{
                 val start = this[0]
                 val end = this[1]
                 // 같은 섬에 두개의 다리가 존재할 수 있다 -> 최대값으로 허용 가능 무게 저장
+                graph[start].add(end)
+                graph[end].add(start)
                 bridge[start][end] = Math.max(this[2], bridge[start][end])
                 bridge[end][start] = Math.max(this[2], bridge[end][start])
                 maxM = Math.max(maxM, this[2])
             }
         }
-        var maxD = 0
+        // var maxD = 0
         br.readLine().split(' ').map{it.toInt()}.let {
-            maxD = getMaxDelivery(it[0], it[1])
+            // maxD = getMaxDelivery(it[0], it[1])
+            findMaxWeight(it[0], it[1])
         }
-        getMaxWieght(maxD)
+        // getMaxWieght(maxD)
 
         bw.flush()
         bw.close()
@@ -104,7 +125,8 @@ class Solution1939 {
         println("visit[$start]")
         while(!queue.isEmpty()){
             val node = queue.poll()
-            for(visitNode in 0 until bridge[node].size){
+            println("try $node")
+            for(visitNode in graph[node]){
                 val bridgeWeight = bridge[node][visitNode]
                 if(bridge[node][visitNode] == -1) continue // 갈 수 없는 루트
                 // 출발지거나, 최대값 갱신을 못하는 경우
@@ -132,7 +154,6 @@ class Solution1939 {
     }
 
 
-    // try => 메모리 초과
     // binary search 를 통해 mid 값을 bfs를 통해 가능여부를 체크
     private fun findMaxWeight(place: Int, dest: Int){
         var start = 0
@@ -157,15 +178,10 @@ class Solution1939 {
         queue.offer(start)
         while(!queue.isEmpty()){
             val node = queue.poll()
-            for(visitNode in 0 until bridge[node].size){
-                if(bridge[node][visitNode] == -1) continue
+            for(visitNode in graph[node]){
                 println("try visit[$node to $visitNode] => [$visitNode], bridge weight[${bridge[node][visitNode]}]")
-                if(visit[visitNode]) {
-                    continue
-                }
-                if(bridge[node][visitNode]<weight){
-                    continue
-                }
+                if(visit[visitNode]) continue
+                if(bridge[node][visitNode]<weight) continue
                 println("visit[$visitNode]")
                 visit[visitNode] = true
                 queue.offer(visitNode)
