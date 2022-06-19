@@ -43,70 +43,137 @@
     - 가능한 루트로만 진입하기 위해서?
 
 */
+/*
+    제출
+    1. 메모리 초과(6%)
+    - 썪을
+
+    2. 메모리 초과(6%)
+    - graph bridge 합침
+    - 썪을
+
+    3. 메모리 초과(6%)
+
+*/
+import java.util.Queue
+import java.util.LinkedList
 fun main(args: Array<String>){
-    /*
-        3 3
-        1 2 2
-        3 1 3
-        2 3 2
-        1 3
-    */
-    val bridge = arrayOf(
-        arrayOf(2, 3),
-        arrayOf(1, 3),
-        arrayOf(1, 2)
-    )// 근데 이러면 중량은?
-    val weight: Array<Array<Int>> = Array(bridge.size){Array(bridge.size){-1}}
-    weight[1][2] = 2
-    weight[2][1] = 2
-
-    weight[1][3] = 3
-    weight[3][1] = 3
-
-    weight[2][3] = 2
-    weight[3][2] = 2
-    // 같은 형태로 저장?
-    // bridge 없이, weight 만으로 탐색 가능하지 않을까?
-    // -1인 곳은 해당 섬으로 가는 길이 없는 것 => 불가능?
-
     Solution1939().solve()
 }
 class Solution1939 {
-    private var graph: Array<ArrayList<Int>>
-    private var bridge: Array<Array<Int>>
-    private var visit: Array<Boolean>
+    private lateinit var bridge: Array<Array<Int>>
     private var n = 0
     private var m = 0
+    private var maxM = 0
+    private var maxDelivery = 0
     fun solve(){
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
         br.readLine().split(' ').map{it.toInt()}.apply{
             n = this[0]; m = this[1]
         }
-        graph = Array(n+1){ArrayList()}
         bridge = Array(n+1){Array(n+1){-1}}
         repeat(m){
             br.readLine().split(' ').map{it.toInt()}.apply{
                 val start = this[0]
                 val end = this[1]
-                graph[start].add(end)
-                graph[end].add(start)
-                bridge[start][end] = this[3]
-                bridge[end][start] = this[3]
+                // 같은 섬에 두개의 다리가 존재할 수 있다 -> 최대값으로 허용 가능 무게 저장
+                bridge[start][end] = Math.max(this[2], bridge[start][end])
+                bridge[end][start] = Math.max(this[2], bridge[end][start])
+                maxM = Math.max(maxM, this[2])
             }
         }
+        var maxD = 0
+        br.readLine().split(' ').map{it.toInt()}.let {
+            maxD = getMaxDelivery(it[0], it[1])
+        }
+        getMaxWieght(maxD)
 
-    
         bw.flush()
         bw.close()
         br.close()
     }
-    // 최대 무게를 구하는거라..
-    private fun bfs(c: Int, weight: Int){
-        visit[c] = true
-        for(i in graph[c].size){
-            
-        }
 
+    // bfs 를 통해 start to dest 간 다리의 무게 중 최대값을 구한다
+    // visit : 출발지에서 해당 섬까지 나를 수 있는 최대 무게
+    private fun getMaxDelivery(start: Int, dest: Int): Int{
+        val queue: Queue<Int> = LinkedList()
+        val visit = Array(n+1){-1}
+        visit[start] = 0
+        queue.offer(start)
+        println("visit[$start]")
+        while(!queue.isEmpty()){
+            val node = queue.poll()
+            for(visitNode in 0 until bridge[node].size){
+                val bridgeWeight = bridge[node][visitNode]
+                if(bridge[node][visitNode] == -1) continue // 갈 수 없는 루트
+                // 출발지거나, 최대값 갱신을 못하는 경우
+                if(visit[visitNode] == 0 || visit[visitNode] >= bridgeWeight) continue
+                visit[visitNode] = bridgeWeight
+                queue.offer(visitNode)
+                println("visit[$visitNode]")
+            }
+        }
+        println("${visit.toList()}")
+        return visit[dest]
+    }
+    private fun getMaxWieght(canDeliveryMaxWeight: Int){
+        var start = 0
+        var end = maxM
+        while(start<end){
+            val mid = (start+end)/2
+            print("start[$start] mid[$mid] end[$end]\n")
+            when{
+                canDeliveryMaxWeight>=mid -> start=mid+1 // 가능하다면 최대값 갱신 시도
+                else -> end=mid-1 // 불가능하다면 배달 무게 낮춘다
+            }
+        }
+        println("$start")
+    }
+
+
+    // try => 메모리 초과
+    // binary search 를 통해 mid 값을 bfs를 통해 가능여부를 체크
+    private fun findMaxWeight(place: Int, dest: Int){
+        var start = 0
+        var end = maxM
+        while(start<end){
+            val mid = (start+end)/2
+            print("start[$start] mid[$mid] end[$end]\n")
+            val canDelivery = canDelivery(place, mid, dest)
+            println("canDelivery[$canDelivery]")
+            when(canDelivery){
+                true -> start=mid+1 // 가능하다면 최대값 갱신 시도
+                false -> end=mid-1 // 불가능하다면 배달 무게 낮춘다
+            }
+        }
+        println("$start")
+    }
+    //bfs-> binary search 도중 매번 bfs 를 진행하여 메모리 초과
+    private fun canDelivery(start: Int, weight: Int, dest: Int): Boolean{
+        val queue: Queue<Int> = LinkedList()
+        val visit = Array(n+1){false}
+        visit[start] = true
+        queue.offer(start)
+        while(!queue.isEmpty()){
+            val node = queue.poll()
+            for(visitNode in 0 until bridge[node].size){
+                if(bridge[node][visitNode] == -1) continue
+                println("try visit[$node to $visitNode] => [$visitNode], bridge weight[${bridge[node][visitNode]}]")
+                if(visit[visitNode]) {
+                    continue
+                }
+                if(bridge[node][visitNode]<weight){
+                    continue
+                }
+                println("visit[$visitNode]")
+                visit[visitNode] = true
+                queue.offer(visitNode)
+                if(visitNode == dest){
+                    return true
+                }
+            }
+        }
+        return false
     }
 }
