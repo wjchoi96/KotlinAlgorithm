@@ -68,16 +68,50 @@
     5. 메모리 초과(6%)
     - 이분탐색으로 중량제한 하지 않으면 큐가 터집니다... 속도도안나오고 => https://www.acmicpc.net/board/view/25076
     - 인접 행렬이 아닌 인접 리스트로 푸는 것이 더 좋은 문제   
+    - n 이 최대 10000 이므로, 2차원 배열 생성시 메모리 초과 => bridge 가 원인?
+    => https://velog.io/@6v6/%EB%B0%B1%EC%A4%80-1939-%EC%A4%91%EB%9F%89%EC%A0%9C%ED%95%9C
+    => map 으로 변경
 
+    6. 틀렸습니다(18%)
+    - 메모리는 해결
+
+    7. 틀렸습니다(12%)
+    - end 를 max+1, mid 값 구할때 +1 진행
+
+    8. 틀렸습니다(6%)
+    - 일단 start 값이 정답이 되는 과정에서 이상함을 느낌
+    - 답이 3일때 mid[2]까지만 검사하고, start=mid+1이 되어 3이 되고, 3에 대한 유효성은 검사하지 못한채 반복문이 종료되어 3이 정답으로 출력되는 현상 발견
+    - max값 유효성이 체크되지 않고 있다는 것을 알게 되었다
+    - end 를 max+1 로 두어 max까지 mid에 포함 될 수 있도록 수정
+    - 하지만 결국 start값(mid+1)이 답으로 출력되는 케이스가 존재한다. 
+    - res 값을 추가하여 mid값을 저장하도록 지정. start 대신 res 리턴
+    - start<end 로 지정을 하니, 모든 값을 체크를 못하고 있는 것을 확인 => #반례3
+    - start<=end 로 지정
+
+    9. 맞췄습니다
+*/
+/*
+    시간복잡도
+    https://www.acmicpc.net/board/view/73375
+    조금 더 정확히 하자면 BFS의 시간 복잡도는 O(N+M)이고, 이분 탐색은 O(log(중량의 최댓값)) 또는 그냥 log(10억)입니다.
+*/
+/*
+    가능한 풀이
+    - 이분탐색 + bfs 성공
+    - bfs + 메모이제이션
+    - bfs
+
+    - 다익스트라 or 플로이드? 얘네는 아직 안배워서 가능한지 모르겠다
 */
 import java.util.Queue
-
 import java.util.LinkedList
+import java.util.HashMap
 fun main(args: Array<String>){
     Solution1939().solve()
 }
 class Solution1939 {
     private lateinit var bridge: Array<Array<Int>>
+    private val bridgeMap: HashMap<Pair<Int, Int>, Int> = HashMap()
     private lateinit var graph: Array<LinkedList<Int>>
     private var n = 0
     private var m = 0
@@ -100,6 +134,8 @@ class Solution1939 {
                 graph[end].add(start)
                 bridge[start][end] = Math.max(this[2], bridge[start][end])
                 bridge[end][start] = Math.max(this[2], bridge[end][start])
+                bridgeMap[start to end] = Math.max(this[2], bridgeMap.getOrDefault(start to end, 0))
+                bridgeMap[end to start] = Math.max(this[2], bridgeMap.getOrDefault(end to start, 0))
                 maxM = Math.max(maxM, this[2])
             }
         }
@@ -113,6 +149,49 @@ class Solution1939 {
         bw.flush()
         bw.close()
         br.close()
+    }
+
+    // binary search 를 통해 mid 값을 bfs를 통해 가능여부를 체크
+    private fun findMaxWeight(place: Int, dest: Int){
+        var start = 0
+        var end = maxM+1
+        var res = start
+        while(start<=end){
+            val mid = (start+end)/2
+            print("start[$start] mid[$mid] end[$end]\n")
+            val canDelivery = canDelivery(place, mid, dest)
+            println("[$mid] canDelivery[$canDelivery]")
+            when(canDelivery){
+                true -> {
+                    start=mid+1 // 가능하다면 최대값 갱신 시도
+                    res = mid
+                }
+                false -> end=mid-1 // 불가능하다면 배달 무게 낮춘다
+            }
+        }
+        println("$res")
+    }
+    //bfs-> binary search 도중 매번 bfs 를 진행하여 메모리 초과
+    private fun canDelivery(start: Int, weight: Int, dest: Int): Boolean{
+        val queue: Queue<Int> = LinkedList()
+        val visit = Array(n+1){false}
+        visit[start] = true
+        queue.offer(start)
+        while(!queue.isEmpty()){
+            val node = queue.poll()
+            for(visitNode in graph[node]){
+                println("try visit[$node to $visitNode] => [$visitNode], bridge weight[${bridgeMap.getOrDefault(node to visitNode, 0)}]")
+                if(visit[visitNode]) continue
+                if(bridgeMap.getOrDefault(node to visitNode, 0)<weight) continue
+                println("visit[$visitNode]")
+                visit[visitNode] = true
+                queue.offer(visitNode)
+                if(visitNode == dest){
+                    return true
+                }
+            }
+        }
+        return false
     }
 
     // bfs 를 통해 start to dest 간 다리의 무게 중 최대값을 구한다
@@ -153,43 +232,42 @@ class Solution1939 {
         println("$start")
     }
 
-
-    // binary search 를 통해 mid 값을 bfs를 통해 가능여부를 체크
-    private fun findMaxWeight(place: Int, dest: Int){
-        var start = 0
-        var end = maxM
-        while(start<end){
-            val mid = (start+end)/2
-            print("start[$start] mid[$mid] end[$end]\n")
-            val canDelivery = canDelivery(place, mid, dest)
-            println("canDelivery[$canDelivery]")
-            when(canDelivery){
-                true -> start=mid+1 // 가능하다면 최대값 갱신 시도
-                false -> end=mid-1 // 불가능하다면 배달 무게 낮춘다
-            }
-        }
-        println("$start")
-    }
-    //bfs-> binary search 도중 매번 bfs 를 진행하여 메모리 초과
-    private fun canDelivery(start: Int, weight: Int, dest: Int): Boolean{
-        val queue: Queue<Int> = LinkedList()
-        val visit = Array(n+1){false}
-        visit[start] = true
-        queue.offer(start)
-        while(!queue.isEmpty()){
-            val node = queue.poll()
-            for(visitNode in graph[node]){
-                println("try visit[$node to $visitNode] => [$visitNode], bridge weight[${bridge[node][visitNode]}]")
-                if(visit[visitNode]) continue
-                if(bridge[node][visitNode]<weight) continue
-                println("visit[$visitNode]")
-                visit[visitNode] = true
-                queue.offer(visitNode)
-                if(visitNode == dest){
-                    return true
-                }
-            }
-        }
-        return false
-    }
 }
+
+/*
+9 9
+1 4 11
+1 5 2
+4 5 4
+4 3 10
+4 2 7
+5 2 10
+5 6 13
+3 2 9
+2 6 8
+1 6
+
+== aws 
+9
+
+2 1
+1 2 1
+1 2
+
+== aws 
+1
+
+
+#반례3
+3 4
+1 2 1
+1 2 1
+1 3 9
+3 2 1
+1 2
+== aws
+1 
+== return
+0
+
+*/
