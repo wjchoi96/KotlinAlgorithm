@@ -51,9 +51,8 @@ class SolutionPriorityQueue {
 
     // 최소힙 구현 해보자
     class PriorityQueue {
-        //size는 10000으로 초기화
         //1-based-index 로 처리해야한다
-        private val queue: Array<Int?> = Array(10000){null}
+        private val queue: Array<Int?> = Array(100001){null}
         private var itemSize: Int = 0 
         val size: Int
             get() = if(itemSize<1) 0 else itemSize
@@ -62,14 +61,14 @@ class SolutionPriorityQueue {
             //마지막 leaf에 추가하고, 올라오면서 유효성 체크하면서 swap?
             queue[++itemSize] = x // leaf 에 추가
             setTreeBalanceFromLeaf(itemSize)
-            printQueue()
         }
 
         fun pop(): Int? {
             val node = queue[1]
-            remove(0)
-            printQueue()
-            return node
+            if(node != null){
+                remove(1)
+            }
+            return node 
         }
         fun top(): Int? = queue[1]
 
@@ -77,52 +76,68 @@ class SolutionPriorityQueue {
             // 지울 대상과 현재 leaf의 위치를 바꾸고, leaf 위치의 데이터 제거
             // leaf에 있던 데이터가 위치한 곳을 root 로 하여 해당 서브트리 setTreeBalanceFromRoot 실행
             swap(at, itemSize)
-            queue[itemSize] = null
-            itemSize--
+            queue[itemSize--] = null
             setTreeBalanceFromRoot(at)
         }
 
+        /*
+            트리의 왼쪽 아이템이 없다면 오른쪽 아이템은 있을 수 없다
+            왼쪽이 없다면 모두 없는것
+
+            왼쪽만 있다면 -> left 와 parent 를 비교하여, 더 작은것을 parent로 적용
+            둘다 있다면 -> 
+            1. left 와 rigth 중 parent 보다 작은게 있다면 변경
+            2. 둘다 parent 보다 작다면 -> 둘중 더 작은 것으로 변경
+        */
         private fun setTreeBalanceFromRoot(root: Int){
             var idx = root
             while(hasChild(idx)){
+                val parent = queue[idx]!!
                 val left = if(hasLeftChild(idx)) queue[idx*2] else null
                 val right = if(hasRightChild(idx)) queue[idx*2+1] else null
                 // println("left[$left][${idx*2}], right[$right][${idx*2+1}]")
-                //9,10 이 반복되네
+                var swapIdx: Int? = null
                 when {
-                    left != null && right != null -> {
-                        idx = if(left <= right){
-                            swap(idx, idx*2)
-                            idx*2
-                        }else {
-                            swap(idx, idx*2+1)
-                            idx*2+1
+                    left == null -> {} // 둘 다 없는 것
+                    right == null -> { // left 만 존재
+                        if(parent > left){
+                            swapIdx = idx*2
                         }
                     }
-                    left != null -> {
-                        swap(idx, idx*2)
-                        idx = idx*2
-                    }
-                    right != null -> {
-                        swap(idx, idx*2+1)
-                        idx = idx*2+1
+                    right != null -> { // 둘 다 존재
+                        if(parent > left && parent > right){ // 둘다 parent보다 작다면 -> 둘중 더 작은것으로 swap
+                            if(left<right){ // 이때 왠만하면 오른쪽값에 parent가 가도록 = 연산은 오른쪽이 우선이 되도록 설정
+                                swapIdx = idx*2
+                            }else{
+                                swapIdx = idx*2+1
+                            }
+                        }else{ //둘다 parent 보다 크거나, 하나만 parent보다 작은경우 -> 작은 경우가 있다면 swap
+                            if(parent>left){
+                                swapIdx = idx*2
+                            }else if(parent>right){
+                                swapIdx = idx*2+1
+                            }
+                        }
                     }
                 }
+                if(swapIdx != null){
+                    swap(idx, swapIdx)
+                    idx = swapIdx
+                }else  // -> 알맞는 위치에 위치한것
+                    break
             }
         }        
         // 트리의 구조를 유지하며, 최소힙에 위배되지 않도록 leaf 부터 root까지 거슬러 올라가며 체크, swap 한다
         private fun setTreeBalanceFromLeaf(leaf: Int){
             var idx = leaf
-            var node = queue[idx]!!
             while(hasParent(idx)){
-                // println("parent[$idx]")
-                var pIdx = idx/2
-                var p = queue[pIdx]!!
-                //node가 p보다 커야한다(같아도 된다). 반대라면 swap 해준다
-                if(node<p){
+                val child = queue[idx]!!
+                val pIdx = idx/2
+                val parent = queue[pIdx]!!
+                // println("idx[$idx] has parent[$pIdx] child[$child] parent[$parent]")
+                if(child<parent){ //chlid가 parent보다 크거나 같아야 한다. 반대라면 swap 해준다
                     swap(idx, pIdx)
                 }
-                node = p
                 idx = pIdx
             }
         }        
