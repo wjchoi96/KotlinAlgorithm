@@ -63,6 +63,31 @@
     x번지의 왼쪽, 오른쪽자식: 2x, 2x+1
     x번지의 부모: x/2
 
+    #TreeSet, TreeMap 과 PriorityQueue 의 차이점
+    일단 Kotlin에서는 TreeSet, TreeMap은 중복을 허용하지 않아서 중복을 허용하는 작업을 하려면 PriorityQueue 사용이 필수
+    
+    Set은 새 정점을 동적할당하거나 정점을 제거하고 불균형 발생시 해결을 위한 처리가 필요하기 때문에
+    같은 O(lg N)시간복잡도 이더라도 수행 속도가 더 느리다.
+
+    PriorityQueue는 힙 구조이기 때문에 불균형이 없어 무조건 lg N 번 자리를 비교하면 끝이라 훨씬 빠르다
+    (같은 연산시 2-4배 정도 속도 차이가 날 수 있다)
+    또한, 공간을 차지하는 정도도 차이가 많이 난다
+
+    PriorityQueue로 해결이 가능하다면, 최대한 PriorityQueue를 사용하는 것이 좋다
+
+    #Kotlin PriorityQueue
+    코틀린의 운선순위 큐는 Comparator를 전달하여 사용한다.
+    var pq = PriorityQueue<T>(Comparator{a,b -> 조건식}) 구조
+    var pq = PriorityQueue<T>{a,b -> 조건식} -> 람다
+    C++과 다르게 comparator 전달 없이 생성하면 pop시에 작은 수부터 나오게 됩니다. 
+    - 기본이 최소힙
+
+    참고
+    https://sangdo913.tistory.com/197
+    https://leesh111112.tistory.com/238?category=1009913
+    https://notepad96.tistory.com/104
+
+
     연습문제
     1. 백준 1927(solve)
     - implements 코드 유효성을 판단
