@@ -17,6 +17,10 @@
 /*
     test code 성공
 */
+/*
+    개선된 코드는 1927.kt
+    - Solution1927.PriorityQueue 
+*/
 
 fun main(args: Array<String>){
     SolutionPriorityQueue().solve()
