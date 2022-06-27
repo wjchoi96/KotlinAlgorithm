@@ -65,13 +65,77 @@
     - maxQueue의 compareBy 에서 -2147483648 이 -it 처리가 되면 2147483648가 되는데, int형의 최대 범위는 2147483647 이기 때문에 오버플로우 발생
 
     3. 성공
+    - 우선순위 큐 구현 성공 - Solution7662
+
+    4. 성공
+    - TreeMap 구현 성공 - Solution7662UseBST
+*/
+/*
+    - TreeMap으로도 구현해보자
+    #TreeMap 주요 메소드 
+    https://codedragon.tistory.com/6142
+    lastKey // 제일 큰 key를 반환
+    firstKey // 제일 작은 key 반환
+
+    map.pollLastEntry() // 제일 큰 키를 반환하며 제거
+    map.pollFirstEntry() // 제일 작은 키를 반환하며 제거
 */
 
 import java.util.PriorityQueue
 import java.util.HashMap
+import java.util.TreeMap
 fun main(args: Array<String>){
-    Solution7662().solve()
+    Solution7662UseBST().solve()
 }
+class Solution7662UseBST {
+    fun solve(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+
+        repeat(br.readLine().toInt()){
+            val map = TreeMap<Long, Int>()
+            repeat(br.readLine().toInt()){
+                br.readLine().split(' ').let { 
+                    val v = it[1].toLong()
+                    when(it[0]){
+                        "I" -> map[v] = map.getOrDefault(v, 0)+1
+                        "D" -> {
+                            if(map.size != 0){
+                                when(v){
+                                    1.toLong() -> {
+                                        val k = map.lastKey() // 제일 큰 키를 반환
+                                        if(map.getOrDefault(k, 1) == 1)
+                                            map.remove(k)
+                                        else
+                                            map[k] = map[k]!!-1
+                                    }
+                                    else -> {
+                                        val k = map.firstKey() // 제일 작은 키를 반환
+                                        if(map.getOrDefault(k, 1) == 1)
+                                            map.remove(k)
+                                        else
+                                            map[k] = map[k]!!-1
+                                    }
+                                }
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+            }
+            if(map.size==0){
+                bw.write("EMPTY\n")
+            }else{
+                bw.write("${map.lastKey()} ${map.firstKey()}\n")
+            }
+        }
+
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+}
+// solve use priority queue
 class Solution7662 {
     fun solve(){
         val bw = System.out.bufferedWriter()
