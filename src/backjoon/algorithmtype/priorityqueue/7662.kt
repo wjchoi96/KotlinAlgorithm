@@ -61,6 +61,10 @@
     - https://girawhale.tistory.com/14 를 참고하며 문제점을 해결해보자
 
     2. 틀렸습니다(92%)
+    - 2147483647 -2147483648 int형 범위에 대한 오버플로우
+    - maxQueue의 compareBy 에서 -2147483648 이 -it 처리가 되면 2147483648가 되는데, int형의 최대 범위는 2147483647 이기 때문에 오버플로우 발생
+
+    3. 성공
 */
 
 import java.util.PriorityQueue
@@ -74,14 +78,14 @@ class Solution7662 {
         val br = System.`in`.bufferedReader()
 
         repeat(br.readLine().toInt()){
-            val minQueue = PriorityQueue<Int>()
-            val maxQueue = PriorityQueue<Int>(compareBy(
+            val minQueue = PriorityQueue<Long>()
+            val maxQueue = PriorityQueue<Long>(compareBy(
                 {-it}
             ))
-            val map: HashMap<Int, Int> = HashMap()
+            val map: HashMap<Long, Int> = HashMap()
             repeat(br.readLine().toInt()){
                 br.readLine().split(' ').let { 
-                    val v = it[1].toInt()
+                    val v = it[1].toLong()
                     when(it[0]){
                         "I" -> {
                             minQueue.offer(v)
@@ -90,7 +94,7 @@ class Solution7662 {
                         }
                         "D" -> {
                             if(map.size != 0){
-                                removeFromMap(map, if(v==1)maxQueue else minQueue)
+                                removeFromMap(map, if(v==1.toLong())maxQueue else minQueue)
                             }
                         }
                     }
@@ -128,8 +132,8 @@ class Solution7662 {
         bw.close()
         br.close()
     }
-    private fun removeFromMap(map: HashMap<Int, Int>, queue: PriorityQueue<Int>): Int{
-        var num: Int
+    private fun removeFromMap(map: HashMap<Long, Int>, queue: PriorityQueue<Long>): Long{
+        var num: Long
         while(true){
             num = queue.poll() // 값을 지운다
             val c = map.getOrDefault(num, 0)
@@ -154,5 +158,18 @@ I 4
 === aws
 4 4
 
+https://www.acmicpc.net/board/view/81295 => 반례모음
+모두 통화
 
+
+1
+2
+I -2147483648
+I 2147483647
+==output==
+-2147483648 -2147483648
+==aws==
+2147483647 -2147483648
+
+maxQueue의 compareBy 에서 -2147483648 이 -it 처리가 되면 2147483648가 되는데, int형의 최대 범위는 2147483647 이기 때문에 오버플로우 발생
 */
