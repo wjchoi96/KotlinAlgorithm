@@ -47,4 +47,75 @@
     kotlin 은 TreeSet, TreeMap 모두 중복을 허용하지 않아 풀이가 불가능한 것 같다 
 
     다음 단원 우선순위 큐를 공부하고 다시 풀어보자
+    => priorityQueue 의 7662.kt 에 구현 성공
+
+    #TreeMap으로 구현 가능하다. 
+    => Solution7662UseBST
 */
+/*
+    TreeMap으로 구현
+    #TreeMap 주요 메소드 
+    https://codedragon.tistory.com/6142
+    lastKey // 제일 큰 key를 반환
+    firstKey // 제일 작은 key 반환
+
+    map.pollLastEntry() // 제일 큰 키를 반환하며 제거
+    map.pollFirstEntry() // 제일 작은 키를 반환하며 제거
+*/
+/*
+    제출
+    1. 성공
+*/
+
+import java.util.TreeMap
+fun main(args: Array<String>){
+    Solution7662UseBST().solve()
+}
+class Solution7662UseBST {
+    fun solve(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+
+        repeat(br.readLine().toInt()){
+            val map = TreeMap<Long, Int>()
+            repeat(br.readLine().toInt()){
+                br.readLine().split(' ').let { 
+                    val v = it[1].toLong()
+                    when(it[0]){
+                        "I" -> map[v] = map.getOrDefault(v, 0)+1
+                        "D" -> {
+                            if(map.size != 0){
+                                when(v){
+                                    1.toLong() -> {
+                                        val k = map.lastKey() // 제일 큰 키를 반환
+                                        if(map.getOrDefault(k, 1) == 1)
+                                            map.remove(k)
+                                        else
+                                            map[k] = map[k]!!-1
+                                    }
+                                    else -> {
+                                        val k = map.firstKey() // 제일 작은 키를 반환
+                                        if(map.getOrDefault(k, 1) == 1)
+                                            map.remove(k)
+                                        else
+                                            map[k] = map[k]!!-1
+                                    }
+                                }
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+            }
+            if(map.size==0){
+                bw.write("EMPTY\n")
+            }else{
+                bw.write("${map.lastKey()} ${map.firstKey()}\n")
+            }
+        }
+
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+}

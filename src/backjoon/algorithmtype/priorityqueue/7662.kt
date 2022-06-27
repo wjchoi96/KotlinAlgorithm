@@ -69,9 +69,11 @@
 
     4. 성공
     - TreeMap 사용해서 구현 성공 - Solution7662UseBST
+    => bst 패키지의 7662.kt 로 코드 이동
 */
 /*
-    - TreeMap으로도 구현해보자
+    TreeMap으로도 구현해보자
+    => bst 패키지의 7662.kt
     #TreeMap 주요 메소드 
     https://codedragon.tistory.com/6142
     lastKey // 제일 큰 key를 반환
@@ -83,57 +85,8 @@
 
 import java.util.PriorityQueue
 import java.util.HashMap
-import java.util.TreeMap
 fun main(args: Array<String>){
-    Solution7662UseBST().solve()
-}
-class Solution7662UseBST {
-    fun solve(){
-        val bw = System.out.bufferedWriter()
-        val br = System.`in`.bufferedReader()
-
-        repeat(br.readLine().toInt()){
-            val map = TreeMap<Long, Int>()
-            repeat(br.readLine().toInt()){
-                br.readLine().split(' ').let { 
-                    val v = it[1].toLong()
-                    when(it[0]){
-                        "I" -> map[v] = map.getOrDefault(v, 0)+1
-                        "D" -> {
-                            if(map.size != 0){
-                                when(v){
-                                    1.toLong() -> {
-                                        val k = map.lastKey() // 제일 큰 키를 반환
-                                        if(map.getOrDefault(k, 1) == 1)
-                                            map.remove(k)
-                                        else
-                                            map[k] = map[k]!!-1
-                                    }
-                                    else -> {
-                                        val k = map.firstKey() // 제일 작은 키를 반환
-                                        if(map.getOrDefault(k, 1) == 1)
-                                            map.remove(k)
-                                        else
-                                            map[k] = map[k]!!-1
-                                    }
-                                }
-                            }
-                        }
-                        else -> {}
-                    }
-                }
-            }
-            if(map.size==0){
-                bw.write("EMPTY\n")
-            }else{
-                bw.write("${map.lastKey()} ${map.firstKey()}\n")
-            }
-        }
-
-        bw.flush()
-        bw.close()
-        br.close()
-    }
+    Solution7662().solve()
 }
 // solve use priority queue
 class Solution7662 {
