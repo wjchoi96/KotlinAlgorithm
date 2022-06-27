@@ -65,10 +65,10 @@
     - maxQueue의 compareBy 에서 -2147483648 이 -it 처리가 되면 2147483648가 되는데, int형의 최대 범위는 2147483647 이기 때문에 오버플로우 발생
 
     3. 성공
-    - 우선순위 큐 구현 성공 - Solution7662
+    - 우선순위 큐 사용해서 구현 성공 - Solution7662
 
     4. 성공
-    - TreeMap 구현 성공 - Solution7662UseBST
+    - TreeMap 사용해서 구현 성공 - Solution7662UseBST
 */
 /*
     - TreeMap으로도 구현해보자
