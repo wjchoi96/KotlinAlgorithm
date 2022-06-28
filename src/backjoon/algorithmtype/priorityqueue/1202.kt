@@ -48,33 +48,86 @@
     가치가 작은 item을 제거하는게 아닌 유지시킬 방법을 생각해보자
     -> 보관해 뒀다가 다시 offer => 개당 O(lg N)의 시간복잡도. 최대 N개 
     => 시간복잡도가 안될것 같은데
-
-    ===== 이거도 맞는 방법일 것 같은데, 일단 다른 풀이를 좀 확인해보자 =====
 */
 /*
-    바킹독님 해설 슬쩍 보려다가 본 그리드 접근법
+    제출
+    내 그리디
+    https://jaimemin.tistory.com/760 참고
 
-    가격이 높은 보석순으로 정렬
-    현재 보석을 담을 수 있는 가장 작은 베낭에 보석을 담는다
+    1. 시간초과(7%)
+    - 가방, 보석이 모두 무게순 오름차순이니, 이전 가방에서 추가된 보석은 현재 가방에도 당연히 추가될 수 있다
+    - 때문에 queue, 와 jIdx를 그대로 유지할 수 있다
 
-    귀류법1. 
-    가장 가격이 높은 보석x를 해당 보석을 담을 수 있는 가방중 최대무게가 A보다 큰 B가방에 담는게 더 이득인가?
-    => 만약 A에 다른 보석y가 있다면, 가방 A와 가방B의 내용물 바꿔도 제한 조건에 아무런 문제가 없다
+    2. 틀렸습니다(7%)
+    - sum을 long 타입으로 설정
 
-    예) 
-    가방 [2, 2, 3]
-    보석 [2:44, 3:33, 1:22]
-    2:44를 가방[2]에 담는다
-    3:33을 가방[3]에 담는다
-    1:22를 가방[1]에 담는다
+    3. 시간초과(14%)
 
-    귀류법1에 대한 반례
-    2:44를 가방[3]에 넣는다
-    3:33를 담을 가방이 없다
-    1:22를 가방[2]에 담는다
-
-    ===== 근데 얘도 구현이... =====
-    보석을 가치가 높은 순으로, 가치가 같아면 무게가 작은 순으로 우선순위 부여
-    
-
+    4. 성공
+    - 근데 3번제출이랑 달라진게 없는거 같은데
+    - 3번 제출과 차이점을 찾으려고 한참 고민했는데, 백준 채점문제인지, 같은코드가 실패할때도 있고 성공할때도 있다
+    - 성공했던 코드를 다시 제출하니 시간초과가 뜨고, 실패했던 코드를 다시 제출하니 성공이 뜨기도 한다
+    - 시간복잡도가 간당간당한듯
+    - 다른 코드들과 큰 차이가 없는데, 속도 차이가 나는 이유는 뭘까?
 */
+import java.util.PriorityQueue
+fun main(args: Array<String>){
+    Solution1202().solve()
+}
+class Solution1202 {
+    // 내 그리디 풀이
+    fun solve(){
+        val bw = System.out.bufferedWriter()
+        val br = System.`in`.bufferedReader()
+
+        val (n, k) = br.readLine().split(' ').map{it.toInt()}
+        val jewels: Array<Jewel?> = Array(n){null}
+        repeat(n){
+            jewels[it] = Jewel(br.readLine().split(' ').map{it.toInt()})
+        }
+        jewels.sortWith(compareBy(
+            {it!!.weight}, {-it!!.value}
+        ))// 무게순 오름차순. 무게가 같다면 가치가 높은게 우선
+
+        val bags: Array<Int> = Array(k){0}
+        repeat(k){
+            bags[it] = br.readLine().toInt()
+        }
+        bags.sort()
+
+        var sum: Long = 0
+        val maxHeap = PriorityQueue<Int>(compareBy(
+            {-it}
+        ))
+        var j = 0
+        //내부의 while문은 for문과 관계없이 딱 N번 반복하니 O(NK)가 아니고 O(N+K)
+        //while문 내부의 offer으로 인해 while문 시간복잡도 O(NlogN)
+        //for문 내부의 poll로 인해 for문 시간복잡도 O(klogN)
+        // N과K의 범위가 같기 때문에 총 O(NlogN)
+        for(b in 0 until bags.size){
+            //현재 가방에 담을 수 있는 보석을 모두 최대힙에 담는다
+            //담을 수 있는 보석을 모두 담는다. 가방의 무게를 넘은 구간은 확인하지 않는다
+            //한번 담은 보석은 다음 가방에도 담을 수 있는 보석이니 유지
+            while(j<n && jewels[j]!!.weight <= bags[b]){
+                maxHeap.offer(jewels[j++]!!.value)
+            }
+            // 담은 보석중 가치가 제일 큰 보석의 정보를 가져온다
+            if(!maxHeap.isEmpty()){
+                sum+=maxHeap.poll()
+            }
+        }
+        //
+        bw.write("$sum\n")
+        
+    
+        bw.flush()
+        bw.close()
+        br.close()
+    }
+    private data class Jewel(
+        val weight: Int,
+        val value: Int
+    ){
+        constructor(list: List<Int>): this(list[0], list[1])
+    }
+}
