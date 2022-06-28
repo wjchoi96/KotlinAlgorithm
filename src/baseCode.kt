@@ -16,15 +16,15 @@ fun main2(args : Array<String>){
 fun main(args: Array<String>){
 
 }
-// 현재 형태가 좀 더 시간이 소요된다
-// 제출시엔 main 함수에다가 코드 복사해서 제출하는게 좀 더 빠르다
 class SolutionXXX {
     fun solve(){
         val bw = System.out.bufferedWriter()
-        val br = Syswtem.`in`.bufferedReader()
+        val br = System.`in`.bufferedReader()
     
         bw.flush()
         bw.close()
         br.close()
     }
 }
+// 현재 형태가 좀 더 시간이 소요된다
+// 제출시엔 main 함수에다가 코드 복사해서 제출하는게 좀 더 빠르다
