@@ -33,6 +33,26 @@
     - 일단 공부해보자
     연습 문제5번 백준 1654를 통해 공부해보자
 
+    ## Upper, Lower Bound
+    https://blog.naver.com/bestmaker0290/220820005454
+    https://jackpot53.tistory.com/33
+
+    # Lower Bound
+    : 이분탐색에서 파생된 것으로, 원하는 K값 이상의 값이 처음 나오는 위치를 찾는 과정
+    - mid값이 원하는 값보다 크거나 같을 경우, end값을 mid로 설정
+    - mid값이 원하는 값보다 작다면 start를 mid+1로 설정
+    - end가 원하는 값보다 크거나 같은 경우를 보관하고 있으므로 end를 리턴
+    - 또는 반복의 조건인 start<end를 벗어난 경우이므로 start을 리턴해도 됨
+        - 반복의 조건을 <=로 한경우 start-1, end를 리턴
+
+    # Upper Bound
+    : 이분탐색에서 파생된 것으로, 원하는 K값을 초과한 값이 처음 나오는 위치를 찾는 과정
+    - mid값이 원하는 값보다 큰 경우, end를 mid로 설정
+    - mid값이 원하는 값보다 작거나 같은 경우, start를 mid+1로 설정
+    - end가 원하는 값을 초과하는 경우를 보관하고 있으니 end를 리턴
+    - 또는 반복의 조건인 start<end를 벗어난 경우이므로 start을 리턴해도 됨
+
+
 
     연습문제
     1. 백준 1920(solve)
