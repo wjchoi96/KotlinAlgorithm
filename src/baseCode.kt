@@ -13,8 +13,8 @@ fun main2(args : Array<String>){
     br.close()
 }
 
-fun main(args: Array<String>){
-
+fun main(){
+    SolutionXXX().solve()
 }
 class SolutionXXX {
     fun solve(){
