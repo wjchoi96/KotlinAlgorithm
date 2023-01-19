@@ -56,6 +56,25 @@
     - battle 코드 수정
 
     3. 틀렸습니다(2%)
+    - atk, count도 long으로 변경
+
+    4. 틀렸습니다(34%)
+    - battle 코드 수정
+
+    5. 틀렸습니다(34%)
+    - start 를 1로 변경
+
+    6. 틀렸습니다(34%)
+    - 이분탐색 코드를 수정
+
+    7. 틀렸습니다(34%)
+    - end 범위를 늘려봄
+
+    8. 틀렸습니다(70%)
+    - end 범위를 더 늘려봄
+
+    9. 성공
+    - 이분탐색이 아니라, 자료형 범위 산정 문제같네..
     
 */
 
@@ -75,12 +94,12 @@ class Solution16434 {
             dungeon[it] = br.readLine().split(' ').map{ it.toInt() }.toTypedArray()
         }
 
-        var start: Long = 0
-        var end: Long = Math.pow(10.0, 12.0).toLong()
+        var start: Long = 1
+        var end: Long = Math.pow(10.0, 15.0).toLong()
 
         while(start < end){
             val mid: Long = ((start + end) / 2.toLong())
-            val user = User(mid, mid, atk)
+            val user = User(mid, mid, atk.toLong())
             val result = startDungeon(dungeon, user)
             println("start[$start], mid[$mid], end[$end] => result[$result]")
             when(result) {
@@ -113,25 +132,21 @@ class Solution16434 {
     data class User (
         val hpMax: Long,
         var hpCur: Long,
-        var atk: Int
+        var atk: Long
     ) {
         fun drinkPortion(portionAtk: Int, portionHp: Int) {
-            val hp = hpCur + portionHp.toLong()
-            hpCur = if(hp > hpMax) hpMax else hp
-            atk = atk + portionAtk
+            hpCur = Math.min(hpCur + portionHp.toLong(), hpMax)
+            atk += portionAtk.toLong()
         }
 
         fun battleMonster(monsterAtk: Int, monsterHp: Int): Boolean {
-            val userAtkCount = if(monsterHp % atk == 0) monsterHp / atk else monsterHp / atk + 1
-            val monsterAtkCount = if(hpCur % monsterAtk.toLong() == 0.toLong()) hpCur / monsterAtk.toLong() else hpCur / monsterAtk.toLong() + 1
-
-            return when {
-                userAtkCount > monsterAtkCount -> false 
-                else -> {
-                    hpCur -= monsterAtk * (userAtkCount-1)
-                    true
-                }
+            val userAtkCount = if(monsterHp.toLong() % atk == 0.toLong()){
+                monsterHp / atk 
+            }else {
+                monsterHp / atk + 1
             }
+            hpCur -= (userAtkCount - 1) * monsterAtk
+            return hpCur > 0
         }
     }
 }
