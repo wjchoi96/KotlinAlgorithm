@@ -17,6 +17,7 @@
     3. 아니라면 nextNode의 부모로 currentNode를 지정
     
     #BFS의 시간복잡도
+    V는 정점의 수, E는 간선의 수
     O(V+E)
     트리에서는 E = V - 1 이기에 
     O(V)가 됨
