@@ -22,6 +22,9 @@
 
     #DFS 제출
     1. 성공
+
+    #재귀 DFS 제출
+    1. 성공
     
 */
 
@@ -52,6 +55,7 @@ class Solution11725 {
 
         bfs(1)
         // dfs(1)
+        // recursiveDfs(1)
 
         for(i in 2..n){
             bw.write("${parent[i]}\n")
@@ -62,6 +66,14 @@ class Solution11725 {
         br.close()
     }
 
+    private fun recursiveDfs(node: Int) {
+        for(nxt in graph[node]) {
+            if(parent[node] == nxt)
+                continue
+            parent[nxt] = node
+            recursiveDfs(nxt)
+        }
+    }
 
     private fun dfs(start: Int) {
         val stack = Stack<Int>()
