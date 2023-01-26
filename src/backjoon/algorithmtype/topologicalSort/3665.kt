@@ -64,6 +64,11 @@
 
     #제출
     1. 정답
+
+    #숏코딩
+    - 동시에 여러 Item이 Queue에 존재할 수 없는것으로 invalidData 판단
+    - 간선의 방향을 바꾸는 과정의 가독성 개선
+    - 결과 출력 가독성 개선
 */
 
 import java.util.Queue
@@ -97,15 +102,17 @@ class Solution3665 {
                     when (graph[it[0]].contains(it[1])) { 
                         true -> { 
                             graph[it[0]].remove(it[1])
-                            graph[it[1]].add(it[0])
                             indegree[it[1]]--
+
+                            graph[it[1]].add(it[0])
                             indegree[it[0]]++
                         }
                         else -> {
                             graph[it[0]].add(it[1])
+                            indegree[it[1]]++
+
                             graph[it[1]].remove(it[0])
                             indegree[it[0]]--
-                            indegree[it[1]]++
                         }
                     }
                 } 
@@ -123,24 +130,20 @@ class Solution3665 {
             //debug log
 
             val queue: Queue<Int> = LinkedList()
-            var zeroCount = 0
             for(i in 1 until indegree.size) {
                 if(indegree[i] == 0){
-                    zeroCount++
                     queue.offer(i)
                 }
             }
-            if(zeroCount > 1){
-                bw.write("?\n")
-                bw.flush()
-                bw.close()
-                br.close()
-                return
-            }
 
             val result: Queue<Int> = LinkedList()
+            var invalidScore = false
             while(!queue.isEmpty()) {
                 val cur = queue.poll()
+                if(!queue.isEmpty()) { //이때, queue가 비어있지 않다면, 여러 결과가 나올 수 있는 위상정렬
+                    invalidScore = true
+                    break
+                }
                 result.offer(cur)
                 for(nxt in graph[cur]) {
                     indegree[nxt]--
@@ -150,11 +153,17 @@ class Solution3665 {
                 }
             }
 
-            if(result.size != n) {
-                bw.write("IMPOSSIBLE")
-            }else {
-                for(i in 0 until n) {
-                    bw.write("${result.toList()[i]} ")
+            when {
+                invalidScore -> {
+                    bw.write("?")
+                }
+                result.size != n -> {
+                    bw.write("IMPOSSIBLE")
+                }
+                else -> {
+                    for(i in 0 until n) {
+                        bw.write("${result.toList()[i]} ")
+                    }
                 }
             }
             bw.write("\n")
