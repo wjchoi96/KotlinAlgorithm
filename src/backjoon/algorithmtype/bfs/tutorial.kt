@@ -1,4 +1,5 @@
-package src.backjoon.algorithmtype.bfs/*
+package src.backjoon.algorithmtype.bfs
+/*
     bfs
     너비 우선 탐색
 
@@ -21,6 +22,10 @@ package src.backjoon.algorithmtype.bfs/*
 
     dfs 는 스택을 이용한방법, 재귀함수를 이용한 방법으로 구현 가능
     bfs 는 큐를 이용한 방법, 인접행렬, 인접리스트를 이용한방법(? 알아보자) 구현 가능
+
+    #시간복잡도
+    - 인접 행렬: O(V^2)
+    - 인접 리스트: O(V+E)
 */
 
 import java.util.*
