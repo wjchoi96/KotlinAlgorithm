@@ -68,7 +68,9 @@
     #플로이드 제출
     1. 성공
 
-    
+    #숏코딩
+    - board, outdegree를 boolean 테이블로 두는게 코드가 더 깔끔
+
 */
 
 import java.util.Queue
@@ -77,35 +79,35 @@ fun main(){
     Solution2458().solve()
 }
 class Solution2458 {
-    private lateinit var board: Array<Array<Int>>
-    private lateinit var outdegreeTable: Array<Array<Int>>
+    private lateinit var board: Array<Array<Boolean>>
+    private lateinit var outdegreeTable: Array<Array<Boolean>>
     fun solve() {
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
 
         val (n, m) = br.readLine().split(' ').map{ it.toInt() }
-        board = Array(n+1){ Array(n+1){ 0 } }
-        outdegreeTable = Array(n+1){ Array(n+1){ 0 } }
+        board = Array(n+1){ Array(n+1){ false } }
+        outdegreeTable = Array(n+1){ Array(n+1){ false } }
 
         repeat(m) {
             br.readLine().split(' ').map{ it.toInt() }.let {
-                board[it[0]][it[1]] = 1
+                board[it[0]][it[1]] = true
             }
         }
 
         for(i in 1..n) {
             for(x in 1..n) {
                 for(y in 1..n) {
-                    val hasPath = board[x][i] + board[i][y] == 2
+                    val hasPath = board[x][i] && board[i][y]
                     when (board[x][y]) {
-                        0 -> {
+                        false -> {
                             if(hasPath){ // 기존에 경로가 없었지만, i를 경유해 가는 경로가 존재할때
-                                board[x][y] = 1 // 경로가 있다고 갱신(비용 계산은 필요없음)
-                                outdegreeTable[y][x] = 1 // x에서 y로 향하는 경로가 있다고 갱신
+                                board[x][y] = true // 경로가 있다고 갱신(비용 계산은 필요없음)
+                                outdegreeTable[y][x] = true // x에서 y로 향하는 경로가 있다고 갱신
                             }
                         }
                         else -> {
-                            outdegreeTable[y][x] = 1 // x에서 y로 향하는 경로가 있다고 갱신
+                            outdegreeTable[y][x] = true // x에서 y로 향하는 경로가 있다고 갱신
                         }
                     }
                 }
@@ -135,8 +137,7 @@ class Solution2458 {
             for(y in 1..n) {
                 when {
                     x == y -> continue
-                    board[x][y] == 1 -> continue
-                    outdegreeTable[x][y] == 1 -> continue
+                    board[x][y] || outdegreeTable[x][y] -> continue
                     else -> {
                         hasPath = false
                         break
@@ -154,79 +155,80 @@ class Solution2458 {
         br.close()
     }
 
+    // private lateinit var board: Array<Array<Int>>
+    // private lateinit var outdegreeTable: Array<Array<Int>>
+    // private val map: HashMap<Int, HashSet<Int>> = HashMap() // 각 정점에대한 bfs 경로를 저장 
+    // // bfs 풀이
+    // fun solveBfs(){
+    //     val bw = System.out.bufferedWriter()
+    //     val br = System.`in`.bufferedReader()
 
-    private val map: HashMap<Int, HashSet<Int>> = HashMap() // 각 정점에대한 bfs 경로를 저장 
-    // bfs 풀이
-    fun solveBfs(){
-        val bw = System.out.bufferedWriter()
-        val br = System.`in`.bufferedReader()
+    //     val (n, m) = br.readLine().split(' ').map{ it.toInt() }
+    //     board = Array(n+1){ Array(n+1){ 0 } }
+    //     repeat(m) {
+    //         br.readLine().split(' ').map{ it.toInt() }.let {
+    //             board[it[0]][it[1]] = 1
+    //         }
+    //     }
 
-        val (n, m) = br.readLine().split(' ').map{ it.toInt() }
-        board = Array(n+1){ Array(n+1){ 0 } }
-        repeat(m) {
-            br.readLine().split(' ').map{ it.toInt() }.let {
-                board[it[0]][it[1]] = 1
-            }
-        }
+    //     val queue: Queue<Int> = LinkedList()
+    //     for(i in 1..n) {
+    //         queue.offer(i)
+    //         val visit = Array(n+1){false}
+    //         while(!queue.isEmpty()){
+    //             val cur = queue.poll()
+    //             println("bfs[$i] => poll $cur")
+    //             for(nxt in 1 until board[cur].size){
+    //                 if(board[cur][nxt] == 0) continue
+    //                 if(visit[nxt]) continue
+    //                 map[i] = map.getOrDefault(i, HashSet()).apply {
+    //                     this.add(nxt)
+    //                     println("bfs[$i] save $nxt")
+    //                 }
+    //                 queue.offer(nxt)
+    //                 visit[nxt] = true
+    //                 println("bfs[$i] => offer $nxt")
+    //             }
+    //         }
+    //     }
 
-        val queue: Queue<Int> = LinkedList()
-        for(i in 1..n) {
-            queue.offer(i)
-            val visit = Array(n+1){false}
-            while(!queue.isEmpty()){
-                val cur = queue.poll()
-                println("bfs[$i] => poll $cur")
-                for(nxt in 1 until board[cur].size){
-                    if(board[cur][nxt] == 0) continue
-                    if(visit[nxt]) continue
-                    map[i] = map.getOrDefault(i, HashSet()).apply {
-                        this.add(nxt)
-                        println("bfs[$i] save $nxt")
-                    }
-                    queue.offer(nxt)
-                    visit[nxt] = true
-                    println("bfs[$i] => offer $nxt")
-                }
-            }
-        }
+    //     var count = 0
+    //     val path = Array(n+1){Array(n+1){false}}
+    //     for(i in 1..n) {
+    //         val set = map.getOrDefault(i, HashSet())
+    //         println("$i => ${set.toList()}")
+    //         set.forEach {
+    //             path[i][it] = true
+    //             path[it][i] = true
+    //         }
+    //     }
 
-        var count = 0
-        val path = Array(n+1){Array(n+1){false}}
-        for(i in 1..n) {
-            val set = map.getOrDefault(i, HashSet())
-            println("$i => ${set.toList()}")
-            set.forEach {
-                path[i][it] = true
-                path[it][i] = true
-            }
-        }
-
-        bw.write("\npath debug\n")
-        for(x in 1 until path.size){
-            for(y in 1 until path.size) {
-                bw.write("${path[x][y]} ")
-            }
-            bw.write("\n")
-        }
-        bw.write("path debug finish\n")
+    //     bw.write("\npath debug\n")
+    //     for(x in 1 until path.size){
+    //         for(y in 1 until path.size) {
+    //             bw.write("${path[x][y]} ")
+    //         }
+    //         bw.write("\n")
+    //     }
+    //     bw.write("path debug finish\n")
     
 
-        for(i in 1..n) {
-            var isSuccess = true
-            for(j in 1..n){
-                if(i == j) continue
-                if(!path[i][j]){
-                    isSuccess = false
-                    break
-                } 
-            }   
-            if(isSuccess) count++
-        }
+    //     for(i in 1..n) {
+    //         var isSuccess = true
+    //         for(j in 1..n){
+    //             if(i == j) continue
+    //             if(!path[i][j]){
+    //                 isSuccess = false
+    //                 break
+    //             } 
+    //         }   
+    //         if(isSuccess) count++
+    //     }
 
-        bw.write("$count\n")
+    //     bw.write("$count\n")
     
-        bw.flush()
-        bw.close()
-        br.close()
-    }
+    //     bw.flush()
+    //     bw.close()
+    //     br.close()
+    // }
 }
