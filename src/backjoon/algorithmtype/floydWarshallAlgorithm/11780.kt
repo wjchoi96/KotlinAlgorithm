@@ -1,7 +1,7 @@
 /*
     백준 11780
     바킹독님 알고리즘 강의 중 플로이드 알고리즘 단원 연습문제
-    https://www.acmicpc.net/problem/12852
+    https://www.acmicpc.net/problem/11780
     
     gold 2
 
