@@ -33,6 +33,11 @@
 
     4. 성공
 
+    #숏코딩
+    - path 배열을 추적하여 경로복원 조건문을 cur != start가 아닌, cur != 0으로 하면
+    앞, 뒤로 추가 코드를 작성해야 하는것을 제거할 수 있음
+    - table[start] = 0이기 때문
+
 */
 
 import java.util.PriorityQueue
@@ -85,12 +90,11 @@ class Solution11779 {
         bw.write("${table[end]}\n")
 
         val sb = StringBuilder()
-        var count = 1
+        var count = 0
         var cur = end
-        sb.append("$cur ")
-        while(cur != start){
-            cur = path[cur]
+        while(cur != 0){
             sb.insert(0, "$cur ")
+            cur = path[cur]
             count++
         }
         bw.write("$count\n")
