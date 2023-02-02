@@ -67,7 +67,13 @@
     - 4번에서 바꾼게 없는데 이럼
     - let문을 해제하면 더 오래걸림
 
-    6. JVM 추가시간없이 못풀것 같음..
+    6. Kotlin으로 푼 사람이 한명도 없음..
+    kotlin으로 안되나..
+
+    7. 성공
+    - Java는 통과한 사람들이 좀 있길래
+    Java로 로직 옮겨서 진행해보니 성공항
+    - JavaAlgorithm/src/backjoon/BackJoon16118.java
 
 */
 
@@ -191,3 +197,131 @@ class Solution16118 {
         println()
     }
 }
+
+/*
+JavaAlgorithm/src/backjoon/BackJoon16118.java
+
+package backjoon;
+
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+public class BackJoon16118 {
+    private static int N, M; //나무 그루터기 N, 오솔길의 개수 M
+    private final static int INF = 2000000000;
+    private static ArrayList<ArrayList<WolfNode>> graph;
+    private static int[] foxTable;
+    private static int[][] wolfTable;
+
+    private static int FAST = 0;
+    private static int SLOW = 1;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(reader.readLine());
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        foxTable = new int[N+1];
+        wolfTable = new int[2][N+1];
+
+        graph = new ArrayList<>();
+        for (int i = 0; i <= N; i++) {
+            graph.add(new ArrayList<>());
+        }
+        
+        for (int i = 0 ; i < M ; i++) {
+            st = new StringTokenizer(reader.readLine());
+
+            int h = Integer.parseInt(st.nextToken());
+            int t = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            
+            graph.get(h).add(new WolfNode(t, 2 * w, SLOW));
+            graph.get(t).add(new WolfNode(h, 2 * w, SLOW));
+        }
+
+        Arrays.fill(foxTable, INF);
+        for (int[] a : wolfTable) Arrays.fill(a, INF);
+
+        wolfDijkstra(1);
+        foxDijkstra(1);
+
+        int count = 0;
+        for (int i = 1 ; i <= N ; i++) {
+            if (foxTable[i] < Math.min(wolfTable[0][i], wolfTable[1][i])) count++;
+        }
+        System.out.println(count);
+    }
+
+    private static void wolfDijkstra(int start) {
+        PriorityQueue<WolfNode> pq = new PriorityQueue<>();
+        pq.add(new WolfNode(start, 0, SLOW));
+        wolfTable[SLOW][start] = 0;
+
+        while (!pq.isEmpty()) {
+        	WolfNode cur = pq.poll();
+
+            if (wolfTable[cur.state][cur.node] != cur.cost) continue;
+
+            for (int i = 0; i < graph.get(cur.node).size(); i++) {
+            	WolfNode nxt = graph.get(cur.node).get(i);
+                int nxtState = 1 - cur.state; //0 : fast,   1 : slow
+                int cost = wolfTable[cur.state][cur.node] + (nxtState == FAST ? nxt.cost / 2 : nxt.cost * 2);
+                if (cost < wolfTable[nxtState][nxt.node]) {
+                	wolfTable[nxtState][nxt.node] = cost;
+                    pq.add(new WolfNode(nxt.node, cost, nxtState));
+                }
+            }
+        }
+    }
+
+    private static void foxDijkstra(int start) {
+        PriorityQueue<WolfNode> pq = new PriorityQueue<>();
+        pq.add(new WolfNode(start, 0, SLOW));
+        foxTable[start] = 0;
+
+        while (!pq.isEmpty()) {
+        	WolfNode cur = pq.poll();
+
+            if (foxTable[cur.node] != cur.cost) continue;
+
+            for (int i = 0; i < graph.get(cur.node).size(); i++) {
+            	WolfNode nxt = graph.get(cur.node).get(i);
+
+                if (nxt.cost + foxTable[cur.node] < foxTable[nxt.node]) {
+                	foxTable[nxt.node] = nxt.cost + foxTable[cur.node];
+                    pq.add(new WolfNode(nxt.node, nxt.cost + foxTable[cur.node], SLOW));
+                }
+            }
+        }
+    }
+
+
+    static class WolfNode implements Comparable<WolfNode> {
+        int node;
+        int cost;
+        int state;
+        WolfNode (int node, int cost, int state) {
+            this.node =  node;
+            this.cost = cost;
+            this.state = state;
+        }
+
+        @Override
+        public int compareTo(WolfNode o) {
+            if (this.cost < o.cost) {//distance가 작은 순
+                return -1;
+            }
+            return 1;
+        }
+    }
+}
+*/
