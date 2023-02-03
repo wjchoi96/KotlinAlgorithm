@@ -45,6 +45,11 @@
     2. 성공
     - 블로그를 보고 접근방식을 생각해서 좀 찝찝
     - 다만, 시간복잡도를 고려해서 안될 방식을을 구분한건 잘한것 같음
+
+    #숏코딩
+    1. Array.fill(item)
+
+    2. dfs 재귀코드에서 중복되는 visit 처리 코드 제거
 */
 
 fun main(){
@@ -78,7 +83,7 @@ class Solution1167 {
         dfs(1, 0)
         bw.write("maxNode[$maxNode], max[$max]\n")
         
-        visit = Array(n+1){false}
+        visit.fill(false)// visit = Array(n+1){false}
         dfs(maxNode, 0)
     
         bw.write("$max\n")
@@ -97,7 +102,6 @@ class Solution1167 {
         for(nxt in graph[node]) {
             if(visit[nxt.first]) continue
             dfs(nxt.first, cost + nxt.second)
-            visit[nxt.first] = true
         }
     }
 }
