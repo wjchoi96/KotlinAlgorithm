@@ -11,6 +11,7 @@
 private val arr = arrayOf(
     6, -8, 1, 12, 8, 15, 7, -7
 )
+// private val val temp = mutableListOf(2, 5, 1, 3, 10, 9, 5, 3, 11, 4) // 무한 loop 돈다
 private var totalTime = 0
 private val buff = Array(arr.size){0}
 fun main(args: Array<String>){
