@@ -13,9 +13,9 @@
 import java.util.Queue
 import java.util.Stack
 fun main(){
-    StackQueue().solve()
+    BaseAlgorithmStackQueue().solve()
 }
-class StackQueue {
+class BaseAlgorithmStackQueue {
     fun solve() {
         val bw = System.out.bufferedWriter()
         val br = System.`in`.bufferedReader()
