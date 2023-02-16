@@ -86,6 +86,19 @@
 
     5. 성공
 
+    #숏코딩
+    - L개선
+        - L은 왼쪽으로 미는것
+        - 첫번째 자리수를 제외한 모든 자릿수가 *10되어 증가됨
+        - 첫번째 자리수는 1의자리로 들아감
+        - (n*10)%10000 + n/1000
+        => 1234 -> 12340%10000 + 1234/1000 => 2340 => 2341
+    - R개선
+        - R은 오른쪽으로 미는것
+        - 마지막 자리수를 제외한 모든 자리수가 /10이 되어 감소됨
+        - 마지막 자리수는 천의자리로 들어감
+        - (n/10) + (n%10)*1000
+        => 1234 -> 1234/10 + (1234%10)*1000 => 123 + 4*1000 => 4123
 
 */
 import java.util.Queue
@@ -151,26 +164,16 @@ class Solution9019 {
     }
 
     private fun l(n: Int): Int {
-        val str = n.toString().padStart(4, '0').toCharArray()
-        val first = str.first()
-        print("L => ${String(str)} to ")
-        str[0] = str[1]
-        str[1] = str[2]
-        str[2] = str[3]
-        str[3] = first
-        println("${String(str)}")
-        return String(str).toInt()
+        print("L => $n to ")
+        val res = n * 10 % 10000 + n / 1000
+        println("$res")
+        return res
     }
 
     private fun r(n: Int): Int {
-        val str = n.toString().padStart(4, '0').toCharArray()
-        val last = str.last()
-        print("R => ${String(str)} to ")
-        str[3] = str[2]
-        str[2] = str[1]
-        str[1] = str[0]
-        str[0] = last
-        println("${String(str)}")
-        return String(str).toInt()
+        print("R => $n to ")
+        val res = (n/10) + (n%10)*1000
+        println("$res")
+        return res
     }
 }
