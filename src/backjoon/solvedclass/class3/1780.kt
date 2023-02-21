@@ -30,6 +30,11 @@
 
     #제출
     1. 성공
+
+    #숏코딩
+    - 분할하는 부분을 반복문을 통해 진행
+    - 모두 같은 블록인지 체크하는 로직을 사용해, baseCondition 제거하여 코드량 감소
+    => baseCondition이 현재는 2개인것(size가 1, 모두 같은 블록을 가짐)
 */
 
 fun main(){
@@ -56,15 +61,6 @@ class Solution1780 {
     }
 
     private fun getCount(x: Int, y: Int, size: Int, v: Triple<Int, Int, Int>): Triple<Int, Int, Int> {
-        // println("getCount x[$x], y[$y], size[$size], v[$v]")
-        if(size <= 1){
-            return v + when(board[x][y]) {
-                -1 -> Triple(1, 0, 0)
-                0 -> Triple(0, 1, 0)
-                else -> Triple(0, 0, 1)
-            }
-        }
-
         var isSameContent = true
         val item = board[x][y]
         for(i in x until x+size){
@@ -85,16 +81,14 @@ class Solution1780 {
                 }
             }
             else -> {
-                val divideSize = size/3
-                getCount(x, y, divideSize, v) + 
-                getCount(x, y+divideSize, divideSize, v) + 
-                getCount(x, y+divideSize*2, divideSize, v) +
-                getCount(x+divideSize, y, divideSize, v) + 
-                getCount(x+divideSize*2, y, divideSize, v) + 
-                getCount(x+divideSize, y+divideSize, divideSize, v) + 
-                getCount(x+divideSize, y+divideSize*2, divideSize, v) +
-                getCount(x+divideSize*2, y+divideSize, divideSize, v) + 
-                getCount(x+divideSize*2, y+divideSize*2, divideSize, v)
+                val nxtSize = size/3
+                var res = Triple(0, 0, 0)
+                for(i in 0 until 3){
+                    for(j in 0 until 3){
+                        res += getCount(x + i*nxtSize, y + j*nxtSize, nxtSize, v)
+                    }
+                }
+                res
             }
         }
         
